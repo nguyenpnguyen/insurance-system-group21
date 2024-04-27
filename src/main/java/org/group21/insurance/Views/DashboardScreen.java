@@ -1,10 +1,13 @@
 package org.group21.insurance.Views;
 
 import javafx.application.Application;
+import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.Button;
+import javafx.scene.effect.DropShadow;
 import javafx.scene.layout.*;
+import javafx.scene.paint.Color;
 import javafx.stage.Stage;
 
 public class DashboardScreen extends Application {
@@ -13,18 +16,7 @@ public class DashboardScreen extends Application {
     public void start(Stage primaryStage) {
         BorderPane root = new BorderPane();
 
-        // Create the header
-        HBox header = new HBox();
-        header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
-
-        Label welcomeText = new Label("Welcome Administrator");
-        Region spacer = new Region();
-        HBox.setHgrow(spacer, Priority.ALWAYS);
-        Button logoutButton = new Button("Logout");
-
-        header.getChildren().addAll(welcomeText, spacer, logoutButton);
-        root.setTop(header);
-
+        // Create sidebar
         VBox sidebar = new VBox();
         sidebar.setStyle("-fx-background-color: #ffffff; -fx-border-color: grey; -fx-border-width: 0 2 0 0; -fx-padding: 0; -fx-min-width: 150px;");
 
@@ -35,13 +27,48 @@ public class DashboardScreen extends Application {
 
         sidebar.getChildren().addAll(section1, section2, section3, section4);
 
-        section1.setOnAction(e -> root.setCenter(new Label("Content for Section 1")));
-        section2.setOnAction(e -> root.setCenter(new Label("Content for Section 2")));
-        section3.setOnAction(e -> root.setCenter(new Label("Content for Section 3")));
-        section4.setOnAction(e -> root.setCenter(new Label("Content for Section 4")));
-//        section5.setOnAction(e -> root.setCenter(new Label("Content for Section 5")));
+        section1.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
+        section2.setOnAction(e -> root.setCenter(new Label("Content for Customer")));
+        section3.setOnAction(e -> root.setCenter(new Label("Content for Claim")));
+        section4.setOnAction(e -> root.setCenter(new Label("Content for Insurance Card")));
 
+        DropShadow dsSidebar = new DropShadow();
+        dsSidebar.setOffsetY(3.0);
+        dsSidebar.setColor(Color.color(0.4, 0.4, 0.4));
+        sidebar.setEffect(dsSidebar);
         root.setLeft(sidebar);
+
+        // Create the header
+        HBox header = new HBox();
+        header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
+
+        Label welcomeText = new Label("Welcome Administrator");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button logoutButton = new Button("Logout");
+
+        logoutButton.setOnAction(e -> {
+            LoginScreen loginScreen = new LoginScreen();
+            try {
+                loginScreen.start(new Stage());
+            } catch (Exception ex) {
+                ex.printStackTrace();
+            }
+            primaryStage.close();
+        });
+
+
+
+        header.getChildren().addAll(welcomeText, spacer, logoutButton);
+
+        DropShadow ds = new DropShadow();
+        ds.setOffsetY(3.0);
+        ds.setColor(Color.color(0.4, 0.4, 0.4));
+        header.setEffect(ds);
+
+        root.setTop(header);
+
+
 
         Scene scene = new Scene(root, 800, 600);
         primaryStage.setTitle("Dashboard");
