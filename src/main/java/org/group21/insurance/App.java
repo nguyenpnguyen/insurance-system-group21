@@ -1,6 +1,6 @@
 package org.group21.insurance;
 
-import org.group21.insurance.Views.LoginScreen;
+import org.group21.insurance.views.LoginScreen;
 import javafx.application.Application;
 import javafx.stage.Stage;
 

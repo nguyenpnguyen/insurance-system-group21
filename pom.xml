@@ -55,7 +55,7 @@
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.group21.insurance.views.App</mainClass>
+                            <mainClass>org.group21.insurance.App</mainClass>
                         </configuration>
                     </execution>
                 </executions>

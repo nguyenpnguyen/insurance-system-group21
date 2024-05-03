@@ -1,4 +1,4 @@
-package org.group21.insurance.Views;
+package org.group21.insurance.views;
 
 import javafx.application.Application;
 import javafx.geometry.Insets;

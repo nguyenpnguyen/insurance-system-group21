@@ -4,4 +4,5 @@ module org.group21.insurance {
   exports org.group21.insurance.models;
 	exports org.group21.insurance.views;
 	exports org.group21.insurance.daos;
+	exports org.group21.insurance;
 }
