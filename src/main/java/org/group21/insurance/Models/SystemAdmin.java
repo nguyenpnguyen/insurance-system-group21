@@ -1,4 +1,4 @@
-package org.group21.insurance.models;
+package org.group21.insurance.Models;
 
 public class SystemAdmin {
   private SystemAdmin systemAdmin;

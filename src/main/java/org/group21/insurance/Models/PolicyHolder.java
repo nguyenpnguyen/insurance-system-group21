@@ -1,4 +1,4 @@
-package org.group21.insurance.models;
+package org.group21.insurance.Models;
 
 import java.util.List;
 

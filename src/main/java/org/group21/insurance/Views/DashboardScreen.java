@@ -12,12 +12,20 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.group21.insurance.models.Claim;
+import org.group21.insurance.Models.Claim;
 
 public class DashboardScreen extends Application {
 
     @Override
     public void start(Stage stage) {
+        Scene dashboardScene = createDashboardUI(stage);
+        stage.setTitle("Insurance Claim Dashboard Portal");
+        stage.setScene(dashboardScene);
+        stage.show();
+    }
+
+
+    private Scene createDashboardUI(Stage stage){
         BorderPane root = new BorderPane();
 
         // Create sidebar
@@ -26,14 +34,8 @@ public class DashboardScreen extends Application {
         // Create the header
         root.setTop(createHeader(stage, root));
 
-
-        Scene scene = new Scene(root, 1200, 600);
-        stage.setTitle("Insurance Claim Dashboard Portal");
-        stage.setScene(scene);
-        stage.show();
+        return new Scene(root, 1200, 600);
     }
-
-
     private VBox createSidebar(BorderPane root){
         VBox sidebar = new VBox();
         sidebar.setStyle("-fx-background-color: #ffffff; -fx-border-color: grey; -fx-border-width: 0 2 0 0; -fx-padding: 0; -fx-min-width: 150px;");
@@ -92,13 +94,13 @@ public class DashboardScreen extends Application {
 
         // Set the action for the "Logout" menu item
         logoutItem.setOnAction(e -> {
-            LoginScreen loginScreen = new LoginScreen();
+            stage.close();
             try {
-                loginScreen.start(new Stage());
+                LoginScreen loginScreen = new LoginScreen();
+                loginScreen.start(stage);
             } catch (Exception ex) {
                 ex.printStackTrace();
             }
-            stage.close();
         });
 
         // Set the action for the "Profile" menu item
@@ -217,8 +219,6 @@ public class DashboardScreen extends Application {
 
         return table;
     }
-
-
 
     public static void main(String[] args) {
         launch(args);
