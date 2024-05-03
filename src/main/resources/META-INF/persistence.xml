@@ -4,7 +4,7 @@
              xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
              version="3.0">
     <persistence-unit name="default">
-        <class>org.group21.insurance.App</class>
+        <class>org.group21.insurance.views.App</class>
         <properties>
             <property name="eclipselink.target-database" value="Database"/>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>

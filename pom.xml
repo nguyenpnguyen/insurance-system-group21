@@ -27,10 +27,12 @@
             <artifactId>org.eclipse.persistence.jpa</artifactId>
             <version>4.0.2</version>
         </dependency>
+
         <dependency>
-            <groupId>org.openjfx</groupId>
-            <artifactId>javafx-graphics</artifactId>
-            <version>22-ea+11</version>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <version>5.11.0-M1</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
     <build>
@@ -53,7 +55,7 @@
                         <!-- Usage: mvn clean javafx:run -->
                         <id>default-cli</id>
                         <configuration>
-                            <mainClass>org.group21.insurance.App</mainClass>
+                            <mainClass>org.group21.insurance.views.App</mainClass>
                         </configuration>
                     </execution>
                 </executions>

@@ -14,4 +14,12 @@ public class Dependent extends Customer {
     super();
     this.claims = claims;
   }
+  
+  public List<Claim> getClaims() {
+    return claims;
+  }
+  
+  public void setClaims(List<Claim> claims) {
+    this.claims = claims;
+  }
 }

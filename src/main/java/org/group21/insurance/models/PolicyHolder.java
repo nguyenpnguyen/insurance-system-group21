@@ -18,4 +18,20 @@ public class PolicyHolder extends Customer {
     this.dependents = dependents;
     this.claims = claims;
   }
+  
+  public List<Dependent> getDependents() {
+    return dependents;
+  }
+  
+  public void setDependents(List<Dependent> dependents) {
+    this.dependents = dependents;
+  }
+  
+  public List<Claim> getClaims() {
+    return claims;
+  }
+  
+  public void setClaims(List<Claim> claims) {
+    this.claims = claims;
+  }
 }
