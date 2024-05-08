@@ -12,7 +12,7 @@ import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
-import org.group21.insurance.Models.Claim;
+import org.group21.insurance.models.Claim;
 
 public class DashboardScreen extends Application {
 

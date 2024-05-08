@@ -1,15 +1,23 @@
-package org.group21.insurance.Models;
-
-import java.util.List;
+package org.group21.insurance.models;
 
 public class PolicyOwner extends Customer {
-  private List<Customer> beneficiaries;
+  private Beneficiaries beneficiaries;
 
   public PolicyOwner() {
-    this.beneficiaries = null;
+    super();
+    this.beneficiaries = new Beneficiaries();
   }
 
-  public PolicyOwner(List<Customer> beneficiaries) {
+  public PolicyOwner(Beneficiaries beneficiaries) {
+    super();
+    this.beneficiaries = beneficiaries;
+  }
+  
+  public Beneficiaries getBeneficiaries() {
+    return beneficiaries;
+  }
+  
+  public void setBeneficiaries(Beneficiaries beneficiaries) {
     this.beneficiaries = beneficiaries;
   }
 }

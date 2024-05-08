@@ -1,32 +1,35 @@
 package org.group21.insurance.models;
 
-public class InsuranceProvider {
+public abstract class Customer {
 	private String id;
 	private String username;
 	private String hashedPassword;
 	private String fullName;
+	private InsuranceCard insuranceCard;
 	private String phoneNumber;
+	private String address;
 	private String email;
-	private InsuranceProviderRole role;
 	
-	public InsuranceProvider() {
+	public Customer() {
 		this.id = "";
 		this.username = "";
 		this.hashedPassword = "";
 		this.fullName = "";
+		this.insuranceCard = new InsuranceCard();
 		this.phoneNumber = "";
+		this.address = "";
 		this.email = "";
-		this.role = InsuranceProviderRole.INSURANCE_MANAGER;
 	}
 	
-	public InsuranceProvider(String id, String username, String hashedPassword, String fullName, String phoneNumber, String email, InsuranceProviderRole role) {
+	public Customer(String id, String username, String hashedPassword, String fullName, InsuranceCard insuranceCard, String phoneNumber, String address, String email) {
 		this.id = id;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 		this.fullName = fullName;
+		this.insuranceCard = insuranceCard;
 		this.phoneNumber = phoneNumber;
+		this.address = address;
 		this.email = email;
-		this.role = role;
 	}
 	
 	public String getId() {
@@ -61,6 +64,14 @@ public class InsuranceProvider {
 		this.fullName = fullName;
 	}
 	
+	public InsuranceCard getInsuranceCard() {
+		return insuranceCard;
+	}
+	
+	public void setInsuranceCard(InsuranceCard insuranceCard) {
+		this.insuranceCard = insuranceCard;
+	}
+	
 	public String getPhoneNumber() {
 		return phoneNumber;
 	}
@@ -69,24 +80,19 @@ public class InsuranceProvider {
 		this.phoneNumber = phoneNumber;
 	}
 	
+	public String getAddress() {
+		return address;
+	}
+	
+	public void setAddress(String address) {
+		this.address = address;
+	}
+	
 	public String getEmail() {
 		return email;
 	}
 	
 	public void setEmail(String email) {
 		this.email = email;
-	}
-	
-	public InsuranceProviderRole getRole() {
-		return role;
-	}
-	
-	public void setRole(InsuranceProviderRole role) {
-		this.role = role;
-	}
-	
-	public enum InsuranceProviderRole {
-		INSURANCE_MANAGER,
-		INSURANCE_SURVEYOR
 	}
 }
