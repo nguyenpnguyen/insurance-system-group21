@@ -1,11 +1,18 @@
 package org.group21.insurance.models;
 
+import jakarta.persistence.*;
+
 import java.util.ArrayList;
 import java.util.List;
 
+@Entity
+@DiscriminatorValue("PolicyHolder")
 public class PolicyHolder extends Customer {
+  @OneToMany(mappedBy = "policyHolder", cascade = CascadeType.ALL)
   private List<Dependent> dependents;
 
+  @ManyToOne
+  @JoinColumn(name = "policy_owner_id", nullable = false)
   private PolicyOwner policyOwner;
 
   public PolicyHolder() {

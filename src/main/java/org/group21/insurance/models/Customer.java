@@ -1,13 +1,35 @@
 package org.group21.insurance.models;
 
+import jakarta.persistence.*;
+
+@Entity
+@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
+@DiscriminatorColumn(name = "customer_type")
 public abstract class Customer {
+	@Id
+	@Column(name = "id", nullable = false)
 	private String id;
+	
+	@Column(name = "username")
 	private String username;
+	
+	@Column(name = "password")
 	private String hashedPassword;
+	
+	@Column(name = "full_name")
 	private String fullName;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
+	
+	@Column(name = "phone_number")
 	private String phoneNumber;
+	
+	@Column(name = "address")
 	private String address;
+	
+	@Column(name = "email")
 	private String email;
 	
 	public Customer() {

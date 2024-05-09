@@ -1,31 +1,31 @@
 package org.group21.insurance.models;
 
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+
+@Entity
 public class BankingInfo {
-	private String id;
-	private String name;
-	private String bank;
+	@Id
+	@Column(name = "account_number", nullable = false)
 	private String accountNumber;
 	
+	@Column(name = "id", nullable = false)
+	private String name;
+	
+	@Column(name = "bank", nullable = false)
+	private String bank;
+	
 	public BankingInfo() {
-		this.id = "";
 		this.name = "";
 		this.bank = "";
 		this.accountNumber = "";
 	}
 	
-	public BankingInfo(String id, String name, String bank, String accountNumber) {
-		this.id = id;
+	public BankingInfo(String name, String bank, String accountNumber) {
 		this.name = name;
 		this.bank = bank;
 		this.accountNumber = accountNumber;
-	}
-	
-	public String getId() {
-		return id;
-	}
-	
-	public void setId(String id) {
-		this.id = id;
 	}
 	
 	public String getName() {

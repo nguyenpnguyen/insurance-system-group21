@@ -1,16 +1,42 @@
 package org.group21.insurance.models;
 
-import java.time.LocalDate;
+import jakarta.persistence.*;
 
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+import java.io.File;
+
+@Entity
 public class Claim {
+	@Id
+	@Column(name = "id", nullable = false)
 	private String id;
+	
+	@Column(name = "claim_date")
 	private LocalDate claimDate;
+	
+	@ManyToOne(targetEntity = Customer.class)
 	private Customer insuredPerson;
+	
+	@Column(name = "exam_date")
 	private LocalDate examDate;
+	
+	@ManyToOne(targetEntity = InsuranceCard.class)
 	private InsuranceCard insuranceCard;
-	private DocumentList documentList;
+	
+	@ElementCollection(targetClass = File.class, fetch = FetchType.EAGER)
+	@CollectionTable(name = "document_list", joinColumns = @JoinColumn(name = "claim_id"))
+	@Column(name = "document", nullable = false)
+	private List<File> documentList;
+	
+	@Column(name = "claim_amount")
 	private long claimAmount;
+	
+	@ManyToOne(targetEntity = BankingInfo.class)
 	private BankingInfo receiverBankingInfo;
+	
+	@Enumerated(EnumType.STRING)
 	private ClaimStatus status;
 	
 	public Claim() {
@@ -19,13 +45,13 @@ public class Claim {
 		this.insuredPerson = null;
 		this.examDate = LocalDate.now();
 		this.insuranceCard = new InsuranceCard();
-		this.documentList = new DocumentList();
+		this.documentList = new ArrayList<>();
 		this.claimAmount = 0;
 		this.receiverBankingInfo = new BankingInfo();
 		this.status = ClaimStatus.NEW;
 	}
 	
-	public Claim(String id, LocalDate claimDate, Customer insuredPerson, LocalDate examDate, InsuranceCard insuranceCard, DocumentList documentList, long claimAmount, BankingInfo receiverBankingInfo, ClaimStatus status) {
+	public Claim(String id, LocalDate claimDate, Customer insuredPerson, LocalDate examDate, InsuranceCard insuranceCard, List<File> documentList, long claimAmount, BankingInfo receiverBankingInfo, ClaimStatus status) {
 		this.id = id;
 		this.claimDate = claimDate;
 		this.insuredPerson = insuredPerson;
@@ -77,11 +103,11 @@ public class Claim {
 		this.insuranceCard = insuranceCard;
 	}
 	
-	public DocumentList getDocumentList() {
+	public List<File> getDocumentList() {
 		return documentList;
 	}
 	
-	public void setDocumentList(DocumentList documentList) {
+	public void setDocumentList(List<File> documentList) {
 		this.documentList = documentList;
 	}
 	

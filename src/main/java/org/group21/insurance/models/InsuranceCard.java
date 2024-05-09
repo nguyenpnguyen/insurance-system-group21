@@ -1,11 +1,24 @@
 package org.group21.insurance.models;
 
+import jakarta.persistence.*;
+
 import java.time.LocalDate;
 
+@Entity
 public class InsuranceCard {
+	@Id
+	@Column(name = "card_number", nullable = false)
 	private String cardNumber;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "policy_owner_id", referencedColumnName = "id")
 	private PolicyOwner policyOwner;
+	
+	@OneToOne(cascade = CascadeType.ALL)
+	@JoinColumn(name = "card_holder_id", referencedColumnName = "id")
 	private Customer cardHolder;
+	
+	@Column(name = "expiration_date")
 	private LocalDate expirationDate;
 	
 	public InsuranceCard() {

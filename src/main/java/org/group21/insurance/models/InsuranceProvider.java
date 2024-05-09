@@ -1,12 +1,31 @@
 package org.group21.insurance.models;
 
+import jakarta.persistence.*;
+
+@Entity
+@Table(name = "insurance_provider")
 public class InsuranceProvider {
+	@Id
+	@Column(name = "id", nullable = false)
 	private String id;
+	
+	@Column(name = "username")
 	private String username;
+	
+	@Column(name = "password")
 	private String hashedPassword;
+	
+	@Column(name = "full_name")
 	private String fullName;
+	
+	@Column(name = "phone_number")
 	private String phoneNumber;
+	
+	@Column(name = "email")
 	private String email;
+	
+	@Column(name = "role")
+	@Enumerated(EnumType.STRING)
 	private InsuranceProviderRole role;
 	
 	public InsuranceProvider() {
