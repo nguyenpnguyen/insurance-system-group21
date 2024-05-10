@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Entity
+@Table(name = "policy_owner")
 public class PolicyOwner extends Customer implements Serializable {
   
   @OneToMany(mappedBy = "policyOwner", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
