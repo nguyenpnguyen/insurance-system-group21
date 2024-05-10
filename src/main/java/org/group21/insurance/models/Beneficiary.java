@@ -6,12 +6,12 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-@Entity
-@Table(name = "beneficiary")
+@Entity(name = "Beneficiary")
+@Table(name = "beneficiaries")
 public class Beneficiary extends Customer implements Serializable {
 	
 	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "insurance_card_id", referencedColumnName = "card_number")
+	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	
 	@ManyToOne
@@ -21,8 +21,11 @@ public class Beneficiary extends Customer implements Serializable {
 	@OneToMany(mappedBy = "policyHolder", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Beneficiary> dependents;
 	
+	@OneToMany(mappedBy = "insuredPerson", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<Claim> claims;
+	
 	@ManyToOne
-	@JoinColumn(name = "policy_owner_id", referencedColumnName = "id", nullable = false)
+	@JoinColumn(name = "policy_owner_id", referencedColumnName = "id")
 	private PolicyOwner policyOwner;
 	
 	@Column(name = "is_policy_holder", nullable = false)
@@ -33,15 +36,19 @@ public class Beneficiary extends Customer implements Serializable {
 			this.insuranceCard = new InsuranceCard();
 			this.policyHolder = new Beneficiary();
 			this.dependents = new ArrayList<>();
+			this.claims = new ArrayList<>();
 			this.policyOwner = new PolicyOwner();
+			this.isPolicyHolder = false;
 	}
 
-	public Beneficiary(String id, String username, String hashedPassword, String fullName, String phoneNumber, String address, String email, InsuranceCard insuranceCard, Beneficiary policyHolder, List<Beneficiary> dependents, PolicyOwner policyOwner) {
+	public Beneficiary(String id, String username, String hashedPassword, String fullName, String phoneNumber, String address, String email, InsuranceCard insuranceCard, Beneficiary policyHolder, List<Beneficiary> dependents, List<Claim> claims, PolicyOwner policyOwner, boolean isPolicyHolder) {
 			super(id, username, hashedPassword, fullName, phoneNumber, address, email);
 			this.insuranceCard = insuranceCard;
 			this.policyHolder = policyHolder;
 			this.dependents = dependents;
+			this.claims = claims;
 			this.policyOwner = policyOwner;
+			this.isPolicyHolder = isPolicyHolder;
 	}
 	
 	public InsuranceCard getInsuranceCard() {
@@ -76,6 +83,14 @@ public class Beneficiary extends Customer implements Serializable {
 		if (isPolicyHolder) {
 			this.dependents = dependents;
 		}
+	}
+	
+	public List<Claim> getClaims() {
+		return claims;
+	}
+	
+	public void setClaims(List<Claim> claims) {
+		this.claims = claims;
 	}
 	
 	public PolicyOwner getPolicyOwner() {

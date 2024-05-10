@@ -8,8 +8,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
-@Entity
-@Table(name = "claim")
+@Entity(name = "Claim")
+@Table(name = "claims")
 public class Claim implements Serializable {
 	@Id
 	@Column(name = "id", nullable = false)
@@ -18,9 +18,9 @@ public class Claim implements Serializable {
 	@Column(name = "claim_date")
 	private LocalDate claimDate;
 	
-	@ManyToOne(targetEntity = Customer.class)
+	@ManyToOne(targetEntity = Beneficiary.class)
 	@JoinColumn(name = "insured_person_id", referencedColumnName = "id")
-	private Customer insuredPerson;
+	private Beneficiary insuredPerson;
 	
 	@Column(name = "exam_date")
 	private LocalDate examDate;
@@ -48,7 +48,7 @@ public class Claim implements Serializable {
 	public Claim() {
 		this.id = "";
 		this.claimDate = LocalDate.now();
-		this.insuredPerson = null;
+		this.insuredPerson = new Beneficiary();
 		this.examDate = LocalDate.now();
 		this.insuranceCard = new InsuranceCard();
 		this.documentList = new ArrayList<>();
@@ -57,7 +57,7 @@ public class Claim implements Serializable {
 		this.status = ClaimStatus.NEW;
 	}
 	
-	public Claim(String id, LocalDate claimDate, Customer insuredPerson, LocalDate examDate, InsuranceCard insuranceCard, List<File> documentList, long claimAmount, BankingInfo receiverBankingInfo, ClaimStatus status) {
+	public Claim(String id, LocalDate claimDate, Beneficiary insuredPerson, LocalDate examDate, InsuranceCard insuranceCard, List<File> documentList, long claimAmount, BankingInfo receiverBankingInfo, ClaimStatus status) {
 		this.id = id;
 		this.claimDate = claimDate;
 		this.insuredPerson = insuredPerson;
@@ -85,11 +85,11 @@ public class Claim implements Serializable {
 		this.claimDate = claimDate;
 	}
 	
-	public Customer getInsuredPerson() {
+	public Beneficiary getInsuredPerson() {
 		return insuredPerson;
 	}
 	
-	public void setInsuredPerson(Customer insuredPerson) {
+	public void setInsuredPerson(Beneficiary insuredPerson) {
 		this.insuredPerson = insuredPerson;
 	}
 	

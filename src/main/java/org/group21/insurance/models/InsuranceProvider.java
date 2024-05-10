@@ -4,8 +4,8 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 
-@Entity
-@Table(name = "insurance_provider")
+@Entity(name = "InsuranceProvider")
+@Table(name = "insurance_providers")
 public class InsuranceProvider implements Serializable {
 	@Id
 	@Column(name = "id", nullable = false)

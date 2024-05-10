@@ -5,8 +5,8 @@ import jakarta.persistence.*;
 import java.io.Serializable;
 import java.time.LocalDate;
 
-@Entity
-@Table(name = "insurance_card")
+@Entity(name = "InsuranceCard")
+@Table(name = "insurance_cards")
 public class InsuranceCard implements Serializable {
 	@Id
 	@Column(name = "card_number", nullable = false)
@@ -18,7 +18,7 @@ public class InsuranceCard implements Serializable {
 	
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "card_holder_id", referencedColumnName = "id")
-	private Customer cardHolder;
+	private Beneficiary cardHolder;
 	
 	@Column(name = "expiration_date")
 	private LocalDate expirationDate;
@@ -26,11 +26,11 @@ public class InsuranceCard implements Serializable {
 	public InsuranceCard() {
 		this.cardNumber = "";
 		this.policyOwner = new PolicyOwner();
-		this.cardHolder = null;
+		this.cardHolder = new Beneficiary();
 		this.expirationDate = LocalDate.now();
 	}
 	
-	public InsuranceCard(String cardNumber, PolicyOwner policyOwner, Customer cardHolder, LocalDate expirationDate) {
+	public InsuranceCard(String cardNumber, PolicyOwner policyOwner, Beneficiary cardHolder, LocalDate expirationDate) {
 		this.cardNumber = cardNumber;
 		this.policyOwner = policyOwner;
 		this.cardHolder = cardHolder;
@@ -53,11 +53,11 @@ public class InsuranceCard implements Serializable {
 		this.policyOwner = policyOwner;
 	}
 	
-	public Customer getCardHolder() {
+	public Beneficiary getCardHolder() {
 		return cardHolder;
 	}
 	
-	public void setCardHolder(Customer cardHolder) {
+	public void setCardHolder(Beneficiary cardHolder) {
 		this.cardHolder = cardHolder;
 	}
 	

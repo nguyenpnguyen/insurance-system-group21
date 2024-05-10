@@ -11,10 +11,10 @@ public abstract class Customer implements Serializable {
 	@Column(name = "id", nullable = false)
 	private String id;
 	
-	@Column(name = "username")
+	@Column(name = "username", nullable = false)
 	private String username;
 	
-	@Column(name = "password")
+	@Column(name = "password", nullable = false)
 	private String hashedPassword;
 	
 	@Column(name = "full_name")
