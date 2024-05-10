@@ -1,15 +1,32 @@
-<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<persistence xmlns="https://jakarta.ee/xml/ns/persistence"
-             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-             xsi:schemaLocation="https://jakarta.ee/xml/ns/persistence https://jakarta.ee/xml/ns/persistence/persistence_3_0.xsd"
-             version="3.0">
-    <persistence-unit name="default">
-        <class>org.group21.insurance.App</class>
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.2"
+             xmlns="http://xmlns.jcp.org/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/persistence http://xmlns.jcp.org/xml/ns/persistence/persistence_2_2.xsd">
+    <persistence-unit name="insurance">
+        <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+
+        <class>org.group21.insurance.models.InsuranceCard</class>
+        <class>org.group21.insurance.models.Claim</class>
+        <class>org.group21.insurance.models.BankingInfo</class>
+        <class>org.group21.insurance.models.InsuranceProvider</class>
+        <class>org.group21.insurance.models.Customer</class>
+        <class>org.group21.insurance.models.PolicyOwner</class>
+        <class>org.group21.insurance.models.Beneficiary</class>
+        <class>org.group21.insurance.models.SystemAdmin</class>
+
         <properties>
-            <property name="eclipselink.target-database" value="Database"/>
             <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.ivefrrtozuwtyxodqnjk&password=rmitInsurance2024"/>
-            <property name="jakarta.persistence.schema-generation.database.action" value="none"/>
+            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.ivefrrtozuwtyxodqnjk&amp;password=rmitInsurance2024"/>
+            <property name="jakarta.persistence.jdbc.user" value="postgres.ivefrrtozuwtyxodqnjk"/>
+            <property name="jakarta.persistence.jdbc.password" value="rmitInsurance2024"/>
+            <property name="hibernate.dialect" value="org.hibernate.dialect.PostgreSQL82Dialect"/>
+            <property name="hibernate.hbm2ddl.auto" value="update"/>
+
+            <!-- SQL statement logging -->
+            <property name="hibernate.show_sql" value="true"/>
+            <property name="hibernate.format_sql" value="true"/>
+            <property name="hibernate.highlight_sql" value="true"/>
         </properties>
+
     </persistence-unit>
 </persistence>
