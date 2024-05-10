@@ -2,13 +2,15 @@ package org.group21.insurance.models;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.io.File;
 
 @Entity
-public class Claim {
+@Table(name = "claim")
+public class Claim implements Serializable {
 	@Id
 	@Column(name = "id", nullable = false)
 	private String id;
@@ -17,12 +19,14 @@ public class Claim {
 	private LocalDate claimDate;
 	
 	@ManyToOne(targetEntity = Customer.class)
+	@JoinColumn(name = "insured_person_id", referencedColumnName = "id")
 	private Customer insuredPerson;
 	
 	@Column(name = "exam_date")
 	private LocalDate examDate;
 	
 	@ManyToOne(targetEntity = InsuranceCard.class)
+	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	
 	@ElementCollection(targetClass = File.class, fetch = FetchType.EAGER)
@@ -34,9 +38,11 @@ public class Claim {
 	private long claimAmount;
 	
 	@ManyToOne(targetEntity = BankingInfo.class)
+	@JoinColumn(name = "receiver_account_number", referencedColumnName = "account_number")
 	private BankingInfo receiverBankingInfo;
 	
 	@Enumerated(EnumType.STRING)
+	@Column(name = "status")
 	private ClaimStatus status;
 	
 	public Claim() {

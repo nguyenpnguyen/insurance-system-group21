@@ -3,14 +3,18 @@ package org.group21.insurance.models;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
+
+import java.io.Serializable;
 
 @Entity
-public class BankingInfo {
+@Table(name = "banking_info")
+public class BankingInfo implements Serializable {
 	@Id
 	@Column(name = "account_number", nullable = false)
 	private String accountNumber;
 	
-	@Column(name = "id", nullable = false)
+	@Column(name = "name", nullable = false)
 	private String name;
 	
 	@Column(name = "bank", nullable = false)

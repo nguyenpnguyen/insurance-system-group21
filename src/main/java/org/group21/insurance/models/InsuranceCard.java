@@ -2,10 +2,12 @@ package org.group21.insurance.models;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
 import java.time.LocalDate;
 
 @Entity
-public class InsuranceCard {
+@Table(name = "insurance_card")
+public class InsuranceCard implements Serializable {
 	@Id
 	@Column(name = "card_number", nullable = false)
 	private String cardNumber;

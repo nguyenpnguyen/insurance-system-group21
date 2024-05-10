@@ -2,10 +2,12 @@ package org.group21.insurance.models;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
-@Inheritance(strategy = InheritanceType.SINGLE_TABLE)
-@DiscriminatorColumn(name = "customer_type")
-public abstract class Customer {
+@Table(name = "customer")
+@Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
+public abstract class Customer implements Serializable {
 	@Id
 	@Column(name = "id", nullable = false)
 	private String id;
@@ -18,10 +20,6 @@ public abstract class Customer {
 	
 	@Column(name = "full_name")
 	private String fullName;
-	
-	@OneToOne(cascade = CascadeType.ALL)
-	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
-	private InsuranceCard insuranceCard;
 	
 	@Column(name = "phone_number")
 	private String phoneNumber;
@@ -37,18 +35,16 @@ public abstract class Customer {
 		this.username = "";
 		this.hashedPassword = "";
 		this.fullName = "";
-		this.insuranceCard = new InsuranceCard();
 		this.phoneNumber = "";
 		this.address = "";
 		this.email = "";
 	}
 	
-	public Customer(String id, String username, String hashedPassword, String fullName, InsuranceCard insuranceCard, String phoneNumber, String address, String email) {
+	public Customer(String id, String username, String hashedPassword, String fullName, String phoneNumber, String address, String email) {
 		this.id = id;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 		this.fullName = fullName;
-		this.insuranceCard = insuranceCard;
 		this.phoneNumber = phoneNumber;
 		this.address = address;
 		this.email = email;
@@ -84,14 +80,6 @@ public abstract class Customer {
 	
 	public void setFullName(String fullName) {
 		this.fullName = fullName;
-	}
-	
-	public InsuranceCard getInsuranceCard() {
-		return insuranceCard;
-	}
-	
-	public void setInsuranceCard(InsuranceCard insuranceCard) {
-		this.insuranceCard = insuranceCard;
 	}
 	
 	public String getPhoneNumber() {

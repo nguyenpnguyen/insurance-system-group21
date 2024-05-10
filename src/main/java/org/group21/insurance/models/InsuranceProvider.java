@@ -2,9 +2,11 @@ package org.group21.insurance.models;
 
 import jakarta.persistence.*;
 
+import java.io.Serializable;
+
 @Entity
 @Table(name = "insurance_provider")
-public class InsuranceProvider {
+public class InsuranceProvider implements Serializable {
 	@Id
 	@Column(name = "id", nullable = false)
 	private String id;
@@ -24,9 +26,8 @@ public class InsuranceProvider {
 	@Column(name = "email")
 	private String email;
 	
-	@Column(name = "role")
-	@Enumerated(EnumType.STRING)
-	private InsuranceProviderRole role;
+	@Column(name = "is_insurance_manager", nullable = false)
+	private boolean isInsuranceManager;
 	
 	public InsuranceProvider() {
 		this.id = "";
@@ -35,17 +36,17 @@ public class InsuranceProvider {
 		this.fullName = "";
 		this.phoneNumber = "";
 		this.email = "";
-		this.role = InsuranceProviderRole.INSURANCE_MANAGER;
+		this.isInsuranceManager = false;
 	}
 	
-	public InsuranceProvider(String id, String username, String hashedPassword, String fullName, String phoneNumber, String email, InsuranceProviderRole role) {
+	public InsuranceProvider(String id, String username, String hashedPassword, String fullName, String phoneNumber, String email, boolean isInsuranceManager) {
 		this.id = id;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 		this.fullName = fullName;
 		this.phoneNumber = phoneNumber;
 		this.email = email;
-		this.role = role;
+		this.isInsuranceManager = isInsuranceManager;
 	}
 	
 	public String getId() {
@@ -96,16 +97,11 @@ public class InsuranceProvider {
 		this.email = email;
 	}
 	
-	public InsuranceProviderRole getRole() {
-		return role;
+	public boolean isInsuranceManager() {
+		return isInsuranceManager;
 	}
 	
-	public void setRole(InsuranceProviderRole role) {
-		this.role = role;
-	}
-	
-	public enum InsuranceProviderRole {
-		INSURANCE_MANAGER,
-		INSURANCE_SURVEYOR
+	public void setInsuranceManager(boolean insuranceManager) {
+		isInsuranceManager = insuranceManager;
 	}
 }
