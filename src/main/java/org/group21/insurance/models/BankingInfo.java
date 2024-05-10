@@ -21,14 +21,17 @@ public class BankingInfo implements Serializable {
 	private String bank;
 	
 	public BankingInfo() {
-		this.name = "";
-		this.bank = "";
-		this.accountNumber = "";
 	}
 	
-	public BankingInfo(String name, String bank, String accountNumber) {
-		this.name = name;
-		this.bank = bank;
+	public BankingInfo(String accountNumber) {
+		this.accountNumber = accountNumber;
+	}
+	
+	public String getAccountNumber() {
+		return accountNumber;
+	}
+	
+	public void setAccountNumber(String accountNumber) {
 		this.accountNumber = accountNumber;
 	}
 	
@@ -46,13 +49,5 @@ public class BankingInfo implements Serializable {
 	
 	public void setBank(String bank) {
 		this.bank = bank;
-	}
-	
-	public String getAccountNumber() {
-		return accountNumber;
-	}
-	
-	public void setAccountNumber(String accountNumber) {
-		this.accountNumber = accountNumber;
 	}
 }

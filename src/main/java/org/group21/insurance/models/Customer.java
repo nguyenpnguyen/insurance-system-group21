@@ -30,23 +30,12 @@ public abstract class Customer implements Serializable {
 	private String email;
 	
 	public Customer() {
-		this.id = "";
-		this.username = "";
-		this.hashedPassword = "";
-		this.fullName = "";
-		this.phoneNumber = "";
-		this.address = "";
-		this.email = "";
 	}
 	
-	public Customer(String id, String username, String hashedPassword, String fullName, String phoneNumber, String address, String email) {
+	public Customer(String id, String username, String hashedPassword) {
 		this.id = id;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
-		this.fullName = fullName;
-		this.phoneNumber = phoneNumber;
-		this.address = address;
-		this.email = email;
 	}
 	
 	public String getId() {

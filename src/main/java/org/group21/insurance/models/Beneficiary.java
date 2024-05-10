@@ -32,22 +32,10 @@ public class Beneficiary extends Customer implements Serializable {
 	private boolean isPolicyHolder;
 	
 	public Beneficiary() {
-			super();
-			this.insuranceCard = new InsuranceCard();
-			this.policyHolder = new Beneficiary();
-			this.dependents = new ArrayList<>();
-			this.claims = new ArrayList<>();
-			this.policyOwner = new PolicyOwner();
-			this.isPolicyHolder = false;
 	}
 
-	public Beneficiary(String id, String username, String hashedPassword, String fullName, String phoneNumber, String address, String email, InsuranceCard insuranceCard, Beneficiary policyHolder, List<Beneficiary> dependents, List<Claim> claims, PolicyOwner policyOwner, boolean isPolicyHolder) {
-			super(id, username, hashedPassword, fullName, phoneNumber, address, email);
-			this.insuranceCard = insuranceCard;
-			this.policyHolder = policyHolder;
-			this.dependents = dependents;
-			this.claims = claims;
-			this.policyOwner = policyOwner;
+	public Beneficiary(String id, String username, String hashedPassword, boolean isPolicyHolder) {
+			super(id, username, hashedPassword);
 			this.isPolicyHolder = isPolicyHolder;
 	}
 	

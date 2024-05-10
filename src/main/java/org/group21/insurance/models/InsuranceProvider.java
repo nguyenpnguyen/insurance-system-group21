@@ -30,22 +30,12 @@ public class InsuranceProvider implements Serializable {
 	private boolean isInsuranceManager;
 	
 	public InsuranceProvider() {
-		this.id = "";
-		this.username = "";
-		this.hashedPassword = "";
-		this.fullName = "";
-		this.phoneNumber = "";
-		this.email = "";
-		this.isInsuranceManager = false;
 	}
 	
-	public InsuranceProvider(String id, String username, String hashedPassword, String fullName, String phoneNumber, String email, boolean isInsuranceManager) {
+	public InsuranceProvider(String id, String username, String hashedPassword, boolean isInsuranceManager) {
 		this.id = id;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
-		this.fullName = fullName;
-		this.phoneNumber = phoneNumber;
-		this.email = email;
 		this.isInsuranceManager = isInsuranceManager;
 	}
 	

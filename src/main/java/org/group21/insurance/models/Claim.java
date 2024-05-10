@@ -12,7 +12,7 @@ import java.io.File;
 @Table(name = "claims")
 public class Claim implements Serializable {
 	@Id
-	@Column(name = "id", nullable = false)
+	@Column(name = "id")
 	private String id;
 	
 	@Column(name = "claim_date")
@@ -46,27 +46,10 @@ public class Claim implements Serializable {
 	private ClaimStatus status;
 	
 	public Claim() {
-		this.id = "";
-		this.claimDate = LocalDate.now();
-		this.insuredPerson = new Beneficiary();
-		this.examDate = LocalDate.now();
-		this.insuranceCard = new InsuranceCard();
-		this.documentList = new ArrayList<>();
-		this.claimAmount = 0;
-		this.receiverBankingInfo = new BankingInfo();
-		this.status = ClaimStatus.NEW;
 	}
 	
-	public Claim(String id, LocalDate claimDate, Beneficiary insuredPerson, LocalDate examDate, InsuranceCard insuranceCard, List<File> documentList, long claimAmount, BankingInfo receiverBankingInfo, ClaimStatus status) {
+	public Claim(String id) {
 		this.id = id;
-		this.claimDate = claimDate;
-		this.insuredPerson = insuredPerson;
-		this.examDate = examDate;
-		this.insuranceCard = insuranceCard;
-		this.documentList = documentList;
-		this.claimAmount = claimAmount;
-		this.receiverBankingInfo = receiverBankingInfo;
-		this.status = status;
 	}
 	
 	public String getId() {

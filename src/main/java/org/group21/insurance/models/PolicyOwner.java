@@ -14,12 +14,10 @@ public class PolicyOwner extends Customer implements Serializable {
   private List<Beneficiary> beneficiaries;
 
   public PolicyOwner() {
-    super();
-    this.beneficiaries = new ArrayList<>();
   }
 
-  public PolicyOwner(List<Beneficiary> beneficiaries) {
-    super();
+  public PolicyOwner(String id, String username, String hashedPassword, List<Beneficiary> beneficiaries) {
+    super(id, username, hashedPassword);
     this.beneficiaries = beneficiaries;
   }
   

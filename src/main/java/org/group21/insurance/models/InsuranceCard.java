@@ -9,7 +9,7 @@ import java.time.LocalDate;
 @Table(name = "insurance_cards")
 public class InsuranceCard implements Serializable {
 	@Id
-	@Column(name = "card_number", nullable = false)
+	@Column(name = "card_number")
 	private String cardNumber;
 	
 	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -24,17 +24,10 @@ public class InsuranceCard implements Serializable {
 	private LocalDate expirationDate;
 	
 	public InsuranceCard() {
-		this.cardNumber = "";
-		this.policyOwner = new PolicyOwner();
-		this.cardHolder = new Beneficiary();
-		this.expirationDate = LocalDate.now();
 	}
 	
-	public InsuranceCard(String cardNumber, PolicyOwner policyOwner, Beneficiary cardHolder, LocalDate expirationDate) {
+	public InsuranceCard(String cardNumber) {
 		this.cardNumber = cardNumber;
-		this.policyOwner = policyOwner;
-		this.cardHolder = cardHolder;
-		this.expirationDate = expirationDate;
 	}
 	
 	public String getCardNumber() {
