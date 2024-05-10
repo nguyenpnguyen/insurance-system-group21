@@ -9,7 +9,7 @@ import java.util.List;
 @Entity
 public class PolicyOwner extends Customer implements Serializable {
   
-  @OneToMany(mappedBy = "policyOwner", cascade = CascadeType.ALL)
+  @OneToMany(mappedBy = "policyOwner", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
   private List<Beneficiary> beneficiaries;
 
   public PolicyOwner() {

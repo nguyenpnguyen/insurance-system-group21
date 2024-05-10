@@ -12,11 +12,11 @@ public class InsuranceCard implements Serializable {
 	@Column(name = "card_number", nullable = false)
 	private String cardNumber;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "policy_owner_id", referencedColumnName = "id")
 	private PolicyOwner policyOwner;
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	@JoinColumn(name = "card_holder_id", referencedColumnName = "id")
 	private Customer cardHolder;
 	

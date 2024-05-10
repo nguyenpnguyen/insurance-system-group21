@@ -18,7 +18,7 @@ public class Beneficiary extends Customer implements Serializable {
 	@JoinColumn(name = "policy_holder_id", referencedColumnName = "id")
 	private Beneficiary policyHolder;
 	
-	@OneToMany(mappedBy = "policyHolder", cascade = CascadeType.ALL)
+	@OneToMany(mappedBy = "policyHolder", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Beneficiary> dependents;
 	
 	@ManyToOne
