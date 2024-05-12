@@ -57,6 +57,7 @@ public class LoginScreen extends Application {
             // Handle login logic here
             System.out.println("Username: " + username);
             System.out.println("Password: " + password);
+
             stage.close();
             DashboardScreen dashboardScreen = new DashboardScreen();
             dashboardScreen.start(stage);

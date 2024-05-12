@@ -14,46 +14,77 @@ import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import org.group21.insurance.models.Claim;
 
+import java.util.ArrayList;
+
 public class DashboardScreen extends Application {
 
     @Override
     public void start(Stage stage) {
-        Scene dashboardScene = createDashboardUI(stage);
+        Scene dashboardScene = createDashboardUI(stage, "dependent");
         stage.setTitle("Insurance Claim Dashboard Portal");
         stage.setScene(dashboardScene);
         stage.show();
     }
 
 
-    private Scene createDashboardUI(Stage stage){
+    private Scene createDashboardUI(Stage stage, String role) {
         BorderPane root = new BorderPane();
 
         // Create sidebar
-        root.setLeft(createSidebar(root));
+        root.setLeft(createSidebar(root, role));
 
         // Create the header
         root.setTop(createHeader(stage, root));
 
         return new Scene(root, 1200, 600);
     }
-    private VBox createSidebar(BorderPane root){
+
+    private VBox createSidebar(BorderPane root, String role) {
         VBox sidebar = new VBox();
         sidebar.setStyle("-fx-background-color: #ffffff; -fx-border-color: grey; -fx-border-width: 0 2 0 0; -fx-padding: 0; -fx-min-width: 150px;");
 
-        Button section1 = createSectionButton("Dashboard");
-        Button section2 = createSectionButton("Customer");
-        Button section3 = createSectionButton("Claim");
-        Button section4 = createSectionButton("Insurance Card");
+        Button dashboardBtn = createSectionButton("Dashboard");
+        Button dependentBtn = createSectionButton("Depedent");
+        Button claimBtn = createSectionButton("Claim");
+        Button customerBtn = createSectionButton("Customer");
+        Button insuranceBtn = createSectionButton("Insurance Card");
+        Button paidBtn = createSectionButton("Payment Calculation");
+        Button propposedClaimBtn = createSectionButton("Proposed Claim");
 
-        sidebar.getChildren().addAll(section1, section2, section3, section4);
-
-        section1.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
-        section2.setOnAction(e -> root.setCenter(new Label("Content for Customer")));
-        section3.setOnAction(e -> {
+        dashboardBtn.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
+        dependentBtn.setOnAction(e -> root.setCenter(new Label("Content for Dependent")));
+        claimBtn.setOnAction(e -> {
             TableView claimTable = createClaimTable();
             root.setCenter(claimTable);
         });
-        section4.setOnAction(e -> root.setCenter(new Label("Content for Insurance Card")));
+        customerBtn.setOnAction(e -> root.setCenter(new Label("Content for Customer")));
+
+        insuranceBtn.setOnAction(e -> root.setCenter(new Label("Content for Insurance Card")));
+        paidBtn.setOnAction(e -> root.setCenter(new Label("Payment Content")));
+        propposedClaimBtn.setOnAction(e -> root.setCenter(new Label("Propose Claim action")));
+
+        switch (role) {
+            case "dependent":
+                sidebar.getChildren().addAll(dashboardBtn, claimBtn);
+                break;
+            case "policy holder":
+                sidebar.getChildren().addAll(dashboardBtn, dependentBtn, claimBtn, customerBtn, insuranceBtn);
+                break;
+            case "policy owner":
+                sidebar.getChildren().addAll(dashboardBtn, claimBtn, customerBtn, insuranceBtn, paidBtn);
+                break;
+            case "insurance surveyors":
+                sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
+                break;
+            case "insurance managers":
+                sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
+                break;
+            case "system admin":
+                sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
+                break;
+            default:
+                break;
+        }
 
         DropShadow dsSidebar = new DropShadow();
         dsSidebar.setOffsetY(3.0);
@@ -63,7 +94,7 @@ public class DashboardScreen extends Application {
         return sidebar;
     }
 
-    private HBox createHeader(Stage stage, BorderPane root){
+    private HBox createHeader(Stage stage, BorderPane root) {
         HBox header = new HBox();
         header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
 
@@ -105,7 +136,7 @@ public class DashboardScreen extends Application {
 
         // Set the action for the "Profile" menu item
         profileItem.setOnAction(e -> {
-            GridPane profilePane = createProfilePane();
+            GridPane profilePane = createProfile();
             root.setCenter(profilePane);
         });
 
@@ -130,7 +161,54 @@ public class DashboardScreen extends Application {
         return button;
     }
 
-    private GridPane createProfilePane() {
+    private GridPane createProfile() {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        // Define column constraints for the GridPane
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(25);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(75);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+
+        Label userIdLabel = new Label("User ID:");
+        TextField userIdField = new TextField();
+        userIdField.setText("Default User ID");
+        gridPane.add(userIdLabel, 0, 0);
+        gridPane.add(userIdField, 1, 0);
+
+        Label fullNameLabel = new Label("Full Name:");
+        TextField fullNameField = new TextField();
+        fullNameField.setText("Default Full Name");
+        gridPane.add(fullNameLabel, 0, 1);
+        gridPane.add(fullNameField, 1, 1);
+
+        Label roleLabel = new Label("Role:");
+        TextField roleField = new TextField();
+        roleField.setText("Default Role");
+        gridPane.add(roleLabel, 0, 2);
+        gridPane.add(roleField, 1, 2);
+
+        Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
+        TextField insuranceCardNumberField = new TextField();
+        insuranceCardNumberField.setText("Default Insurance Card Number");
+        gridPane.add(insuranceCardNumberLabel, 0, 3);
+        gridPane.add(insuranceCardNumberField, 1, 3);
+
+        Label claimsLabel = new Label("Claims:");
+        TableView claimsTable = new TableView();
+        gridPane.add(claimsLabel, 0, 4);
+        gridPane.add(claimsTable, 1, 4);
+
+        return gridPane;
+    }
+
+    private GridPane createClaim() {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.CENTER);
         gridPane.setHgap(10);
@@ -224,3 +302,4 @@ public class DashboardScreen extends Application {
         launch(args);
     }
 }
+
