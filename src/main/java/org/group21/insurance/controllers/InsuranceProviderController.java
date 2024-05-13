@@ -13,12 +13,20 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		this.em = em;
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceManager(String id) {
+	public Optional<InsuranceProvider> readInsuranceManager(String imId) {
 		return Optional.empty();
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceSurveyor(String id) {
+	public Optional<InsuranceProvider> readInsuranceSurveyor(String isId) {
 		return Optional.empty();
+	}
+	
+	public List<InsuranceProvider> readAllInsuranceManagers() {
+		return List.of();
+	}
+	
+	public List<InsuranceProvider> readAllInsuranceSurveyors() {
+		return List.of();
 	}
 	
 	@Override
@@ -32,17 +40,17 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 	}
 	
 	@Override
-	public void create(InsuranceProvider insuranceProvider) {
+	public void create(InsuranceProvider ip) {
 	
 	}
 	
 	@Override
-	public void update(InsuranceProvider insuranceProvider) {
+	public void update(InsuranceProvider ip) {
 	
 	}
 	
 	@Override
-	public void delete(InsuranceProvider insuranceProvider) {
+	public void delete(InsuranceProvider ip) {
 	
 	}
 }
