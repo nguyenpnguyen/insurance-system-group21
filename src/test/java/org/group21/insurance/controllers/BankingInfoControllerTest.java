@@ -151,7 +151,7 @@ class BankingInfoControllerTest {
 	}
 	
 	// Helper method to create and persist a BankingInfo entity
-	BankingInfo createAndPersist() {
+	private BankingInfo createAndPersist() {
 		BankingInfo bi = new BankingInfo();
 		// Set unique values for accountNumber, bank, and name
 		bi.setAccountNumber("AccountNumber_" + UUID.randomUUID().toString().substring(0, 8));

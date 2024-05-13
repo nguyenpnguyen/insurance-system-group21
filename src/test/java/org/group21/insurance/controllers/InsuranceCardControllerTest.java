@@ -132,7 +132,7 @@ class InsuranceCardControllerTest {
 		assertNull(deletedIc);
 	}
 	
-	InsuranceCard createAndPersist() {
+	private InsuranceCard createAndPersist() {
 		InsuranceCard ic = new InsuranceCard();
 		// Set unique values for accountNumber, bank, and name
 		ic.setCardNumber("CardNumber_" + UUID.randomUUID().toString().substring(0, 8));
