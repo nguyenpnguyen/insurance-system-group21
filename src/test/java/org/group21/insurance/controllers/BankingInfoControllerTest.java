@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BankingInfoControllerTest {
+class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
@@ -49,7 +49,7 @@ class BankingInfoControllerTest {
 	}
 	
 	@Test
-	void create() {
+	public void create() {
 		BankingInfo bi = new BankingInfo();
 		// Create a new BankingInfo entity
 		bi.setAccountNumber("1234567890");
@@ -66,15 +66,15 @@ class BankingInfoControllerTest {
 		// Assert that the savedBi is not null
 		assertNotNull(savedBi);
 		// Assert that the savedBi has the correct values
-		assertEquals("1234567890", savedBi.getAccountNumber());
-		assertEquals("Bank of America", savedBi.getBank());
-		assertEquals("John Doe", savedBi.getName());
+		assertEquals(bi.getAccountNumber(), savedBi.getAccountNumber());
+		assertEquals(bi.getBank(), savedBi.getBank());
+		assertEquals(bi.getName(), savedBi.getName());
 	}
 	
 	@Test
-	void read() {
+	public void read() {
 		// Create a BankingInfo entity and persist it
-		BankingInfo savedBi = createAndPersistBi();
+		BankingInfo savedBi = createAndPersist();
 		
 		// Read the BankingInfo using its ID
 		Optional<BankingInfo> optionalBi = biController.read(savedBi.getAccountNumber());
@@ -95,11 +95,11 @@ class BankingInfoControllerTest {
 	}
 	
 	@Test
-	void readAll() {
+	public void readAll() {
 		// Create and persist multiple BankingInfo entities
-		BankingInfo bi1 = createAndPersistBi();
-		BankingInfo bi2 = createAndPersistBi();
-		BankingInfo bi3 = createAndPersistBi();
+		BankingInfo bi1 = createAndPersist();
+		BankingInfo bi2 = createAndPersist();
+		BankingInfo bi3 = createAndPersist();
 		
 		// Add the created entities to the list of created entities
 		createdEntities.add(bi1);
@@ -119,9 +119,9 @@ class BankingInfoControllerTest {
 	}
 	
 	@Test
-	void update() {
+	public void update() {
 		// Create and persist a BankingInfo entity
-		BankingInfo savedBi = createAndPersistBi();
+		BankingInfo savedBi = createAndPersist();
 		
 		// Add the created entity to the list of created entities
 		createdEntities.add(savedBi);
@@ -142,9 +142,9 @@ class BankingInfoControllerTest {
 	}
 	
 	@Test
-	void delete() {
+	public void delete() {
 		// Create and persist a BankingInfo entity
-		BankingInfo savedBi = createAndPersistBi();
+		BankingInfo savedBi = createAndPersist();
 		
 		// Add the created entity to the list of created entities
 		createdEntities.add(savedBi);
@@ -160,7 +160,7 @@ class BankingInfoControllerTest {
 	}
 	
 	// Helper method to create and persist a BankingInfo entity
-	private BankingInfo createAndPersistBi() {
+	public BankingInfo createAndPersist() {
 		BankingInfo bi = new BankingInfo();
 		// Set unique values for accountNumber, bank, and name
 		bi.setAccountNumber("AccountNumber_" + UUID.randomUUID().toString().substring(0, 8));
