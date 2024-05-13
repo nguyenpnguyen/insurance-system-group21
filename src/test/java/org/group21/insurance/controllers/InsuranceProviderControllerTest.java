@@ -1,38 +1,91 @@
 package org.group21.insurance.controllers;
 
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
+import jakarta.persistence.Persistence;
+import org.group21.insurance.models.InsuranceProvider;
+import org.junit.jupiter.api.*;
 
-import static org.junit.jupiter.api.Assertions.*;
+import java.util.ArrayList;
+import java.util.List;
 
-class InsuranceProviderControllerTest {
+class InsuranceProviderControllerTest implements ControllerTest<InsuranceProvider> {
+	private static final String PERSISTENCE_UNIT_NAME = "insurance";
+	private static EntityManagerFactory emf;
+	private static EntityManager em;
+	private InsuranceProviderController ipController;
+	private List<InsuranceProvider> createdEntities;
+	
+	@BeforeAll
+	static void setUpAll() {
+		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		em = emf.createEntityManager();
+	}
+	
+	@AfterAll
+	static void tearDownAll() {
+		em.close();
+		emf.close();
+	}
 	
 	@BeforeEach
 	void setUp() {
+		ipController = new InsuranceProviderController(em);
+		createdEntities = new ArrayList<>();
 	}
 	
 	@AfterEach
 	void tearDown() {
+		for (InsuranceProvider entity : createdEntities) {
+			em.getTransaction().begin();
+			em.remove(entity);
+			em.getTransaction().commit();
+		}
+		createdEntities.clear();
+		ipController = null;
 	}
 	
 	@Test
-	void read() {
+	public void create() {
+		// TODO: Implement
+		InsuranceProvider ip = new InsuranceProvider();
+		ipController.create(ip);
 	}
 	
 	@Test
-	void readAll() {
+	public void read() {
 	}
 	
 	@Test
-	void create() {
+	public void readInsuranceManager() {
 	}
 	
 	@Test
-	void update() {
+	public void readInsuranceSurveyor() {
 	}
 	
 	@Test
-	void delete() {
+	public void readAll() {
+	}
+	
+	@Test
+	public void readAllInsuranceManagers() {
+	}
+	
+	@Test
+	public void readAllInsuranceSurveyors() {
+	}
+	
+	@Test
+	public void update() {
+	}
+	
+	@Test
+	public void delete() {
+	}
+	
+	@Override
+	public InsuranceProvider createAndPersist() {
+		return null;
 	}
 }
