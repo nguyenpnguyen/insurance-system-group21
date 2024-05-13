@@ -3,7 +3,6 @@ package org.group21.insurance.models;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
-import java.util.ArrayList;
 import java.util.List;
 
 @Entity(name = "Beneficiary")
@@ -93,7 +92,7 @@ public class Beneficiary extends Customer implements Serializable {
 		return isPolicyHolder;
 	}
 	
-	public void setPolicyHolder(boolean policyHolder) {
+	public void setIsPolicyHolder(boolean policyHolder) {
 		isPolicyHolder = policyHolder;
 	}
 }
