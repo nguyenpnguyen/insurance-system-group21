@@ -6,7 +6,10 @@ import jakarta.persistence.Persistence;
 import org.group21.insurance.models.BankingInfo;
 import org.junit.jupiter.api.*;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -107,7 +110,7 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		assertEquals(expectedSize, bankingInfoList.size());
 		
 		// Assert that the list contains the created entities
-		for (BankingInfo bi : Arrays.asList(bi1, bi2, bi3)) {
+		for (BankingInfo bi : List.of(bi1, bi2, bi3)) {
 			assertTrue(bankingInfoList.contains(bi));
 		}
 	}

@@ -7,7 +7,10 @@ import org.group21.insurance.models.InsuranceCard;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -95,7 +98,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 		assertFalse(insuranceCards.isEmpty());
 		assertEquals(expectedSize, insuranceCards.size());
 		
-		for (InsuranceCard insuranceCard : Arrays.asList(ic1, ic2, ic3)) {
+		for (InsuranceCard insuranceCard : List.of(ic1, ic2, ic3)) {
 			assertTrue(insuranceCards.contains(insuranceCard));
 		}
 	}
