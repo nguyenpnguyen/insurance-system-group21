@@ -15,10 +15,11 @@
         <class>org.group21.insurance.models.SystemAdmin</class>
 
         <properties>
-            <property name="jakarta.persistence.jdbc.driver" value="org.postgresql.Driver"/>
-            <property name="jakarta.persistence.jdbc.url" value="jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.ivefrrtozuwtyxodqnjk&amp;password=rmitInsurance2024"/>
-            <property name="jakarta.persistence.jdbc.user" value="postgres.ivefrrtozuwtyxodqnjk"/>
-            <property name="jakarta.persistence.jdbc.password" value="rmitInsurance2024"/>
+            <property name="hibernate.connection.driver_class" value="org.postgresql.Driver"/>
+            <property name="hibernate.connection.url"
+                      value="jdbc:postgresql://aws-0-ap-southeast-1.pooler.supabase.com:5432/postgres?user=postgres.ivefrrtozuwtyxodqnjk&amp;password=rmitInsurance2024"/>
+            <property name="hibernate.connection.username" value="postgres.ivefrrtozuwtyxodqnjk"/>
+            <property name="hibernate.connection.password" value="rmitInsurance2024"/>
 
             <!-- SQL statement logging -->
             <property name="hibernate.show_sql" value="true"/>
