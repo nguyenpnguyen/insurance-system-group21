@@ -214,7 +214,7 @@ class InsuranceProviderControllerTest {
 		assertNull(deletedIp);
 	}
 	
-	InsuranceProvider createAndPersistIManager() {
+	private InsuranceProvider createAndPersistIManager() {
 		InsuranceProvider ip = new InsuranceProvider();
 		// Set unique fields
 		ip.setInsuranceProviderId("ID_" + UUID.randomUUID().toString().substring(0, 8));
@@ -230,7 +230,7 @@ class InsuranceProviderControllerTest {
 		return ip;
 	}
 	
-	InsuranceProvider createAndPersistISurveyor() {
+	private InsuranceProvider createAndPersistISurveyor() {
 		InsuranceProvider ip = new InsuranceProvider();
 		// Set unique fields
 		ip.setInsuranceProviderId("ID_" + UUID.randomUUID().toString().substring(0, 8));
