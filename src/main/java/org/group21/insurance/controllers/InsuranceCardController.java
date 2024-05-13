@@ -13,14 +13,6 @@ public class InsuranceCardController implements GenericController<InsuranceCard>
 		this.em = em;
 	}
 	
-	public EntityManager getEm() {
-		return em;
-	}
-	
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
 	@Override
 	public Optional<InsuranceCard> read(String id) {
 		return Optional.empty();

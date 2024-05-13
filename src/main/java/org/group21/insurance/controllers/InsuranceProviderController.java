@@ -6,22 +6,20 @@ import org.group21.insurance.models.InsuranceProvider;
 import java.util.List;
 import java.util.Optional;
 
-public class InsuranceProviderController implements GenericController<InsuranceProvider>{
+public class InsuranceProviderController implements GenericController<InsuranceProvider> {
 	EntityManager em;
 	
 	public InsuranceProviderController(EntityManager em) {
 		this.em = em;
 	}
 	
-	public EntityManager getEm() {
-		return em;
+	public Optional<InsuranceProvider> readInsuranceManager(String id) {
+		return Optional.empty();
 	}
 	
-	public void setEm(EntityManager em) {
-		this.em = em;
+	public Optional<InsuranceProvider> readInsuranceSurveyor(String id) {
+		return Optional.empty();
 	}
-	
-	
 	
 	@Override
 	public Optional<InsuranceProvider> read(String id) {

@@ -6,18 +6,10 @@ import org.group21.insurance.models.BankingInfo;
 import java.util.List;
 import java.util.Optional;
 
-public class BankingInfoController implements GenericController<BankingInfo>{
+public class BankingInfoController implements GenericController<BankingInfo> {
 	EntityManager em;
 	
 	public BankingInfoController(EntityManager em) {
-		this.em = em;
-	}
-	
-	public EntityManager getEm() {
-		return em;
-	}
-	
-	public void setEm(EntityManager em) {
 		this.em = em;
 	}
 	

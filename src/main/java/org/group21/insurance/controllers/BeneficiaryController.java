@@ -13,14 +13,6 @@ public class BeneficiaryController implements GenericController<Beneficiary> {
 		this.em = em;
 	}
 	
-	public EntityManager getEm() {
-		return em;
-	}
-	
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
 	public Optional<Beneficiary> readPolicyHolder(String policyHolderId) {
 		return Optional.empty();
 	}

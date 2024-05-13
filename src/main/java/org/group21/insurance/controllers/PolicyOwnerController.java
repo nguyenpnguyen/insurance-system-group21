@@ -1,7 +1,6 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
-import org.group21.insurance.models.Customer;
 import org.group21.insurance.models.PolicyOwner;
 
 import java.util.List;
@@ -11,14 +10,6 @@ public class PolicyOwnerController implements GenericController<PolicyOwner> {
 	EntityManager em;
 	
 	public PolicyOwnerController(EntityManager em) {
-		this.em = em;
-	}
-	
-	public EntityManager getEm() {
-		return em;
-	}
-	
-	public void setEm(EntityManager em) {
 		this.em = em;
 	}
 	

@@ -13,14 +13,6 @@ public class ClaimController implements GenericController<Claim> {
 		this.em = em;
 	}
 	
-	public EntityManager getEm() {
-		return em;
-	}
-	
-	public void setEm(EntityManager em) {
-		this.em = em;
-	}
-	
 	@Override
 	public Optional<Claim> read(String id) {
 		return Optional.empty();
