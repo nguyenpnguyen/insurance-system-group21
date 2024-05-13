@@ -9,9 +9,6 @@ import java.util.Optional;
 public class BankingInfoController implements GenericController<BankingInfo>{
 	EntityManager em;
 	
-	public BankingInfoController() {
-	}
-	
 	public BankingInfoController(EntityManager em) {
 		this.em = em;
 	}

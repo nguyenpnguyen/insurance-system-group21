@@ -9,9 +9,6 @@ import java.util.Optional;
 public class ClaimController implements GenericController<Claim> {
 	EntityManager em;
 	
-	public ClaimController() {
-	}
-	
 	public ClaimController(EntityManager em) {
 		this.em = em;
 	}

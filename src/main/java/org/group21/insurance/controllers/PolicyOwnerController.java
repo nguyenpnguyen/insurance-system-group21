@@ -10,9 +10,6 @@ import java.util.Optional;
 public class PolicyOwnerController implements GenericController<PolicyOwner> {
 	EntityManager em;
 	
-	public PolicyOwnerController() {
-	}
-	
 	public PolicyOwnerController(EntityManager em) {
 		this.em = em;
 	}

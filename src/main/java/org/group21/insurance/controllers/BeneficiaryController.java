@@ -9,9 +9,6 @@ import java.util.Optional;
 public class BeneficiaryController implements GenericController<Beneficiary> {
 	EntityManager em;
 	
-	public BeneficiaryController() {
-	}
-	
 	public BeneficiaryController(EntityManager em) {
 		this.em = em;
 	}

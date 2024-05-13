@@ -9,9 +9,6 @@ import java.util.Optional;
 public class InsuranceCardController implements GenericController<InsuranceCard> {
 	EntityManager em;
 	
-	public InsuranceCardController() {
-	}
-	
 	public InsuranceCardController(EntityManager em) {
 		this.em = em;
 	}
