@@ -11,8 +11,8 @@ import java.io.Serializable;
 @Table(name = "system_admin")
 public class SystemAdmin implements Serializable {
 	@Id
-	@Column(name = "id", nullable = false)
-	private final int id = 1;
+	@Column(name = "sys_admin_id", nullable = false)
+	private final int sysAdminId = 1;
 	
 	@Column(name = "username")
 	private String username;
@@ -27,8 +27,8 @@ public class SystemAdmin implements Serializable {
 		this.hashedPassword = hashedPassword;
 	}
 	
-	public int getId() {
-		return id;
+	public int getSysAdminId() {
+		return sysAdminId;
 	}
 	
 	public String getUsername() {

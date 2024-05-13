@@ -8,8 +8,8 @@ import java.io.Serializable;
 @Table(name = "insurance_providers")
 public class InsuranceProvider implements Serializable {
 	@Id
-	@Column(name = "id", nullable = false)
-	private String id;
+	@Column(name = "insurance_provider_id", nullable = false)
+	private String insuranceProviderId;
 	
 	@Column(name = "username")
 	private String username;
@@ -32,19 +32,19 @@ public class InsuranceProvider implements Serializable {
 	public InsuranceProvider() {
 	}
 	
-	public InsuranceProvider(String id, String username, String hashedPassword, boolean isInsuranceManager) {
-		this.id = id;
+	public InsuranceProvider(String insuranceProviderId, String username, String hashedPassword, boolean isInsuranceManager) {
+		this.insuranceProviderId = insuranceProviderId;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 		this.isInsuranceManager = isInsuranceManager;
 	}
 	
-	public String getId() {
-		return id;
+	public String getInsuranceProviderId() {
+		return insuranceProviderId;
 	}
 	
-	public void setId(String id) {
-		this.id = id;
+	public void setInsuranceProviderId(String insuranceProviderId) {
+		this.insuranceProviderId = insuranceProviderId;
 	}
 	
 	public String getUsername() {

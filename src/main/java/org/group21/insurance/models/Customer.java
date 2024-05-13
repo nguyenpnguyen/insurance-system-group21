@@ -8,8 +8,8 @@ import java.io.Serializable;
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
 public abstract class Customer implements Serializable {
 	@Id
-	@Column(name = "id", nullable = false)
-	private String id;
+	@Column(name = "customer_id", nullable = false)
+	private String customerId;
 	
 	@Column(name = "username", nullable = false)
 	private String username;
@@ -32,18 +32,18 @@ public abstract class Customer implements Serializable {
 	public Customer() {
 	}
 	
-	public Customer(String id, String username, String hashedPassword) {
-		this.id = id;
+	public Customer(String customerId, String username, String hashedPassword) {
+		this.customerId = customerId;
 		this.username = username;
 		this.hashedPassword = hashedPassword;
 	}
 	
-	public String getId() {
-		return id;
+	public String getCustomerId() {
+		return customerId;
 	}
 	
-	public void setId(String id) {
-		this.id = id;
+	public void setCustomerId(String customerId) {
+		this.customerId = customerId;
 	}
 	
 	public String getUsername() {

@@ -15,7 +15,7 @@ public class Beneficiary extends Customer implements Serializable {
 	private InsuranceCard insuranceCard;
 	
 	@ManyToOne
-	@JoinColumn(name = "policy_holder_id", referencedColumnName = "id")
+	@JoinColumn(name = "policy_holder_id", referencedColumnName = "customer_id")
 	private Beneficiary policyHolder;
 	
 	@OneToMany(mappedBy = "policyHolder", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
@@ -25,7 +25,7 @@ public class Beneficiary extends Customer implements Serializable {
 	private List<Claim> claims;
 	
 	@ManyToOne
-	@JoinColumn(name = "policy_owner_id", referencedColumnName = "id")
+	@JoinColumn(name = "policy_owner_id", referencedColumnName = "customer_id")
 	private PolicyOwner policyOwner;
 	
 	@Column(name = "is_policy_holder", nullable = false)
