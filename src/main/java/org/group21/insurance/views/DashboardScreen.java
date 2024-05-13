@@ -1,20 +1,29 @@
 package org.group21.insurance.views;
 
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
 import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
+import org.group21.insurance.models.BankingInfo;
+import org.group21.insurance.models.Beneficiary;
 import org.group21.insurance.models.Claim;
+import org.group21.insurance.models.InsuranceCard;
 
+import java.io.File;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Random;
 
 public class DashboardScreen extends Application {
 
@@ -54,7 +63,7 @@ public class DashboardScreen extends Application {
         dashboardBtn.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
         dependentBtn.setOnAction(e -> root.setCenter(new Label("Content for Dependent")));
         claimBtn.setOnAction(e -> {
-            TableView claimTable = createClaimTable();
+            TableView claimTable = createClaimTable(root);
             root.setCenter(claimTable);
         });
         customerBtn.setOnAction(e -> root.setCenter(new Label("Content for Customer")));
@@ -175,7 +184,6 @@ public class DashboardScreen extends Application {
         column2.setPercentWidth(75);
         gridPane.getColumnConstraints().addAll(column1, column2);
 
-
         Label userIdLabel = new Label("User ID:");
         TextField userIdField = new TextField();
         userIdField.setText("Default User ID");
@@ -185,18 +193,21 @@ public class DashboardScreen extends Application {
         Label fullNameLabel = new Label("Full Name:");
         TextField fullNameField = new TextField();
         fullNameField.setText("Default Full Name");
+        fullNameField.setEditable(false);
         gridPane.add(fullNameLabel, 0, 1);
         gridPane.add(fullNameField, 1, 1);
 
         Label roleLabel = new Label("Role:");
         TextField roleField = new TextField();
         roleField.setText("Default Role");
+        roleField.setEditable(false);
         gridPane.add(roleLabel, 0, 2);
         gridPane.add(roleField, 1, 2);
 
         Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
         TextField insuranceCardNumberField = new TextField();
         insuranceCardNumberField.setText("Default Insurance Card Number");
+        insuranceCardNumberField.setEditable(false);
         gridPane.add(insuranceCardNumberLabel, 0, 3);
         gridPane.add(insuranceCardNumberField, 1, 3);
 
@@ -208,58 +219,12 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private GridPane createClaim() {
-        GridPane gridPane = new GridPane();
-        gridPane.setAlignment(Pos.CENTER);
-        gridPane.setHgap(10);
-        gridPane.setVgap(10);
-        gridPane.setPadding(new Insets(25, 25, 25, 25));
-
-        // Define column constraints for the GridPane
-        ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(25);
-        ColumnConstraints column2 = new ColumnConstraints();
-        column2.setPercentWidth(75);
-        gridPane.getColumnConstraints().addAll(column1, column2);
-
-
-        Label userIdLabel = new Label("User ID:");
-        TextField userIdField = new TextField();
-        userIdField.setText("Default User ID");
-        gridPane.add(userIdLabel, 0, 0);
-        gridPane.add(userIdField, 1, 0);
-
-        Label fullNameLabel = new Label("Full Name:");
-        TextField fullNameField = new TextField();
-        fullNameField.setText("Default Full Name");
-        gridPane.add(fullNameLabel, 0, 1);
-        gridPane.add(fullNameField, 1, 1);
-
-        Label roleLabel = new Label("Role:");
-        TextField roleField = new TextField();
-        roleField.setText("Default Role");
-        gridPane.add(roleLabel, 0, 2);
-        gridPane.add(roleField, 1, 2);
-
-        Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
-        TextField insuranceCardNumberField = new TextField();
-        insuranceCardNumberField.setText("Default Insurance Card Number");
-        gridPane.add(insuranceCardNumberLabel, 0, 3);
-        gridPane.add(insuranceCardNumberField, 1, 3);
-
-        Label claimsLabel = new Label("Claims:");
-        TableView claimsTable = new TableView();
-        gridPane.add(claimsLabel, 0, 4);
-        gridPane.add(claimsTable, 1, 4);
-
-        return gridPane;
-    }
-
-    private TableView createClaimTable() {
+    private TableView createClaimTable(BorderPane root) {
         TableView<Claim> table = new TableView<>();
 
         TableColumn<Claim, String> idColumn = new TableColumn<>("ID");
         idColumn.setCellValueFactory(new PropertyValueFactory<>("id"));
+//        idColumn.setPrefWidth(150);
 
         TableColumn<Claim, String> claimDateColumn = new TableColumn<>("Claim Date");
         claimDateColumn.setCellValueFactory(new PropertyValueFactory<>("claimDate"));
@@ -295,11 +260,120 @@ public class DashboardScreen extends Application {
         table.getColumns().add(statusColumn);
         table.getColumns().add(receiverBankingInfoColumn);
 
+        ObservableList<Claim> claimData = FXCollections.observableArrayList();
+        for (int i = 0; i < 20; i++) {
+            Claim claim = new Claim();
+            claim.setId("ID" + i);
+            claim.setClaimDate(LocalDate.now());
+             claim.setInsuredPerson(new Beneficiary());
+             claim.setExamDate(LocalDate.now());
+             claim.setInsuranceCard(new InsuranceCard());
+             claim.setDocumentList(new ArrayList<>());
+             claim.setClaimAmount(new Random().nextInt(1000) + 1);
+             claim.setReceiverBankingInfo(new BankingInfo());
+//            claim.setStatus(Claim.getClaimStatus.PENDING);
+
+            claimData.add(claim);
+        }
+
+        table.setItems(claimData);
+
+        table.setRowFactory(tv -> {
+            TableRow<Claim> row = new TableRow<>();
+            row.setOnMouseClicked(e -> {
+                Claim clickedClaim = row.getItem();
+                GridPane claimPane = createClaimDetails(clickedClaim);
+                root.setCenter(claimPane);
+                System.out.println("Claim ID: " + clickedClaim.getId());
+            });
+            return row;
+        });
+
         return table;
+    }
+
+    private static GridPane createClaimDetails(Claim claim) {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        // Define column constraints for the GridPane
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(20);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(80);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+
+        Label userIdLabel = new Label("User ID:");
+        TextField userIdField = new TextField();
+        userIdField.setText(claim.getId());
+        userIdField.setEditable(false);
+        gridPane.add(userIdLabel, 0, 0);
+        gridPane.add(userIdField, 1, 0);
+
+        Label fullNameLabel = new Label("Full Name:");
+        TextField fullNameField = new TextField();
+        fullNameField.setText("Default Full Name");
+        fullNameField.setEditable(false);
+        gridPane.add(fullNameLabel, 0, 1);
+        gridPane.add(fullNameField, 1, 1);
+
+        Label roleLabel = new Label("Role:");
+        TextField roleField = new TextField();
+        roleField.setText("Default Role");
+        roleField.setEditable(false);
+        gridPane.add(roleLabel, 0, 2);
+        gridPane.add(roleField, 1, 2);
+
+        Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
+        TextField insuranceCardNumberField = new TextField();
+        insuranceCardNumberField.setText("Default Insurance Card Number");
+        insuranceCardNumberField.setEditable(false);
+        gridPane.add(insuranceCardNumberLabel, 0, 3);
+        gridPane.add(insuranceCardNumberField, 1, 3);
+
+        Label claimAmountLabel = new Label("Claim Amount:");
+        TextField claimAmountField = new TextField();
+        claimAmountField.setText("Default Claim Amount");
+        claimAmountField.setEditable(false);
+        gridPane.add(claimAmountLabel, 0, 4);
+        gridPane.add(claimAmountField, 1, 4);
+
+        Label claimDateLabel = new Label("Claim Date:");
+        TextField claimDateField = new TextField();
+        claimDateField.setText("Default Claim Date");
+        claimDateField.setEditable(false);
+        gridPane.add(claimDateLabel, 0, 5);
+        gridPane.add(claimDateField, 1, 5);
+
+        Label insuredPersonLabel = new Label("Insured Person:");
+        TextField insuredPersonField = new TextField();
+        insuredPersonField.setText("Default Insured Person");
+        insuredPersonField.setEditable(false);
+        gridPane.add(insuredPersonLabel, 0, 6);
+        gridPane.add(insuredPersonField, 1, 6);
+
+        Label examDateLabel = new Label("Exam Date:");
+        TextField examDateField = new TextField();
+        examDateField.setText("Default Exam Date");
+        examDateField.setEditable(false);
+        gridPane.add(examDateLabel, 0, 7);
+        gridPane.add(examDateField, 1, 7);
+
+        Label documentListLabel = new Label("Document List:");
+        TextField documentListField = new TextField();
+        documentListField.setText("Default Document List");
+        documentListField.setEditable(false);
+        gridPane.add(documentListLabel, 0, 8);
+        gridPane.add(documentListField, 1, 8);
+
+        return gridPane;
     }
 
     public static void main(String[] args) {
         launch(args);
     }
 }
-
