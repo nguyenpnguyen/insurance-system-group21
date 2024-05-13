@@ -7,10 +7,7 @@ import org.group21.insurance.models.InsuranceCard;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -73,8 +70,6 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 		
 		Optional<InsuranceCard> optionalIc = icController.read(savedIc.getCardNumber());
 		
-		createdEntities.add(savedIc);
-		
 		assertTrue(optionalIc.isPresent());
 		
 		InsuranceCard retrievedIc = optionalIc.get();
@@ -87,33 +82,28 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	
 	@Test
 	public void readAll() {
-		InsuranceCard ic1 = new InsuranceCard();
-		ic1.setCardNumber("1234567890");
-		ic1.setExpirationDate(LocalDate.now());
-		icController.create(ic1);
-		
-		InsuranceCard ic2 = new InsuranceCard();
-		ic2.setCardNumber("0987654321");
-		ic2.setExpirationDate(LocalDate.now());
-		icController.create(ic2);
-		
-		createdEntities.add(ic1);
-		createdEntities.add(ic2);
+		InsuranceCard ic1 = createAndPersist();
+		InsuranceCard ic2 = createAndPersist();
+		InsuranceCard ic3 = createAndPersist();
 		
 		List<InsuranceCard> insuranceCards = icController.readAll();
 		
-		assertNotNull(insuranceCards);
-		assertEquals(2, insuranceCards.size());
-		assertTrue(insuranceCards.stream().anyMatch(ic -> ic.getCardNumber().equals(ic1.getCardNumber())));
-		assertTrue(insuranceCards.stream().anyMatch(ic -> ic.getCardNumber().equals(ic2.getCardNumber())));
+		int expectedSize = 3; // Initial expected size
+		expectedSize += createdEntities.size(); // Add the count of entities created during the test
+		
+		// Assert that the list is not empty and contains the expected number of elements
+		assertFalse(insuranceCards.isEmpty());
+		assertEquals(expectedSize, insuranceCards.size());
+		
+		for (InsuranceCard insuranceCard : Arrays.asList(ic1, ic2, ic3)) {
+			assertTrue(insuranceCards.contains(insuranceCard));
+		}
 	}
 	
 	
 	@Test
 	public void update() {
 		InsuranceCard savedIc = createAndPersist();
-		
-		createdEntities.add(savedIc);
 		
 		savedIc.setCardNumber("UpdatedCardNumber");
 		savedIc.setExpirationDate(LocalDate.now().plusDays(1));
@@ -132,8 +122,6 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	public void delete() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		createdEntities.add(savedIc);
-		
 		icController.delete(savedIc);
 		
 		InsuranceCard deletedIc = em.find(InsuranceCard.class, savedIc.getCardNumber());
@@ -147,6 +135,8 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 		// Set unique values for accountNumber, bank, and name
 		ic.setCardNumber("CardNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		ic.setExpirationDate(LocalDate.now());
+		
+		createdEntities.add(ic);
 		
 		em.getTransaction().begin();
 		em.persist(ic);

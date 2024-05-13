@@ -6,10 +6,7 @@ import jakarta.persistence.Persistence;
 import org.group21.insurance.models.BankingInfo;
 import org.junit.jupiter.api.*;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -79,9 +76,6 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		// Read the BankingInfo using its ID
 		Optional<BankingInfo> optionalBi = biController.read(savedBi.getAccountNumber());
 		
-		// Add the created entity to the list of created entities
-		createdEntities.add(savedBi);
-		
 		// Assert that the optionalBi is present
 		assertTrue(optionalBi.isPresent());
 		
@@ -101,11 +95,6 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		BankingInfo bi2 = createAndPersist();
 		BankingInfo bi3 = createAndPersist();
 		
-		// Add the created entities to the list of created entities
-		createdEntities.add(bi1);
-		createdEntities.add(bi2);
-		createdEntities.add(bi3);
-		
 		// Read all BankingInfo entities
 		List<BankingInfo> bankingInfoList = biController.readAll();
 		
@@ -116,15 +105,17 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		// Assert that the list is not empty and contains the expected number of elements
 		assertFalse(bankingInfoList.isEmpty());
 		assertEquals(expectedSize, bankingInfoList.size());
+		
+		// Assert that the list contains the created entities
+		for (BankingInfo bi : Arrays.asList(bi1, bi2, bi3)) {
+			assertTrue(bankingInfoList.contains(bi));
+		}
 	}
 	
 	@Test
 	public void update() {
 		// Create and persist a BankingInfo entity
 		BankingInfo savedBi = createAndPersist();
-		
-		// Add the created entity to the list of created entities
-		createdEntities.add(savedBi);
 		
 		// Update the BankingInfo entity
 		savedBi.setAccountNumber("UpdatedAccountNumber");
@@ -146,9 +137,6 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		// Create and persist a BankingInfo entity
 		BankingInfo savedBi = createAndPersist();
 		
-		// Add the created entity to the list of created entities
-		createdEntities.add(savedBi);
-		
 		// Delete the BankingInfo entity
 		biController.delete(savedBi);
 		
@@ -166,6 +154,8 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 		bi.setAccountNumber("AccountNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		bi.setBank("Bank_" + UUID.randomUUID().toString().substring(0, 8));
 		bi.setName("Name_" + UUID.randomUUID().toString().substring(0, 8));
+		
+		createdEntities.add(bi);
 		
 		em.getTransaction().begin();
 		em.persist(bi);
