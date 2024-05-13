@@ -4,22 +4,20 @@ import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.List;
-import java.io.File;
 
 @Entity(name = "Claim")
 @Table(name = "claims")
 public class Claim implements Serializable {
 	@Id
-	@Column(name = "id")
-	private String id;
+	@Column(name = "claim_id")
+	private String claimId;
 	
 	@Column(name = "claim_date")
 	private LocalDate claimDate;
 	
 	@ManyToOne(targetEntity = Beneficiary.class)
-	@JoinColumn(name = "insured_person_id", referencedColumnName = "id")
+	@JoinColumn(name = "insured_person_id", referencedColumnName = "customer_id")
 	private Beneficiary insuredPerson;
 	
 	@Column(name = "exam_date")
@@ -29,10 +27,8 @@ public class Claim implements Serializable {
 	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	
-	@ElementCollection(targetClass = File.class, fetch = FetchType.EAGER)
-	@CollectionTable(name = "document_list", joinColumns = @JoinColumn(name = "claim_id"))
-	@Column(name = "document", nullable = false)
-	private List<File> documentList;
+	@OneToMany(mappedBy = "claim", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	private List<Document> document;
 	
 	@Column(name = "claim_amount")
 	private long claimAmount;
@@ -48,16 +44,16 @@ public class Claim implements Serializable {
 	public Claim() {
 	}
 	
-	public Claim(String id) {
-		this.id = id;
+	public Claim(String claimId) {
+		this.claimId = claimId;
 	}
 	
-	public String getId() {
-		return id;
+	public String getClaimId() {
+		return claimId;
 	}
 	
-	public void setId(String id) {
-		this.id = id;
+	public void setClaimId(String claimId) {
+		this.claimId = claimId;
 	}
 	
 	public LocalDate getClaimDate() {
@@ -92,12 +88,12 @@ public class Claim implements Serializable {
 		this.insuranceCard = insuranceCard;
 	}
 	
-	public List<File> getDocumentList() {
-		return documentList;
+	public List<Document> getDocumentList() {
+		return document;
 	}
 	
-	public void setDocumentList(List<File> documentList) {
-		this.documentList = documentList;
+	public void setDocumentList(List<Document> document) {
+		this.document = document;
 	}
 	
 	public long getClaimAmount() {
