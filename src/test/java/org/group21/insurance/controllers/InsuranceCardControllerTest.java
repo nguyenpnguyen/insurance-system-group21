@@ -14,7 +14,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
+class InsuranceCardControllerTest {
 	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
@@ -50,7 +50,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	}
 	
 	@Test
-	public void create() {
+	void create() {
 		InsuranceCard ic = new InsuranceCard();
 		ic.setCardNumber("1234567890");
 		ic.setExpirationDate(LocalDate.now());
@@ -68,7 +68,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	}
 	
 	@Test
-	public void read() {
+	void read() {
 		InsuranceCard savedIc = createAndPersist();
 		
 		Optional<InsuranceCard> optionalIc = icController.read(savedIc.getCardNumber());
@@ -84,7 +84,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	}
 	
 	@Test
-	public void readAll() {
+	void readAll() {
 		InsuranceCard ic1 = createAndPersist();
 		InsuranceCard ic2 = createAndPersist();
 		InsuranceCard ic3 = createAndPersist();
@@ -105,10 +105,10 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	
 	
 	@Test
-	public void update() {
+	void update() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		savedIc.setCardNumber("UpdatedCardNumber");
+		savedIc.setCardNumber("UpdatedCardNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedIc.setExpirationDate(LocalDate.now().plusDays(1));
 		icController.update(savedIc);
 		
@@ -122,7 +122,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 	}
 	
 	@Test
-	public void delete() {
+	void delete() {
 		InsuranceCard savedIc = createAndPersist();
 		
 		icController.delete(savedIc);
@@ -132,8 +132,7 @@ class InsuranceCardControllerTest implements ControllerTest<InsuranceCard> {
 		assertNull(deletedIc);
 	}
 	
-	@Override
-	public InsuranceCard createAndPersist() {
+	InsuranceCard createAndPersist() {
 		InsuranceCard ic = new InsuranceCard();
 		// Set unique values for accountNumber, bank, and name
 		ic.setCardNumber("CardNumber_" + UUID.randomUUID().toString().substring(0, 8));

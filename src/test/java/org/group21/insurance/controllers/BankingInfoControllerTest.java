@@ -13,7 +13,7 @@ import java.util.UUID;
 
 import static org.junit.jupiter.api.Assertions.*;
 
-class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
+class BankingInfoControllerTest {
 	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
@@ -49,7 +49,7 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	}
 	
 	@Test
-	public void create() {
+	void create() {
 		BankingInfo bi = new BankingInfo();
 		// Create a new BankingInfo entity
 		bi.setAccountNumber("1234567890");
@@ -72,7 +72,7 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	}
 	
 	@Test
-	public void read() {
+	void read() {
 		// Create a BankingInfo entity and persist it
 		BankingInfo savedBi = createAndPersist();
 		
@@ -92,7 +92,7 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	}
 	
 	@Test
-	public void readAll() {
+	void readAll() {
 		// Create and persist multiple BankingInfo entities
 		BankingInfo bi1 = createAndPersist();
 		BankingInfo bi2 = createAndPersist();
@@ -116,27 +116,27 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	}
 	
 	@Test
-	public void update() {
+	void update() {
 		// Create and persist a BankingInfo entity
 		BankingInfo savedBi = createAndPersist();
 		
 		// Update the BankingInfo entity
-		savedBi.setAccountNumber("UpdatedAccountNumber");
-		savedBi.setBank("UpdatedBank");
-		savedBi.setName("UpdatedName");
+		savedBi.setAccountNumber("UpdatedAccountNumber_" + UUID.randomUUID().toString().substring(0, 8));
+		savedBi.setBank("UpdatedBank_" + UUID.randomUUID().toString().substring(0, 8));
+		savedBi.setName("UpdatedName_" + UUID.randomUUID().toString().substring(0, 8));
 		biController.update(savedBi);
 		
 		// Retrieve the updated BankingInfo from the database
 		BankingInfo updatedBi = em.find(BankingInfo.class, savedBi.getAccountNumber());
 		
 		// Assert that the updatedBi has the correct values
-		assertEquals("UpdatedAccountNumber", updatedBi.getAccountNumber());
-		assertEquals("UpdatedBank", updatedBi.getBank());
-		assertEquals("UpdatedName", updatedBi.getName());
+		assertEquals(savedBi.getAccountNumber(), updatedBi.getAccountNumber());
+		assertEquals(savedBi.getBank(), updatedBi.getBank());
+		assertEquals(savedBi.getName(), updatedBi.getName());
 	}
 	
 	@Test
-	public void delete() {
+	void delete() {
 		// Create and persist a BankingInfo entity
 		BankingInfo savedBi = createAndPersist();
 		
@@ -151,7 +151,7 @@ class BankingInfoControllerTest implements ControllerTest<BankingInfo> {
 	}
 	
 	// Helper method to create and persist a BankingInfo entity
-	public BankingInfo createAndPersist() {
+	BankingInfo createAndPersist() {
 		BankingInfo bi = new BankingInfo();
 		// Set unique values for accountNumber, bank, and name
 		bi.setAccountNumber("AccountNumber_" + UUID.randomUUID().toString().substring(0, 8));
