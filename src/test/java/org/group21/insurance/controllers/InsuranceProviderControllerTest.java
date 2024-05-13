@@ -93,15 +93,14 @@ class InsuranceProviderControllerTest {
 		Optional<InsuranceProvider> optionalIm = ipController.readInsuranceManager(savedIm.getInsuranceProviderId());
 		
 		assertTrue(optionalIm.isPresent());
-		assertTrue(optionalIm.get().isInsuranceManager());
 		
 		InsuranceProvider retrievedIm = optionalIm.get();
 		
+		assertTrue(retrievedIm.isInsuranceManager());
 		assertEquals(savedIm.getInsuranceProviderId(), retrievedIm.getInsuranceProviderId());
 		assertEquals(savedIm.getUsername(), retrievedIm.getUsername());
 		assertEquals(savedIm.getHashedPassword(), retrievedIm.getHashedPassword());
 		assertEquals(savedIm.isInsuranceManager(), retrievedIm.isInsuranceManager());
-		assertTrue(retrievedIm.isInsuranceManager());
 	}
 	
 	@Test
