@@ -19,7 +19,7 @@ class InsuranceCardControllerTest {
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
 	private InsuranceCardController icController;
-	private final List<InsuranceCard> createdEntities = new ArrayList<>();
+	private List<InsuranceCard> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
@@ -35,6 +35,7 @@ class InsuranceCardControllerTest {
 	
 	@BeforeEach
 	void setUp() {
+		createdEntities = new ArrayList<>();
 		icController = new InsuranceCardController(em);
 	}
 	
