@@ -24,17 +24,17 @@ public class InsuranceCardController implements GenericController<InsuranceCard>
 	}
 	
 	@Override
-	public void create(InsuranceCard insuranceCard) {
+	public void create(InsuranceCard ic) {
 	
 	}
 	
 	@Override
-	public void update(InsuranceCard insuranceCard) {
+	public void update(InsuranceCard ic) {
 	
 	}
 	
 	@Override
-	public void delete(InsuranceCard insuranceCard) {
+	public void delete(InsuranceCard ic) {
 	
 	}
 }

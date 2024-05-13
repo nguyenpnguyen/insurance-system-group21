@@ -24,17 +24,17 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 	}
 	
 	@Override
-	public void create(BankingInfo bankingInfo) {
+	public void create(BankingInfo bi) {
 	
 	}
 	
 	@Override
-	public void update(BankingInfo bankingInfo) {
+	public void update(BankingInfo bi) {
 	
 	}
 	
 	@Override
-	public void delete(BankingInfo bankingInfo) {
+	public void delete(BankingInfo bi) {
 	
 	}
 }

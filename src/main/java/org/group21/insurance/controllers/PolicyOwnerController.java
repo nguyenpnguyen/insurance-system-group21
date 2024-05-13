@@ -24,17 +24,17 @@ public class PolicyOwnerController implements GenericController<PolicyOwner> {
 	}
 	
 	@Override
-	public void create(PolicyOwner policyOwner) {
+	public void create(PolicyOwner po) {
 	
 	}
 	
 	@Override
-	public void update(PolicyOwner policyOwner) {
+	public void update(PolicyOwner po) {
 	
 	}
 	
 	@Override
-	public void delete(PolicyOwner policyOwner) {
+	public void delete(PolicyOwner po) {
 	
 	}
 }

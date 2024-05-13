@@ -40,17 +40,17 @@ public class BeneficiaryController implements GenericController<Beneficiary> {
 	}
 	
 	@Override
-	public void create(Beneficiary beneficiary) {
+	public void create(Beneficiary b) {
 	
 	}
 	
 	@Override
-	public void update(Beneficiary beneficiary) {
+	public void update(Beneficiary b) {
 	
 	}
 	
 	@Override
-	public void delete(Beneficiary beneficiary) {
+	public void delete(Beneficiary b) {
 	
 	}
 }
