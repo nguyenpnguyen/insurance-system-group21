@@ -13,7 +13,7 @@ public class InsuranceProvider implements Serializable {
 	@GenericGenerator(name = "insurance-provider-generator",
 			strategy = "org.group21.insurance.utils.IdGenerator",
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "prefix", value = "i"),
+					@org.hibernate.annotations.Parameter(name = "prefix", value = "p"),
 					@org.hibernate.annotations.Parameter(name = "length", value = "7")
 			})
 	@Column(name = "insurance_provider_id", nullable = false)
