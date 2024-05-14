@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.group21.insurance.models.Beneficiary;
+import org.group21.insurance.utils.PasswordAuthenticator;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -51,10 +52,13 @@ class BeneficiaryControllerTest {
 	
 	@Test
 	void create() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		Beneficiary b = new Beneficiary();
 		b.setCustomerId("BeneficiaryId_" + UUID.randomUUID().toString().substring(0, 8));
 		b.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		b.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		b.setHashedPassword(pAuthenticator.hash(testPassword));
 		b.setFullName("FullName_" + UUID.randomUUID().toString().substring(0, 8));
 		b.setAddress("Address_" + UUID.randomUUID().toString().substring(0, 8));
 		b.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));
@@ -238,10 +242,14 @@ class BeneficiaryControllerTest {
 	}
 	
 	private Beneficiary createAndPersistPolicyHolder() {
+		
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		Beneficiary ph = new Beneficiary();
 		ph.setCustomerId("BeneficiaryId_" + UUID.randomUUID().toString().substring(0, 8));
 		ph.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		ph.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		ph.setHashedPassword(pAuthenticator.hash(testPassword));
 		ph.setFullName("FullName_" + UUID.randomUUID().toString().substring(0, 8));
 		ph.setAddress("Address_" + UUID.randomUUID().toString().substring(0, 8));
 		ph.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));
@@ -256,10 +264,13 @@ class BeneficiaryControllerTest {
 	}
 	
 	private Beneficiary createAndPersistDependent() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		Beneficiary d = new Beneficiary();
 		d.setCustomerId("BeneficiaryId_" + UUID.randomUUID().toString().substring(0, 8));
 		d.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		d.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		d.setHashedPassword(pAuthenticator.hash(testPassword));
 		d.setFullName("FullName_" + UUID.randomUUID().toString().substring(0, 8));
 		d.setAddress("Address_" + UUID.randomUUID().toString().substring(0, 8));
 		d.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));

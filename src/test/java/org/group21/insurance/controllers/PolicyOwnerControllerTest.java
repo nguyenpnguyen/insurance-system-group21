@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.group21.insurance.models.PolicyOwner;
+import org.group21.insurance.utils.PasswordAuthenticator;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -51,10 +52,13 @@ class PolicyOwnerControllerTest {
 	
 	@Test
 	void create() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		PolicyOwner po = new PolicyOwner();
 		po.setCustomerId("PolicyOwnerId_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		po.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		po.setHashedPassword(pAuthenticator.hash(testPassword));
 		po.setFullName("FullName_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setAddress("Address_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));
@@ -150,10 +154,13 @@ class PolicyOwnerControllerTest {
 	}
 	
 	private PolicyOwner createAndPersist() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		PolicyOwner po = new PolicyOwner();
 		po.setCustomerId("PolicyOwnerId_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		po.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		po.setHashedPassword(pAuthenticator.hash(testPassword));
 		po.setFullName("FullName_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setAddress("Address_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));

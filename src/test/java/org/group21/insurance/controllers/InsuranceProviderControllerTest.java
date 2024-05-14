@@ -4,6 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.group21.insurance.models.InsuranceProvider;
+import org.group21.insurance.utils.PasswordAuthenticator;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -51,10 +52,13 @@ class InsuranceProviderControllerTest {
 	
 	@Test
 	void create() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		InsuranceProvider ip = new InsuranceProvider();
 		ip.setInsuranceProviderId("ID_" + UUID.randomUUID().toString().substring(0, 8));
 		ip.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		ip.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		ip.setHashedPassword(pAuthenticator.hash(testPassword));
 		ip.setInsuranceManager(true);
 		
 		ipController.create(ip);
@@ -214,11 +218,14 @@ class InsuranceProviderControllerTest {
 	}
 	
 	private InsuranceProvider createAndPersistIManager() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		InsuranceProvider ip = new InsuranceProvider();
 		// Set unique fields
 		ip.setInsuranceProviderId("ID_" + UUID.randomUUID().toString().substring(0, 8));
 		ip.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		ip.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		ip.setHashedPassword(pAuthenticator.hash(testPassword));
 		ip.setInsuranceManager(true);
 		
 		createdEntities.add(ip);
@@ -230,11 +237,14 @@ class InsuranceProviderControllerTest {
 	}
 	
 	private InsuranceProvider createAndPersistISurveyor() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		InsuranceProvider ip = new InsuranceProvider();
 		// Set unique fields
 		ip.setInsuranceProviderId("ID_" + UUID.randomUUID().toString().substring(0, 8));
 		ip.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
-		ip.setHashedPassword("Password_" + UUID.randomUUID().toString().substring(0, 8));
+		ip.setHashedPassword(pAuthenticator.hash(testPassword));
 		ip.setInsuranceManager(false);
 		
 		createdEntities.add(ip);
