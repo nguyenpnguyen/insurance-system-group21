@@ -8,7 +8,8 @@ import java.io.Serializable;
 @Table(name = "system_admin")
 public class SystemAdmin implements Serializable {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "system_admin_seq")
+	@SequenceGenerator(name = "system_admin_seq", sequenceName = "system_admin_seq", allocationSize = 1)
 	@Column(name = "sys_admin_id", nullable = false)
 	private long sysAdminId;
 	
