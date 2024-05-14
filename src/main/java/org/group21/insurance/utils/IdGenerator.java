@@ -11,6 +11,13 @@ import java.io.Serializable;
 import java.util.Properties;
 import java.util.stream.Stream;
 
+/**
+ * <p>
+ * Class used to generate unique identifiers for entities.
+ * </p>
+ *
+ * @see <a href="https://www.baeldung.com/hibernate-identifiers">Baeldung</a>
+ */
 public class IdGenerator implements IdentifierGenerator, Configurable {
 	private String prefix;
 	private int length;

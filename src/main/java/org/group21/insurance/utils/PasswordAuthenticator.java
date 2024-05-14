@@ -17,6 +17,7 @@ import java.util.regex.Pattern;
  * concurrently by multiple threads.</p>
  *
  * @see <a href="http://stackoverflow.com/a/2861125/3474">StackOverflow</a>
+ * @see <a href="https://www.baeldung.com/java-password-hashing">Baeldung</a>
  */
 public final class PasswordAuthenticator {
 	
