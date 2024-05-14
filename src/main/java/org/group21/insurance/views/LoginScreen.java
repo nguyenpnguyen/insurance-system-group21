@@ -59,7 +59,7 @@ public class LoginScreen extends Application {
             System.out.println("Password: " + password);
 
             stage.close();
-            DashboardScreen dashboardScreen = new DashboardScreen();
+            DashboardScreen dashboardScreen = new DashboardScreen("policy holder");
             dashboardScreen.start(stage);
         }
     }
