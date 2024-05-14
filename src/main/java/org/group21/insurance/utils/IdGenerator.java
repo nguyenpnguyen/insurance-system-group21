@@ -44,6 +44,6 @@ public class IdGenerator implements IdentifierGenerator, Configurable {
 				.orElse(0L);
 		
 		String idWithoutPrefix = String.format("%0" + (length - prefix.length()) + "d", maxId + 1);
-		return prefix + "-" + object.getClass().getSimpleName().charAt(0) + "-" + idWithoutPrefix;
+		return prefix + "-" + object.getClass().getSimpleName().toLowerCase().charAt(0) + "-" + idWithoutPrefix;
 	}
 }
