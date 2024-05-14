@@ -152,6 +152,8 @@ class ClaimControllerTest {
 		
 		claimController.create(claim);
 		
+		createdEntities.add(claim);
+		
 		em.getTransaction().begin();
 		em.persist(claim);
 		em.getTransaction().commit();

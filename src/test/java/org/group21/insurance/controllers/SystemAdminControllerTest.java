@@ -130,6 +130,8 @@ class SystemAdminControllerTest {
 		admin.setUsername("admin");
 		admin.setHashedPassword(pAuthenticator.hash("admin".toCharArray()));
 		
+		createdEntities.add(admin);
+		
 		em.getTransaction().begin();
 		em.persist(admin);
 		em.getTransaction().commit();
