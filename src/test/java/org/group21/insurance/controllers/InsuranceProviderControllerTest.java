@@ -107,7 +107,7 @@ class InsuranceProviderControllerTest {
 	void readInsuranceSurveyor() {
 		InsuranceProvider savedIs = createAndPersistISurveyor();
 		
-		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceManager(savedIs.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceSurveyor(savedIs.getInsuranceProviderId());
 		
 		assertTrue(optionalIs.isPresent());
 		assertFalse(optionalIs.get().isInsuranceManager());

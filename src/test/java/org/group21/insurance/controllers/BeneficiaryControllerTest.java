@@ -102,7 +102,7 @@ class BeneficiaryControllerTest {
 	void readPolicyHolder() {
 		Beneficiary savedPolicyHolder = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalPolicyHolder = bController.read(savedPolicyHolder.getCustomerId());
+		Optional<Beneficiary> optionalPolicyHolder = bController.readPolicyHolder(savedPolicyHolder.getCustomerId());
 		
 		assertTrue(optionalPolicyHolder.isPresent());
 		
@@ -123,7 +123,7 @@ class BeneficiaryControllerTest {
 	void readDependent() {
 		Beneficiary savedDependent = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalDependent = bController.read(savedDependent.getCustomerId());
+		Optional<Beneficiary> optionalDependent = bController.readDependent(savedDependent.getCustomerId());
 		
 		assertTrue(optionalDependent.isPresent());
 		
