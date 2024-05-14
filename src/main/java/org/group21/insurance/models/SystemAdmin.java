@@ -1,9 +1,6 @@
 package org.group21.insurance.models;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 
@@ -11,8 +8,9 @@ import java.io.Serializable;
 @Table(name = "system_admin")
 public class SystemAdmin implements Serializable {
 	@Id
+	@GeneratedValue
 	@Column(name = "sys_admin_id", nullable = false)
-	private final int sysAdminId = 1;
+	private long sysAdminId;
 	
 	@Column(name = "username")
 	private String username;
@@ -27,7 +25,7 @@ public class SystemAdmin implements Serializable {
 		this.hashedPassword = hashedPassword;
 	}
 	
-	public int getSysAdminId() {
+	public long getSysAdminId() {
 		return sysAdminId;
 	}
 	
