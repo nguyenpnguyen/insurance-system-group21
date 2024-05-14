@@ -1,6 +1,7 @@
 package org.group21.insurance.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 
@@ -8,6 +9,13 @@ import java.io.Serializable;
 @Table(name = "insurance_providers")
 public class InsuranceProvider implements Serializable {
 	@Id
+	@GeneratedValue(generator = "insurance-provider-generator")
+	@GenericGenerator(name = "insurance-provider-generator",
+			strategy = "org.group21.insurance.utils.IdGenerator",
+			parameters = {
+					@org.hibernate.annotations.Parameter(name = "prefix", value = "i"),
+					@org.hibernate.annotations.Parameter(name = "length", value = "7")
+			})
 	@Column(name = "insurance_provider_id", nullable = false)
 	private String insuranceProviderId;
 	

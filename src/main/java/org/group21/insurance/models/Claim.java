@@ -1,6 +1,7 @@
 package org.group21.insurance.models;
 
 import jakarta.persistence.*;
+import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
@@ -10,6 +11,13 @@ import java.util.List;
 @Table(name = "claims")
 public class Claim implements Serializable {
 	@Id
+	@GeneratedValue(generator = "claim-id-generator")
+	@GenericGenerator(name = "claim-id-generator",
+			strategy = "org.group21.insurance.utils.IdGenerator",
+			parameters = {
+					@org.hibernate.annotations.Parameter(name = "prefix", value = "f"),
+					@org.hibernate.annotations.Parameter(name = "length", value = "10")
+			})
 	@Column(name = "claim_id")
 	private String claimId;
 	
