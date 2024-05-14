@@ -38,12 +38,12 @@ public class IdGenerator implements IdentifierGenerator, Configurable {
 		
 		Stream<String> ids = session.createQuery(query).stream();
 		
-		long maxId = ids.map(o -> o.replace(prefix + "-", ""))
+		long maxId = ids.map(o -> o.replaceAll("\\D", ""))
 				.mapToLong(Long::parseLong)
 				.max()
 				.orElse(0L);
 		
 		String idWithoutPrefix = String.format("%0" + (length - prefix.length()) + "d", maxId + 1);
-		return prefix + idWithoutPrefix;
+		return prefix + "-" + object.getClass().getSimpleName().charAt(0) + "-" + idWithoutPrefix;
 	}
 }
