@@ -14,7 +14,7 @@ public class InsuranceCard implements Serializable {
 	@GenericGenerator(name = "card-number-generator",
 			strategy = "org.group21.insurance.utils.IdGenerator",
 			parameters = {
-					@org.hibernate.annotations.Parameter(name = "prefix", value = ""),
+					@org.hibernate.annotations.Parameter(name = "prefix", value = "ic"),
 					@org.hibernate.annotations.Parameter(name = "length", value = "10")
 			})
 	@Column(name = "card_number")

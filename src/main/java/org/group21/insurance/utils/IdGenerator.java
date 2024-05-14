@@ -38,7 +38,7 @@ public class IdGenerator implements IdentifierGenerator, Configurable {
 		
 		Stream<String> ids = session.createQuery(query).stream();
 		
-		long maxId = ids.map(o -> o.replace(prefix + "-", ""))
+		long maxId = ids.map(o -> o.replaceAll("\\D", ""))
 				.mapToLong(Long::parseLong)
 				.max()
 				.orElse(0L);
