@@ -23,7 +23,7 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 	}
 	
 	@Override
-	public Optional<BankingInfo> read(String id) {
+	public Optional<BankingInfo> read(String accountNumber) {
 		return Optional.empty();
 	}
 	

@@ -23,7 +23,7 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	
 	
 	@Override
-	public Optional<PolicyOwner> read(String id) {
+	public Optional<PolicyOwner> read(String policyOwnerId) {
 		return Optional.empty();
 	}
 	

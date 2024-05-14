@@ -39,7 +39,7 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 	}
 	
 	@Override
-	public Optional<Beneficiary> read(String id) {
+	public Optional<Beneficiary> read(String beneficiaryId) {
 		return Optional.empty();
 	}
 	

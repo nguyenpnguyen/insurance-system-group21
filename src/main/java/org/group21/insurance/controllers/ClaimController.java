@@ -23,7 +23,7 @@ public class ClaimController implements GenericController<Claim> {
 	}
 	
 	@Override
-	public Optional<Claim> read(String id) {
+	public Optional<Claim> read(String claimId) {
 		return Optional.empty();
 	}
 	

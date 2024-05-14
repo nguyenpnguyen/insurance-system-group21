@@ -23,7 +23,7 @@ public class InsuranceCardController implements GenericController<InsuranceCard>
 	}
 	
 	@Override
-	public Optional<InsuranceCard> read(String id) {
+	public Optional<InsuranceCard> read(String cardNumber) {
 		return Optional.empty();
 	}
 	

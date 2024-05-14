@@ -22,11 +22,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		return instance;
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceManager(String imId) {
+	public Optional<InsuranceProvider> readInsuranceManager(String insuranceManagerId) {
 		return Optional.empty();
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceSurveyor(String isId) {
+	public Optional<InsuranceProvider> readInsuranceSurveyor(String insuranceSurveyorId) {
 		return Optional.empty();
 	}
 	
@@ -39,7 +39,7 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 	}
 	
 	@Override
-	public Optional<InsuranceProvider> read(String id) {
+	public Optional<InsuranceProvider> read(String insuranceProviderId) {
 		return Optional.empty();
 	}
 	
