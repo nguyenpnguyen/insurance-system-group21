@@ -36,7 +36,7 @@ class BeneficiaryControllerTest {
 	@BeforeEach
 	void setUp() {
 		createdEntities = new ArrayList<>();
-		bController = new BeneficiaryController(em);
+		bController = BeneficiaryController.getInstance(em);
 	}
 	
 	@AfterEach

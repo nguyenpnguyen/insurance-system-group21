@@ -36,7 +36,7 @@ class InsuranceCardControllerTest {
 	@BeforeEach
 	void setUp() {
 		createdEntities = new ArrayList<>();
-		icController = new InsuranceCardController(em);
+		icController = InsuranceCardController.getInstance(em);
 	}
 	
 	@AfterEach

@@ -9,8 +9,17 @@ import java.util.Optional;
 public class BeneficiaryController implements GenericController<Beneficiary>, UserController<Beneficiary> {
 	EntityManager em;
 	
-	public BeneficiaryController(EntityManager em) {
+	private static BeneficiaryController instance = null;
+	
+	private BeneficiaryController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static BeneficiaryController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new BeneficiaryController(em);
+		}
+		return instance;
 	}
 	
 	public Optional<Beneficiary> readPolicyHolder(String policyHolderId) {

@@ -9,8 +9,17 @@ import java.util.Optional;
 public class InsuranceProviderController implements GenericController<InsuranceProvider>, UserController<InsuranceProvider> {
 	EntityManager em;
 	
-	public InsuranceProviderController(EntityManager em) {
+	private static InsuranceProviderController instance = null;
+	
+	private InsuranceProviderController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static InsuranceProviderController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new InsuranceProviderController(em);
+		}
+		return instance;
 	}
 	
 	public Optional<InsuranceProvider> readInsuranceManager(String imId) {

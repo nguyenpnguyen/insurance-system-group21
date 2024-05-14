@@ -36,7 +36,7 @@ class PolicyOwnerControllerTest {
 	@BeforeEach
 	void setUp() {
 		createdEntities = new ArrayList<>();
-		poController = new PolicyOwnerController(em);
+		poController = PolicyOwnerController.getInstance(em);
 	}
 	
 	@AfterEach

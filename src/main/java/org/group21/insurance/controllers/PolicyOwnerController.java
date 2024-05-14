@@ -8,10 +8,19 @@ import java.util.Optional;
 
 public class PolicyOwnerController implements GenericController<PolicyOwner>, UserController<PolicyOwner> {
 	EntityManager em;
+	private static PolicyOwnerController instance = null;
 	
-	public PolicyOwnerController(EntityManager em) {
+	private PolicyOwnerController(EntityManager em) {
 		this.em = em;
 	}
+	
+	public static PolicyOwnerController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new PolicyOwnerController(em);
+		}
+		return instance;
+	}
+	
 	
 	@Override
 	public Optional<PolicyOwner> read(String id) {
@@ -38,6 +47,7 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	
 	}
 	
+	@Override
 	public Optional<PolicyOwner> findByUsername(String username) {
 		return Optional.empty();
 	}

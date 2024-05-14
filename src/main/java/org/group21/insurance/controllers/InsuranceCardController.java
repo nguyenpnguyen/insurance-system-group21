@@ -9,8 +9,17 @@ import java.util.Optional;
 public class InsuranceCardController implements GenericController<InsuranceCard> {
 	EntityManager em;
 	
-	public InsuranceCardController(EntityManager em) {
+	private static InsuranceCardController instance = null;
+	
+	private InsuranceCardController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static InsuranceCardController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new InsuranceCardController(em);
+		}
+		return instance;
 	}
 	
 	@Override

@@ -9,8 +9,17 @@ import java.util.Optional;
 public class ClaimController implements GenericController<Claim> {
 	EntityManager em;
 	
-	public ClaimController(EntityManager em) {
+	private static ClaimController instance = null;
+	
+	private ClaimController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static ClaimController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new ClaimController(em);
+		}
+		return instance;
 	}
 	
 	@Override

@@ -9,8 +9,17 @@ import java.util.Optional;
 public class BankingInfoController implements GenericController<BankingInfo> {
 	EntityManager em;
 	
-	public BankingInfoController(EntityManager em) {
+	private static BankingInfoController instance = null;
+	
+	private BankingInfoController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static BankingInfoController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new BankingInfoController(em);
+		}
+		return instance;
 	}
 	
 	@Override

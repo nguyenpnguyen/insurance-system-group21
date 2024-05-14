@@ -35,7 +35,7 @@ class SystemAdminControllerTest {
 	@BeforeEach
 	void setUp() {
 		createdEntities = new ArrayList<>();
-		systemAdminController = new SystemAdminController(em);
+		systemAdminController = SystemAdminController.getInstance(em);
 	}
 	
 	@AfterEach

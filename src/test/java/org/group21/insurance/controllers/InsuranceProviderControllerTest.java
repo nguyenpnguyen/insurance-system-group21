@@ -35,7 +35,7 @@ class InsuranceProviderControllerTest {
 	
 	@BeforeEach
 	void setUp() {
-		ipController = new InsuranceProviderController(em);
+		ipController = InsuranceProviderController.getInstance(em);
 		createdEntities = new ArrayList<>();
 	}
 	

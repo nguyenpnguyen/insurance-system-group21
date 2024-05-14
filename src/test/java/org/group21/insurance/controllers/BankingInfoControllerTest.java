@@ -34,7 +34,7 @@ class BankingInfoControllerTest {
 	
 	@BeforeEach
 	void setUp() {
-		biController = new BankingInfoController(em);
+		biController = BankingInfoController.getInstance(em);
 	}
 	
 	@AfterEach

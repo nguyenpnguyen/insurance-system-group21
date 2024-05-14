@@ -36,7 +36,7 @@ class ClaimControllerTest {
 	@BeforeEach
 	void setUp() {
 		createdEntities = new ArrayList<>();
-		claimController = new ClaimController(em);
+		claimController = ClaimController.getInstance(em);
 	}
 	
 	@AfterEach
