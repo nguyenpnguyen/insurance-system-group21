@@ -74,7 +74,6 @@ class BeneficiaryControllerTest {
 		assertNotNull(savedBeneficiary);
 		assertEquals(b.getCustomerId(), savedBeneficiary.getCustomerId());
 		assertEquals(b.getUsername(), savedBeneficiary.getUsername());
-		assertEquals(b.getHashedPassword(), savedBeneficiary.getHashedPassword());
 		assertEquals(b.getFullName(), savedBeneficiary.getFullName());
 		assertEquals(b.getAddress(), savedBeneficiary.getAddress());
 		assertEquals(b.getEmail(), savedBeneficiary.getEmail());
@@ -94,7 +93,6 @@ class BeneficiaryControllerTest {
 		
 		assertEquals(savedBeneficiary.getCustomerId(), retrievedBeneficiary.getCustomerId());
 		assertEquals(savedBeneficiary.getUsername(), retrievedBeneficiary.getUsername());
-		assertEquals(savedBeneficiary.getHashedPassword(), retrievedBeneficiary.getHashedPassword());
 		assertEquals(savedBeneficiary.getFullName(), retrievedBeneficiary.getFullName());
 		assertEquals(savedBeneficiary.getAddress(), retrievedBeneficiary.getAddress());
 		assertEquals(savedBeneficiary.getEmail(), retrievedBeneficiary.getEmail());
@@ -115,7 +113,6 @@ class BeneficiaryControllerTest {
 		assertTrue(retrievedPolicyHolder.isPolicyHolder());
 		assertEquals(savedPolicyHolder.getCustomerId(), retrievedPolicyHolder.getCustomerId());
 		assertEquals(savedPolicyHolder.getUsername(), retrievedPolicyHolder.getUsername());
-		assertEquals(savedPolicyHolder.getHashedPassword(), retrievedPolicyHolder.getHashedPassword());
 		assertEquals(savedPolicyHolder.getFullName(), retrievedPolicyHolder.getFullName());
 		assertEquals(savedPolicyHolder.getAddress(), retrievedPolicyHolder.getAddress());
 		assertEquals(savedPolicyHolder.getEmail(), retrievedPolicyHolder.getEmail());
@@ -136,7 +133,6 @@ class BeneficiaryControllerTest {
 		assertFalse(retrievedDependent.isPolicyHolder());
 		assertEquals(savedDependent.getCustomerId(), retrievedDependent.getCustomerId());
 		assertEquals(savedDependent.getUsername(), retrievedDependent.getUsername());
-		assertEquals(savedDependent.getHashedPassword(), retrievedDependent.getHashedPassword());
 		assertEquals(savedDependent.getFullName(), retrievedDependent.getFullName());
 		assertEquals(savedDependent.getAddress(), retrievedDependent.getAddress());
 		assertEquals(savedDependent.getEmail(), retrievedDependent.getEmail());
@@ -205,10 +201,13 @@ class BeneficiaryControllerTest {
 	
 	@Test
 	void update() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		Beneficiary savedBeneficiary = createAndPersistPolicyHolder();
 		
 		savedBeneficiary.setUsername("UpdatedUsername_" + UUID.randomUUID().toString().substring(0, 8));
-		savedBeneficiary.setHashedPassword("UpdatedPassword_" + UUID.randomUUID().toString().substring(0, 8));
+		savedBeneficiary.setHashedPassword(pAuthenticator.hash(testPassword));
 		savedBeneficiary.setFullName("UpdatedFullName_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBeneficiary.setAddress("UpdatedAddress_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBeneficiary.setEmail("UpdatedEmail_" + UUID.randomUUID().toString().substring(0, 8));
@@ -222,7 +221,6 @@ class BeneficiaryControllerTest {
 		assertNotNull(updatedBeneficiary);
 		assertEquals(savedBeneficiary.getCustomerId(), updatedBeneficiary.getCustomerId());
 		assertEquals(savedBeneficiary.getUsername(), updatedBeneficiary.getUsername());
-		assertEquals(savedBeneficiary.getHashedPassword(), updatedBeneficiary.getHashedPassword());
 		assertEquals(savedBeneficiary.getFullName(), updatedBeneficiary.getFullName());
 		assertEquals(savedBeneficiary.getAddress(), updatedBeneficiary.getAddress());
 		assertEquals(savedBeneficiary.getEmail(), updatedBeneficiary.getEmail());

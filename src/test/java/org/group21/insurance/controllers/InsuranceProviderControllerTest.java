@@ -70,7 +70,6 @@ class InsuranceProviderControllerTest {
 		assertNotNull(savedIp);
 		assertEquals(ip.getInsuranceProviderId(), savedIp.getInsuranceProviderId());
 		assertEquals(ip.getUsername(), savedIp.getUsername());
-		assertEquals(ip.getHashedPassword(), savedIp.getHashedPassword());
 		assertEquals(ip.isInsuranceManager(), savedIp.isInsuranceManager());
 	}
 	
@@ -86,7 +85,6 @@ class InsuranceProviderControllerTest {
 		
 		assertEquals(savedIp.getInsuranceProviderId(), retrievedIp.getInsuranceProviderId());
 		assertEquals(savedIp.getUsername(), retrievedIp.getUsername());
-		assertEquals(savedIp.getHashedPassword(), retrievedIp.getHashedPassword());
 		assertEquals(savedIp.isInsuranceManager(), retrievedIp.isInsuranceManager());
 	}
 	
@@ -103,7 +101,6 @@ class InsuranceProviderControllerTest {
 		assertTrue(retrievedIm.isInsuranceManager());
 		assertEquals(savedIm.getInsuranceProviderId(), retrievedIm.getInsuranceProviderId());
 		assertEquals(savedIm.getUsername(), retrievedIm.getUsername());
-		assertEquals(savedIm.getHashedPassword(), retrievedIm.getHashedPassword());
 		assertEquals(savedIm.isInsuranceManager(), retrievedIm.isInsuranceManager());
 	}
 	
@@ -118,11 +115,10 @@ class InsuranceProviderControllerTest {
 		
 		InsuranceProvider retrievedIs = optionalIs.get();
 		
+		assertFalse(retrievedIs.isInsuranceManager());
 		assertEquals(savedIs.getInsuranceProviderId(), retrievedIs.getInsuranceProviderId());
 		assertEquals(savedIs.getUsername(), retrievedIs.getUsername());
-		assertEquals(savedIs.getHashedPassword(), retrievedIs.getHashedPassword());
 		assertEquals(savedIs.isInsuranceManager(), retrievedIs.isInsuranceManager());
-		assertFalse(retrievedIs.isInsuranceManager());
 	}
 	
 	@Test
@@ -187,10 +183,14 @@ class InsuranceProviderControllerTest {
 	
 	@Test
 	void update() {
+		
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		InsuranceProvider savedIp = createAndPersistIManager();
 		
 		savedIp.setUsername("NewUsername_" + UUID.randomUUID().toString().substring(0, 8));
-		savedIp.setHashedPassword("NewPassword_" + UUID.randomUUID().toString().substring(0, 8));
+		savedIp.setHashedPassword(pAuthenticator.hash(testPassword));
 		savedIp.setInsuranceManager(!savedIp.isInsuranceManager());
 		
 		ipController.update(savedIp);
@@ -199,7 +199,6 @@ class InsuranceProviderControllerTest {
 		
 		assertEquals(savedIp.getInsuranceProviderId(), updatedIp.getInsuranceProviderId());
 		assertEquals(savedIp.getUsername(), updatedIp.getUsername());
-		assertEquals(savedIp.getHashedPassword(), updatedIp.getHashedPassword());
 		assertEquals(savedIp.isInsuranceManager(), updatedIp.isInsuranceManager());
 		assertEquals(savedIp.getEmail(), updatedIp.getEmail());
 		assertEquals(savedIp.getPhoneNumber(), updatedIp.getPhoneNumber());

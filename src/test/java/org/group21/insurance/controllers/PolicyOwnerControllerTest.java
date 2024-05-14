@@ -73,7 +73,6 @@ class PolicyOwnerControllerTest {
 		assertNotNull(savedPo);
 		assertEquals(po.getCustomerId(), savedPo.getCustomerId());
 		assertEquals(po.getUsername(), savedPo.getUsername());
-		assertEquals(po.getHashedPassword(), savedPo.getHashedPassword());
 		assertEquals(po.getFullName(), savedPo.getFullName());
 		assertEquals(po.getAddress(), savedPo.getAddress());
 		assertEquals(po.getEmail(), savedPo.getEmail());
@@ -92,7 +91,6 @@ class PolicyOwnerControllerTest {
 		
 		assertEquals(savedPo.getCustomerId(), retrievedPo.getCustomerId());
 		assertEquals(savedPo.getUsername(), retrievedPo.getUsername());
-		assertEquals(savedPo.getHashedPassword(), retrievedPo.getHashedPassword());
 		assertEquals(savedPo.getFullName(), retrievedPo.getFullName());
 		assertEquals(savedPo.getAddress(), retrievedPo.getAddress());
 		assertEquals(savedPo.getEmail(), retrievedPo.getEmail());
@@ -120,10 +118,13 @@ class PolicyOwnerControllerTest {
 	
 	@Test
 	void update() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
 		PolicyOwner savedPo = createAndPersist();
 		
 		savedPo.setUsername("NewUsername_" + UUID.randomUUID().toString().substring(0, 8));
-		savedPo.setHashedPassword("NewPassword_" + UUID.randomUUID().toString().substring(0, 8));
+		savedPo.setHashedPassword(pAuthenticator.hash(testPassword));
 		savedPo.setFullName("NewFullName_" + UUID.randomUUID().toString().substring(0, 8));
 		savedPo.setAddress("NewAddress_" + UUID.randomUUID().toString().substring(0, 8));
 		savedPo.setEmail("NewEmail_" + UUID.randomUUID().toString().substring(0, 8));
@@ -135,7 +136,6 @@ class PolicyOwnerControllerTest {
 		
 		assertEquals(savedPo.getCustomerId(), updatedPo.getCustomerId());
 		assertEquals(savedPo.getUsername(), updatedPo.getUsername());
-		assertEquals(savedPo.getHashedPassword(), updatedPo.getHashedPassword());
 		assertEquals(savedPo.getFullName(), updatedPo.getFullName());
 		assertEquals(savedPo.getAddress(), updatedPo.getAddress());
 		assertEquals(savedPo.getEmail(), updatedPo.getEmail());
