@@ -1,4 +1,4 @@
-package org.group21.insurance.utils;
+package org.group21.insurance.authentication;
 
 interface LogInHandler {
 	

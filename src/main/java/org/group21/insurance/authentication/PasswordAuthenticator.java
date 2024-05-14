@@ -1,4 +1,4 @@
-package org.group21.insurance.utils;
+package org.group21.insurance.authentication;
 
 import javax.crypto.SecretKeyFactory;
 import javax.crypto.spec.PBEKeySpec;

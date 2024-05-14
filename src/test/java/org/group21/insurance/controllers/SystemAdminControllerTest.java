@@ -3,8 +3,8 @@ package org.group21.insurance.controllers;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.SystemAdmin;
-import org.group21.insurance.utils.PasswordAuthenticator;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;

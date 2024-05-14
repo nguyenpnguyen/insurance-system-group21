@@ -6,11 +6,19 @@ import org.group21.insurance.models.SystemAdmin;
 import java.util.List;
 import java.util.Optional;
 
-public class SystemAdminController implements GenericController<SystemAdmin> {
+public class SystemAdminController implements GenericController<SystemAdmin>, UserController<SystemAdmin> {
 	EntityManager em;
+	private static SystemAdminController instance = null;
 	
-	public SystemAdminController(EntityManager em) {
+	private SystemAdminController(EntityManager em) {
 		this.em = em;
+	}
+	
+	public static SystemAdminController getInstance(EntityManager em) {
+		if (instance == null) {
+			instance = new SystemAdminController(em);
+		}
+		return instance;
 	}
 	
 	public Optional<SystemAdmin> read(String id) {
@@ -38,5 +46,10 @@ public class SystemAdminController implements GenericController<SystemAdmin> {
 	@Override
 	public void delete(SystemAdmin systemAdmin) {
 	
+	}
+	
+	@Override
+	public Optional<SystemAdmin> findByUsername(String username) {
+		return Optional.empty();
 	}
 }

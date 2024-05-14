@@ -6,7 +6,7 @@ import org.group21.insurance.models.PolicyOwner;
 import java.util.List;
 import java.util.Optional;
 
-public class PolicyOwnerController implements GenericController<PolicyOwner> {
+public class PolicyOwnerController implements GenericController<PolicyOwner>, UserController<PolicyOwner> {
 	EntityManager em;
 	
 	public PolicyOwnerController(EntityManager em) {
@@ -36,5 +36,9 @@ public class PolicyOwnerController implements GenericController<PolicyOwner> {
 	@Override
 	public void delete(PolicyOwner po) {
 	
+	}
+	
+	public Optional<PolicyOwner> findByUsername(String username) {
+		return Optional.empty();
 	}
 }

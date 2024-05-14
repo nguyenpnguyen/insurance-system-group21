@@ -6,7 +6,7 @@ import org.group21.insurance.models.Beneficiary;
 import java.util.List;
 import java.util.Optional;
 
-public class BeneficiaryController implements GenericController<Beneficiary> {
+public class BeneficiaryController implements GenericController<Beneficiary>, UserController<Beneficiary> {
 	EntityManager em;
 	
 	public BeneficiaryController(EntityManager em) {
@@ -52,5 +52,10 @@ public class BeneficiaryController implements GenericController<Beneficiary> {
 	@Override
 	public void delete(Beneficiary b) {
 	
+	}
+	
+	@Override
+	public Optional<Beneficiary> findByUsername(String username) {
+		return Optional.empty();
 	}
 }

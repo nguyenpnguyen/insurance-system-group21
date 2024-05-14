@@ -1,8 +1,6 @@
-package org.group21.insurance.utils;
+package org.group21.insurance.authentication;
 
-public class DependentLogInHandler implements LogInHandler {
-	private static DependentLogInHandler instance = null;
-	
+public class InsuranceManagerLogInHandler implements LogInHandler {
 	@Override
 	public boolean isAuthenticated(String username, String password) {
 		return false;

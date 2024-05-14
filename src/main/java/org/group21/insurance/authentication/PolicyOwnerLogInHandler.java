@@ -1,6 +1,6 @@
-package org.group21.insurance.utils;
+package org.group21.insurance.authentication;
 
-public class InsuranceManagerLogInHandler implements LogInHandler {
+public class PolicyOwnerLogInHandler implements LogInHandler {
 	@Override
 	public boolean isAuthenticated(String username, String password) {
 		return false;

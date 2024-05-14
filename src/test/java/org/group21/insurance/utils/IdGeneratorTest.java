@@ -3,6 +3,7 @@ package org.group21.insurance.utils;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.*;
 import org.junit.jupiter.api.*;
 

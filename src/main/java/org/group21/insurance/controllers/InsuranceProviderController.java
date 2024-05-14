@@ -6,7 +6,7 @@ import org.group21.insurance.models.InsuranceProvider;
 import java.util.List;
 import java.util.Optional;
 
-public class InsuranceProviderController implements GenericController<InsuranceProvider> {
+public class InsuranceProviderController implements GenericController<InsuranceProvider>, UserController<InsuranceProvider> {
 	EntityManager em;
 	
 	public InsuranceProviderController(EntityManager em) {
@@ -52,5 +52,10 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 	@Override
 	public void delete(InsuranceProvider ip) {
 	
+	}
+	
+	@Override
+	public Optional<InsuranceProvider> findByUsername(String username) {
+		return Optional.empty();
 	}
 }
