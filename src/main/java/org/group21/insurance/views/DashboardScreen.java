@@ -87,7 +87,7 @@ public class DashboardScreen extends Application {
 
         // Set the action for the "Profile" menu item
         profileItem.setOnAction(e -> {
-            GridPane profilePane = showProfile();
+            GridPane profilePane = showCustomerProfile();
             root.setCenter(profilePane);
         });
 
@@ -102,7 +102,7 @@ public class DashboardScreen extends Application {
     }
 
 
-    private GridPane showProfile() {
+    private GridPane showCustomerProfile() {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -378,6 +378,177 @@ public class DashboardScreen extends Application {
         gridPane.add(documentListField, 1, 8);
 
         return gridPane;
+    }
+
+    private TableView creatInsuranceTable(BorderPane root) {
+        TableView<Claim> table = new TableView<>();
+
+        TableColumn<Claim, String> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("claimId"));
+        idColumn.setPrefWidth(40);
+        idColumn.setCellFactory(tc -> new TableCell<Claim, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+
+        TableColumn<Claim, String> claimDateColumn = new TableColumn<>("Claim Date");
+        claimDateColumn.setCellValueFactory(new PropertyValueFactory<>("claimDate"));
+
+        TableColumn<Claim, String> customerColumn = new TableColumn<>("Customer");
+        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
+
+        TableColumn<Claim, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card");
+        insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCardNumber"));
+
+        TableColumn<Claim, String> examDateColumn = new TableColumn<>("Exam Date");
+        examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
+
+        TableColumn<Claim, String> documentsColumn = new TableColumn<>("Documents");
+        documentsColumn.setCellValueFactory(new PropertyValueFactory<>("documents"));
+
+        TableColumn<Claim, String> claimAmountColumn = new TableColumn<>("Claim Amount");
+        claimAmountColumn.setCellValueFactory(new PropertyValueFactory<>("claimAmount"));
+
+        TableColumn<Claim, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        TableColumn<Claim, String> receiverBankingInfoColumn = new TableColumn<>("Banking Info");
+        receiverBankingInfoColumn.setCellValueFactory(new PropertyValueFactory<>("receiverBankingInfo"));
+
+        table.getColumns().add(idColumn);
+        table.getColumns().add(claimDateColumn);
+        table.getColumns().add(customerColumn);
+        table.getColumns().add(insuranceCardNumberColumn);
+        table.getColumns().add(examDateColumn);
+        table.getColumns().add(documentsColumn);
+        table.getColumns().add(claimAmountColumn);
+        table.getColumns().add(statusColumn);
+        table.getColumns().add(receiverBankingInfoColumn);
+
+        ObservableList<Claim> claimData = FXCollections.observableArrayList();
+        for (int i = 1; i <= 30; i++) {
+            Claim claim = new Claim();
+            claim.setClaimId("ID" + i);
+            System.out.println(claim.getClaimId());
+            claim.setClaimDate(LocalDate.now());
+            claim.setInsuredPerson(new Beneficiary());
+            claim.setExamDate(LocalDate.now());
+            claim.setInsuranceCard(new InsuranceCard());
+            claim.setDocumentList(new ArrayList<>());
+            claim.setClaimAmount(new Random().nextInt(1000) + 1);
+            claim.setReceiverBankingInfo(new BankingInfo());
+//          claim.setStatus(Claim.getClaimStatus.PENDING);
+
+            claimData.add(claim);
+        }
+
+        table.setItems(claimData);
+
+        table.setRowFactory(tv -> {
+            TableRow<Claim> row = new TableRow<>();
+            row.setOnMouseClicked(e -> {
+                Claim clickedClaim = row.getItem();
+                GridPane claimPane = showClaimDetails(clickedClaim);
+                root.setCenter(claimPane);
+            });
+            return row;
+        });
+
+        return table;
+    }
+
+    private TableView createCustomerTable(BorderPane root) {
+        TableView<Claim> table = new TableView<>();
+
+        TableColumn<Claim, String> idColumn = new TableColumn<>("ID");
+        idColumn.setCellValueFactory(new PropertyValueFactory<>("claimId"));
+        idColumn.setPrefWidth(40);
+        idColumn.setCellFactory(tc -> new TableCell<Claim, String>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty) {
+                    setText(null);
+                } else {
+                    setText(item);
+                    setAlignment(Pos.CENTER);
+                }
+            }
+        });
+
+        TableColumn<Claim, String> claimDateColumn = new TableColumn<>("Claim Date");
+        claimDateColumn.setCellValueFactory(new PropertyValueFactory<>("claimDate"));
+
+        TableColumn<Claim, String> customerColumn = new TableColumn<>("Customer");
+        customerColumn.setCellValueFactory(new PropertyValueFactory<>("customer"));
+
+        TableColumn<Claim, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card");
+        insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCardNumber"));
+
+        TableColumn<Claim, String> examDateColumn = new TableColumn<>("Exam Date");
+        examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
+
+        TableColumn<Claim, String> documentsColumn = new TableColumn<>("Documents");
+        documentsColumn.setCellValueFactory(new PropertyValueFactory<>("documents"));
+
+        TableColumn<Claim, String> claimAmountColumn = new TableColumn<>("Claim Amount");
+        claimAmountColumn.setCellValueFactory(new PropertyValueFactory<>("claimAmount"));
+
+        TableColumn<Claim, String> statusColumn = new TableColumn<>("Status");
+        statusColumn.setCellValueFactory(new PropertyValueFactory<>("status"));
+
+        TableColumn<Claim, String> receiverBankingInfoColumn = new TableColumn<>("Banking Info");
+        receiverBankingInfoColumn.setCellValueFactory(new PropertyValueFactory<>("receiverBankingInfo"));
+
+        table.getColumns().add(idColumn);
+        table.getColumns().add(claimDateColumn);
+        table.getColumns().add(customerColumn);
+        table.getColumns().add(insuranceCardNumberColumn);
+        table.getColumns().add(examDateColumn);
+        table.getColumns().add(documentsColumn);
+        table.getColumns().add(claimAmountColumn);
+        table.getColumns().add(statusColumn);
+        table.getColumns().add(receiverBankingInfoColumn);
+
+        ObservableList<Claim> claimData = FXCollections.observableArrayList();
+        for (int i = 1; i <= 30; i++) {
+            Claim claim = new Claim();
+            claim.setClaimId("ID" + i);
+            System.out.println(claim.getClaimId());
+            claim.setClaimDate(LocalDate.now());
+            claim.setInsuredPerson(new Beneficiary());
+            claim.setExamDate(LocalDate.now());
+            claim.setInsuranceCard(new InsuranceCard());
+            claim.setDocumentList(new ArrayList<>());
+            claim.setClaimAmount(new Random().nextInt(1000) + 1);
+            claim.setReceiverBankingInfo(new BankingInfo());
+//          claim.setStatus(Claim.getClaimStatus.PENDING);
+
+            claimData.add(claim);
+        }
+
+        table.setItems(claimData);
+
+        table.setRowFactory(tv -> {
+            TableRow<Claim> row = new TableRow<>();
+            row.setOnMouseClicked(e -> {
+                Claim clickedClaim = row.getItem();
+                GridPane claimPane = showClaimDetails(clickedClaim);
+                root.setCenter(claimPane);
+
+            });
+            return row;
+        });
+
+        return table;
     }
 
     public static void main(String[] args) {
