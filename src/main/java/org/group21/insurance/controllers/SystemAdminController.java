@@ -39,21 +39,27 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	
 	@Override
 	public void create(SystemAdmin systemAdmin) {
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(systemAdmin);
 		em.getTransaction().commit();
 	}
 	
 	@Override
 	public void update(SystemAdmin systemAdmin) {
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(systemAdmin);
 		em.getTransaction().commit();
 	}
 	
 	@Override
 	public void delete(SystemAdmin systemAdmin) {
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.remove(systemAdmin);
 		em.getTransaction().commit();
 	}
