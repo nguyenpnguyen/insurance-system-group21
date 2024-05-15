@@ -23,31 +23,33 @@ class BankingInfoControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
-		emf.close();
+		if (emf.isOpen()) {
+			emf.close();
+		}
 	}
 	
 	@BeforeEach
 	void setUp() {
-		biController = BankingInfoController.getInstance(em);
+		em = emf.createEntityManager();
+		biController = BankingInfoController.getInstance();
 	}
 	
 	@AfterEach
 	void tearDown() {
+		em.getTransaction().begin(); // Start a transaction
 		for (BankingInfo entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
-			}
-			em.remove(entity);
-			em.getTransaction().commit();
+			BankingInfo managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+			em.remove(managedEntity); // Remove the entity
 		}
-		createdEntities.clear();
-		biController = null;
+		em.getTransaction().commit(); // Commit the transaction
+		createdEntities.clear(); // Clear the list for the next test
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 	
 	@Test
@@ -57,7 +59,7 @@ class BankingInfoControllerTest {
 		bi.setAccountNumber("1234567890");
 		bi.setBank("Bank of America");
 		bi.setName("John Doe");
-		biController.create(bi);
+		biController.create(em, bi);
 		
 		// Add the created entity to the list of created entities
 		createdEntities.add(bi);
@@ -79,7 +81,7 @@ class BankingInfoControllerTest {
 		BankingInfo savedBi = createAndPersist();
 		
 		// Read the BankingInfo using its ID
-		Optional<BankingInfo> optionalBi = biController.read(savedBi.getAccountNumber());
+		Optional<BankingInfo> optionalBi = biController.read(em, savedBi.getAccountNumber());
 		
 		// Assert that the optionalBi is present
 		assertTrue(optionalBi.isPresent());
@@ -101,11 +103,10 @@ class BankingInfoControllerTest {
 		BankingInfo bi3 = createAndPersist();
 		
 		// Read all BankingInfo entities
-		List<BankingInfo> bankingInfoList = biController.readAll();
+		List<BankingInfo> bankingInfoList = biController.readAll(em);
 		
 		// Count the number of entities created during the test
 		int expectedSize = 3; // Initial expected size
-		expectedSize += createdEntities.size(); // Add the count of entities created during the test
 		
 		// Assert that the list is not empty and contains the expected number of elements
 		assertFalse(bankingInfoList.isEmpty());
@@ -123,10 +124,9 @@ class BankingInfoControllerTest {
 		BankingInfo savedBi = createAndPersist();
 		
 		// Update the BankingInfo entity
-		savedBi.setAccountNumber("UpdatedAccountNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBi.setBank("UpdatedBank_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBi.setName("UpdatedName_" + UUID.randomUUID().toString().substring(0, 8));
-		biController.update(savedBi);
+		biController.update(em, savedBi);
 		
 		// Retrieve the updated BankingInfo from the database
 		BankingInfo updatedBi = em.find(BankingInfo.class, savedBi.getAccountNumber());
@@ -143,7 +143,7 @@ class BankingInfoControllerTest {
 		BankingInfo savedBi = createAndPersist();
 		
 		// Delete the BankingInfo entity
-		biController.delete(savedBi);
+		biController.delete(em, savedBi);
 		
 		// Try to retrieve the deleted BankingInfo from the database
 		BankingInfo deletedBi = em.find(BankingInfo.class, savedBi.getAccountNumber());
