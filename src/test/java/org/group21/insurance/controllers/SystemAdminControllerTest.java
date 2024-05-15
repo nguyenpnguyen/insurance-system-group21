@@ -41,12 +41,14 @@ class SystemAdminControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (SystemAdmin entity : createdEntities) {
-			em.getTransaction().begin();
-			em.remove(entity);
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			SystemAdmin managedEntity = em.merge(entity);
+			em.remove(managedEntity);
 			em.getTransaction().commit();
 		}
 		createdEntities.clear();
-		systemAdminController = null;
 	}
 	
 	@Test
@@ -88,7 +90,6 @@ class SystemAdminControllerTest {
 		
 		List<SystemAdmin> admins = systemAdminController.readAll();
 		
-		assertNotNull(admins);
 		assertEquals(1, admins.size());
 		
 		SystemAdmin retrievedAdmin = admins.get(0);
@@ -123,6 +124,20 @@ class SystemAdminControllerTest {
 		assertNull(deletedAdmin);
 	}
 	
+	@Test
+	void findByUsername() {
+		SystemAdmin savedAdmin = createAndPersist();
+		
+		Optional<SystemAdmin> optionalAdmin = systemAdminController.findByUsername(savedAdmin.getUsername());
+		
+		assertTrue(optionalAdmin.isPresent());
+		
+		SystemAdmin retrievedAdmin = optionalAdmin.get();
+		
+		assertEquals(savedAdmin.getSysAdminId(), retrievedAdmin.getSysAdminId());
+		assertEquals(savedAdmin.getUsername(), retrievedAdmin.getUsername());
+	}
+	
 	private SystemAdmin createAndPersist() {
 		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
 		
@@ -132,7 +147,9 @@ class SystemAdminControllerTest {
 		
 		createdEntities.add(admin);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(admin);
 		em.getTransaction().commit();
 		
