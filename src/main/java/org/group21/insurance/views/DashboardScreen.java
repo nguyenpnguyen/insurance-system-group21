@@ -49,7 +49,7 @@ public class DashboardScreen extends Application {
         HBox header = new HBox();
         header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
 
-        Label welcomeText = new Label("Welcome Administrator");
+        Label welcomeText = new Label("Welcome " + userRole);
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
@@ -111,9 +111,9 @@ public class DashboardScreen extends Application {
 
         // Define column constraints for the GridPane
         ColumnConstraints column1 = new ColumnConstraints();
-        column1.setPercentWidth(25);
+        column1.setPercentWidth(15);
         ColumnConstraints column2 = new ColumnConstraints();
-        column2.setPercentWidth(75);
+        column2.setPercentWidth(85);
         gridPane.getColumnConstraints().addAll(column1, column2);
 
         Label userIdLabel = new Label("User ID:");
@@ -143,6 +143,20 @@ public class DashboardScreen extends Application {
         gridPane.add(insuranceCardNumberLabel, 0, 3);
         gridPane.add(insuranceCardNumberField, 1, 3);
 
+        Label addressLabel = new Label("Address:");
+        TextField addressField = new TextField();
+        addressField.setText("Default Address");
+        addressField.setEditable(false);
+        gridPane.add(addressLabel, 0, 4);
+        gridPane.add(addressField, 1, 4);
+
+        Label emailLabel = new Label("Email:");
+        TextField emailField = new TextField();
+        emailField.setText("Default Email");
+        emailField.setEditable(false);
+        gridPane.add(emailLabel, 0, 5);
+        gridPane.add(emailField, 1, 5);
+
         return gridPane;
     }
 
@@ -171,22 +185,22 @@ public class DashboardScreen extends Application {
         propposedClaimBtn.setOnAction(e -> root.setCenter(new Label("Propose Claim action")));
 
         switch (userRole) {
-            case "dependent":
+            case "Dependent":
                 sidebar.getChildren().addAll(dashboardBtn, claimBtn);
                 break;
-            case "policy holder":
+            case "Policy holder":
                 sidebar.getChildren().addAll(dashboardBtn, dependentBtn, claimBtn, insuranceBtn);
                 break;
-            case "policy owner":
+            case "Policy owner":
                 sidebar.getChildren().addAll(dashboardBtn, claimBtn, customerBtn, insuranceBtn, paidBtn);
 
-            case "insurance surveyors":
+            case "Insurance surveyor":
                 sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
                 break;
-            case "insurance managers":
+            case "Insurance manager":
                 sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
                 break;
-            case "system admin":
+            case "System admin":
                 sidebar.getChildren().addAll(dashboardBtn, customerBtn, claimBtn, insuranceBtn);
                 break;
             default:
