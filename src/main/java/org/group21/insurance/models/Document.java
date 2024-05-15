@@ -8,7 +8,8 @@ import java.io.Serializable;
 @Table(name = "document_list")
 public class Document implements Serializable {
 	@Id
-	@GeneratedValue
+	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "document_list_seq")
+	@SequenceGenerator(name = "document_list_seq", sequenceName = "document_list_seq", allocationSize = 1)
 	@Column(name = "document_id", nullable = false)
 	private long documentId;
 	

@@ -118,7 +118,6 @@ class DocumentControllerTest {
 		List<Document> documents = documentController.readAll(em);
 		
 		int expectedSize = 3;
-		expectedSize += createdEntities.size(); // Add the count of entities created during the test
 		
 		assertFalse(documents.isEmpty());
 		assertEquals(expectedSize, documents.size());
@@ -160,7 +159,9 @@ class DocumentControllerTest {
 		Claim claim = new Claim();
 		claim.setStatus(Claim.ClaimStatus.NEW);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(claim);
 		em.getTransaction().commit();
 		

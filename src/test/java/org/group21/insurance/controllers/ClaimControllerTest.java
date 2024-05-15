@@ -28,7 +28,9 @@ class ClaimControllerTest {
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		if (emf.isOpen()) {
+			emf.close();
+		}
 	}
 	
 	@BeforeEach
@@ -40,16 +42,16 @@ class ClaimControllerTest {
 	
 	@AfterEach
 	void tearDown() {
+		em.getTransaction().begin(); // Start a transaction
 		for (Claim entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
-			}
-			em.remove(entity);
-			em.getTransaction().commit();
+			Claim managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+			em.remove(managedEntity); // Remove the entity
 		}
-		createdEntities.clear();
-		claimController = null;
-		em.close();
+		em.getTransaction().commit(); // Commit the transaction
+		createdEntities.clear(); // Clear the list for the next test
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 	
 	@Test
