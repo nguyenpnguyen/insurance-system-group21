@@ -6,19 +6,7 @@ import org.group21.insurance.models.Beneficiary;
 
 import java.util.Optional;
 
-public class DependentLogInHandler implements LogInHandler {
-	private static final String ROLE = "Dependent";
-	private static DependentLogInHandler instance = null;
-	
-	private DependentLogInHandler(BeneficiaryController beneficiaryController) {
-	}
-	
-	public static DependentLogInHandler getInstance() {
-		if (instance == null) {
-			instance = new DependentLogInHandler(BeneficiaryController.getInstance());
-		}
-		return instance;
-	}
+public class DependentLogInHandler extends LogInHandler {
 	
 	@Override
 	public boolean isAuthenticated(EntityManager em, String username, String password) {
@@ -37,10 +25,5 @@ public class DependentLogInHandler implements LogInHandler {
 		PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 		
 		return passwordAuthenticator.authenticate(password.toCharArray(), dependent.getHashedPassword());
-	}
-	
-	@Override
-	public String getRole() {
-		return ROLE;
 	}
 }

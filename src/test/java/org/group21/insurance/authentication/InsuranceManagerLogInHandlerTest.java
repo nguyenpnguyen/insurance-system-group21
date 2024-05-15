@@ -29,7 +29,7 @@ class InsuranceManagerLogInHandlerTest {
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
-		insuranceManagerLogInHandler = InsuranceManagerLogInHandler.getInstance();
+		insuranceManagerLogInHandler = new InsuranceManagerLogInHandler();
 	}
 	
 	@AfterEach

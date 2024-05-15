@@ -6,19 +6,7 @@ import org.group21.insurance.models.InsuranceProvider;
 
 import java.util.Optional;
 
-public class InsuranceSurveyorLogInHandler implements LogInHandler {
-	private static final String ROLE = "InsuranceSurveyor";
-	private static InsuranceSurveyorLogInHandler instance = null;
-	
-	private InsuranceSurveyorLogInHandler(InsuranceProviderController ipController) {
-	}
-	
-	public static InsuranceSurveyorLogInHandler getInstance() {
-		if (instance == null) {
-			instance = new InsuranceSurveyorLogInHandler(InsuranceProviderController.getInstance());
-		}
-		return instance;
-	}
+public class InsuranceSurveyorLogInHandler extends LogInHandler {
 	
 	@Override
 	public boolean isAuthenticated(EntityManager em, String username, String password) {
@@ -37,10 +25,5 @@ public class InsuranceSurveyorLogInHandler implements LogInHandler {
 		PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 		
 		return passwordAuthenticator.authenticate(password.toCharArray(), insuranceSurveyor.getHashedPassword());
-	}
-	
-	@Override
-	public String getRole() {
-		return ROLE;
 	}
 }

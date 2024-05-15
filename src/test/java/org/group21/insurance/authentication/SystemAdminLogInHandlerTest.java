@@ -29,7 +29,7 @@ class SystemAdminLogInHandlerTest {
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
-		systemAdminLogInHandler = SystemAdminLogInHandler.getInstance();
+		systemAdminLogInHandler = new SystemAdminLogInHandler();
 	}
 	
 	@AfterEach

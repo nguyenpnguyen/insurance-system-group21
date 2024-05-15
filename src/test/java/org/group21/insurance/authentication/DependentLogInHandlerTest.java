@@ -29,7 +29,7 @@ class DependentLogInHandlerTest {
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
-		dependentLogInHandler = DependentLogInHandler.getInstance();
+		dependentLogInHandler = new DependentLogInHandler();
 	}
 	
 	@AfterEach

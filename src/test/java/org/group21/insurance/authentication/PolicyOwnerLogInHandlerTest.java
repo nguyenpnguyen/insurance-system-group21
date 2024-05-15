@@ -30,7 +30,7 @@ class PolicyOwnerLogInHandlerTest {
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
-		policyOwnerLogInHandler = PolicyOwnerLogInHandler.getInstance();
+		policyOwnerLogInHandler = new PolicyOwnerLogInHandler();
 	}
 	
 	@AfterEach
