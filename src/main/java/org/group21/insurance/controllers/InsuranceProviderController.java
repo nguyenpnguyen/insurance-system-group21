@@ -45,7 +45,7 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
-			cq.select(root).where(cb.equal(root.get("isInsuranceManager"), true));
+			cq.select(root).where(cb.equal(root.get("is_insurance_manager"), true));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
@@ -57,7 +57,7 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
-			cq.select(root).where(cb.equal(root.get("isInsuranceManager"), false));
+			cq.select(root).where(cb.equal(root.get("is_insurance_manager"), false));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
