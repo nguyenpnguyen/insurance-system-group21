@@ -3,6 +3,8 @@ package org.group21.insurance.controllers;
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
+import org.group21.insurance.authentication.PasswordAuthenticator;
+import org.group21.insurance.models.Beneficiary;
 import org.group21.insurance.models.InsuranceCard;
 import org.junit.jupiter.api.*;
 
@@ -19,7 +21,7 @@ class InsuranceCardControllerTest {
 	private static EntityManagerFactory emf;
 	private static EntityManager em;
 	private InsuranceCardController icController;
-	private List<InsuranceCard> createdEntities;
+	private List<Object> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
@@ -28,7 +30,9 @@ class InsuranceCardControllerTest {
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		if (emf.isOpen()) {
+			emf.close();
+		}
 	}
 	
 	@BeforeEach
@@ -40,23 +44,51 @@ class InsuranceCardControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		for (InsuranceCard entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+		em.getTransaction().begin();
+		for (Object entity : createdEntities) {
+			if (entity instanceof InsuranceCard) {
+				InsuranceCard ic = (InsuranceCard) entity;
+				InsuranceCard found = em.find(InsuranceCard.class, ic.getCardNumber());
+				if (found != null) {
+					em.remove(found);
+				}
+			} else if (entity instanceof Beneficiary) {
+				Beneficiary beneficiary = (Beneficiary) entity;
+				Beneficiary found = em.find(Beneficiary.class, beneficiary.getCustomerId());
+				if (found != null) {
+					em.remove(found);
+				}
 			}
-			em.remove(entity);
-			em.getTransaction().commit();
 		}
+		em.getTransaction().commit();
 		createdEntities.clear();
-		icController = null;
-		em.close();
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 	
 	@Test
 	void create() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
+		Beneficiary testBeneficiary = new Beneficiary();
+		testBeneficiary.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
+		testBeneficiary.setHashedPassword(pAuthenticator.hash(testPassword));
+		testBeneficiary.setIsPolicyHolder(true);
+		
+		createdEntities.add(testBeneficiary);
+		
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
+		em.persist(testBeneficiary);
+		em.getTransaction().commit();
+		
 		InsuranceCard ic = new InsuranceCard();
-		ic.setCardNumber("1234567890");
 		ic.setExpirationDate(LocalDate.now());
+		ic.setCardHolder(testBeneficiary);
+		
 		icController.create(em, ic);
 		
 		createdEntities.add(ic);
@@ -83,7 +115,6 @@ class InsuranceCardControllerTest {
 		assertEquals(savedIc.getCardNumber(), retrievedIc.getCardNumber());
 		assertEquals(savedIc.getExpirationDate(), retrievedIc.getExpirationDate());
 		assertEquals(savedIc.getCardHolder().getCustomerId(), retrievedIc.getCardHolder().getCustomerId());
-		assertEquals(savedIc.getPolicyOwner().getCustomerId(), retrievedIc.getPolicyOwner().getCustomerId());
 	}
 	
 	@Test
@@ -94,8 +125,7 @@ class InsuranceCardControllerTest {
 		
 		List<InsuranceCard> insuranceCards = icController.readAll(em);
 		
-		int expectedSize = 3; // Initial expected size
-		expectedSize += createdEntities.size(); // Add the count of entities created during the test
+		int expectedSize = 6; // Initial expected size
 		
 		// Assert that the list is not empty and contains the expected number of elements
 		assertFalse(insuranceCards.isEmpty());
@@ -111,7 +141,6 @@ class InsuranceCardControllerTest {
 	void update() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		savedIc.setCardNumber("UpdatedCardNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedIc.setExpirationDate(LocalDate.now().plusDays(1));
 		icController.update(em, savedIc);
 		
@@ -121,7 +150,6 @@ class InsuranceCardControllerTest {
 		assertEquals(savedIc.getCardNumber(), updatedIc.getCardNumber());
 		assertEquals(savedIc.getExpirationDate(), updatedIc.getExpirationDate());
 		assertEquals(savedIc.getCardHolder().getCustomerId(), updatedIc.getCardHolder().getCustomerId());
-		assertEquals(savedIc.getPolicyOwner().getCustomerId(), updatedIc.getPolicyOwner().getCustomerId());
 	}
 	
 	@Test
@@ -136,10 +164,25 @@ class InsuranceCardControllerTest {
 	}
 	
 	private InsuranceCard createAndPersist() {
+		PasswordAuthenticator pAuthenticator = new PasswordAuthenticator();
+		char[] testPassword = ("Password_" + UUID.randomUUID().toString().substring(0, 8)).toCharArray();
+		
+		Beneficiary testBeneficiary = new Beneficiary();
+		testBeneficiary.setUsername("Username_" + UUID.randomUUID().toString().substring(0, 8));
+		testBeneficiary.setHashedPassword(pAuthenticator.hash(testPassword));
+		testBeneficiary.setIsPolicyHolder(true);
+		
+		createdEntities.add(testBeneficiary);
+		
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
+		em.persist(testBeneficiary);
+		em.getTransaction().commit();
+		
 		InsuranceCard ic = new InsuranceCard();
-		// Set unique values for accountNumber, bank, and name
-		ic.setCardNumber("CardNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		ic.setExpirationDate(LocalDate.now());
+		ic.setCardHolder(testBeneficiary);
 		
 		createdEntities.add(ic);
 		

@@ -28,7 +28,9 @@ class PolicyOwnerControllerTest {
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		if (emf.isOpen()) {
+			emf.close();
+		}
 	}
 	
 	@BeforeEach
@@ -40,16 +42,16 @@ class PolicyOwnerControllerTest {
 	
 	@AfterEach
 	void tearDown() {
+		em.getTransaction().begin(); // Start a transaction
 		for (PolicyOwner entity : createdEntities) {
-			if (em.getTransaction().isActive()) {
-				em.getTransaction().rollback();
-			}
-			PolicyOwner managedEntity = em.merge(entity);
-			em.remove(managedEntity);
-			em.getTransaction().commit();
+			PolicyOwner managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+			em.remove(managedEntity); // Remove the entity
 		}
-		createdEntities.clear();
-		em.close();
+		em.getTransaction().commit(); // Commit the transaction
+		createdEntities.clear(); // Clear the list for the next test
+		if (em.isOpen()) {
+			em.close();
+		}
 	}
 	
 	@Test
