@@ -23,19 +23,18 @@ class SystemAdminControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		systemAdminController = SystemAdminController.getInstance(em);
+		systemAdminController = SystemAdminController.getInstance();
 	}
 	
 	@AfterEach
@@ -49,6 +48,7 @@ class SystemAdminControllerTest {
 			em.getTransaction().commit();
 		}
 		createdEntities.clear();
+		em.close();
 	}
 	
 	@Test
@@ -59,7 +59,7 @@ class SystemAdminControllerTest {
 		testAdmin.setUsername("testAdmin");
 		testAdmin.setHashedPassword(pAuthenticator.hash("testAdmin".toCharArray()));
 		
-		systemAdminController.create(testAdmin);
+		systemAdminController.create(em, testAdmin);
 		
 		createdEntities.add(testAdmin);
 		
@@ -74,7 +74,7 @@ class SystemAdminControllerTest {
 	void read() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		Optional<SystemAdmin> optionalAdmin = systemAdminController.read(Long.toString(savedAdmin.getSysAdminId()));
+		Optional<SystemAdmin> optionalAdmin = systemAdminController.read(em, Long.toString(savedAdmin.getSysAdminId()));
 		
 		assertTrue(optionalAdmin.isPresent());
 		
@@ -88,7 +88,7 @@ class SystemAdminControllerTest {
 	void readAll() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		List<SystemAdmin> admins = systemAdminController.readAll();
+		List<SystemAdmin> admins = systemAdminController.readAll(em);
 		
 		assertEquals(1, admins.size());
 		
@@ -104,7 +104,7 @@ class SystemAdminControllerTest {
 		
 		savedAdmin.setUsername("updatedUsername");
 		
-		systemAdminController.update(savedAdmin);
+		systemAdminController.update(em, savedAdmin);
 		
 		SystemAdmin updatedAdmin = em.find(SystemAdmin.class, savedAdmin.getSysAdminId());
 		
@@ -117,7 +117,7 @@ class SystemAdminControllerTest {
 	void delete() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		systemAdminController.delete(savedAdmin);
+		systemAdminController.delete(em, savedAdmin);
 		
 		SystemAdmin deletedAdmin = em.find(SystemAdmin.class, savedAdmin.getSysAdminId());
 		
@@ -128,7 +128,7 @@ class SystemAdminControllerTest {
 	void findByUsername() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		Optional<SystemAdmin> optionalAdmin = systemAdminController.findByUsername(savedAdmin.getUsername());
+		Optional<SystemAdmin> optionalAdmin = systemAdminController.findByUsername(em, savedAdmin.getUsername());
 		
 		assertTrue(optionalAdmin.isPresent());
 		

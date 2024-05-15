@@ -23,19 +23,18 @@ class DocumentControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		documentController = DocumentController.getInstance(em);
+		documentController = DocumentController.getInstance();
 	}
 	
 	@AfterEach
@@ -49,6 +48,7 @@ class DocumentControllerTest {
 		}
 		createdEntities.clear();
 		documentController = null;
+		em.close();
 	}
 	
 	@Test
@@ -65,7 +65,7 @@ class DocumentControllerTest {
 		document.setFileUrl("FileUrl");
 		document.setClaim(claim);
 		
-		documentController.create(document);
+		documentController.create(em, document);
 		
 		createdEntities.add(document);
 		
@@ -83,7 +83,7 @@ class DocumentControllerTest {
 		
 		String fileName = "FileName";
 		
-		Optional<Document> optionalDocument = documentController.findByFileName(fileName);
+		Optional<Document> optionalDocument = documentController.findByFileName(em, fileName);
 		
 		assertTrue(optionalDocument.isPresent());
 		
@@ -97,7 +97,7 @@ class DocumentControllerTest {
 	void read() {
 		Document savedDocument = createAndPersist();
 		
-		Optional<Document> optionalDocument = documentController.read(Long.toString(savedDocument.getDocumentId()));
+		Optional<Document> optionalDocument = documentController.read(em, Long.toString(savedDocument.getDocumentId()));
 		
 		assertTrue(optionalDocument.isPresent());
 		
@@ -115,7 +115,7 @@ class DocumentControllerTest {
 		Document d2 = createAndPersist();
 		Document d3 = createAndPersist();
 		
-		List<Document> documents = documentController.readAll();
+		List<Document> documents = documentController.readAll(em);
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -135,7 +135,7 @@ class DocumentControllerTest {
 		savedDocument.setFileName("NewFileName");
 		savedDocument.setFileUrl("NewFileUrl");
 		
-		documentController.update(savedDocument);
+		documentController.update(em, savedDocument);
 		
 		Document updatedDocument = em.find(Document.class, savedDocument.getDocumentId());
 		
@@ -149,7 +149,7 @@ class DocumentControllerTest {
 	void delete() {
 		Document savedDocument = createAndPersist();
 		
-		documentController.delete(savedDocument);
+		documentController.delete(em, savedDocument);
 		
 		Document deletedDocument = em.find(Document.class, savedDocument.getDocumentId());
 		

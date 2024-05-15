@@ -24,19 +24,18 @@ class InsuranceCardControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		icController = InsuranceCardController.getInstance(em);
+		icController = InsuranceCardController.getInstance();
 	}
 	
 	@AfterEach
@@ -50,6 +49,7 @@ class InsuranceCardControllerTest {
 		}
 		createdEntities.clear();
 		icController = null;
+		em.close();
 	}
 	
 	@Test
@@ -57,7 +57,7 @@ class InsuranceCardControllerTest {
 		InsuranceCard ic = new InsuranceCard();
 		ic.setCardNumber("1234567890");
 		ic.setExpirationDate(LocalDate.now());
-		icController.create(ic);
+		icController.create(em, ic);
 		
 		createdEntities.add(ic);
 		
@@ -74,7 +74,7 @@ class InsuranceCardControllerTest {
 	void read() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		Optional<InsuranceCard> optionalIc = icController.read(savedIc.getCardNumber());
+		Optional<InsuranceCard> optionalIc = icController.read(em, savedIc.getCardNumber());
 		
 		assertTrue(optionalIc.isPresent());
 		
@@ -92,7 +92,7 @@ class InsuranceCardControllerTest {
 		InsuranceCard ic2 = createAndPersist();
 		InsuranceCard ic3 = createAndPersist();
 		
-		List<InsuranceCard> insuranceCards = icController.readAll();
+		List<InsuranceCard> insuranceCards = icController.readAll(em);
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -113,7 +113,7 @@ class InsuranceCardControllerTest {
 		
 		savedIc.setCardNumber("UpdatedCardNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedIc.setExpirationDate(LocalDate.now().plusDays(1));
-		icController.update(savedIc);
+		icController.update(em, savedIc);
 		
 		InsuranceCard updatedIc = em.find(InsuranceCard.class, savedIc.getCardNumber());
 		
@@ -128,7 +128,7 @@ class InsuranceCardControllerTest {
 	void delete() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		icController.delete(savedIc);
+		icController.delete(em, savedIc);
 		
 		InsuranceCard deletedIc = em.find(InsuranceCard.class, savedIc.getCardNumber());
 		

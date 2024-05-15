@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.group21.insurance.models.Beneficiary;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,18 +19,22 @@ class PolicyHolderLogInHandlerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
-		policyHolderLogInHandler = PolicyHolderLogInHandler.getInstance(em);
+		em = emf.createEntityManager();
+		policyHolderLogInHandler = PolicyHolderLogInHandler.getInstance();
+	}
+	
+	@AfterEach
+	void tearDown() {
+		em.close();
 	}
 	
 	@Test
@@ -49,7 +50,7 @@ class PolicyHolderLogInHandlerTest {
 		em.persist(policyHolder);
 		em.getTransaction().commit();
 		
-		boolean authenticated = policyHolderLogInHandler.isAuthenticated(TEST_USERNAME, TEST_PASSWORD);
+		boolean authenticated = policyHolderLogInHandler.isAuthenticated(em, TEST_USERNAME, TEST_PASSWORD);
 		
 		assertTrue(authenticated);
 		

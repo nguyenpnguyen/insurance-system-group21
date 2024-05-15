@@ -8,25 +8,23 @@ import java.util.Optional;
 
 public class DependentLogInHandler implements LogInHandler {
 	private static final String ROLE = "Dependent";
-	private static EntityManager em;
 	private static DependentLogInHandler instance = null;
 	
 	private DependentLogInHandler(BeneficiaryController beneficiaryController) {
 	}
 	
-	public static DependentLogInHandler getInstance(EntityManager entityManager) {
-		em = entityManager;
+	public static DependentLogInHandler getInstance() {
 		if (instance == null) {
-			instance = new DependentLogInHandler(BeneficiaryController.getInstance(em));
+			instance = new DependentLogInHandler(BeneficiaryController.getInstance());
 		}
 		return instance;
 	}
 	
 	@Override
-	public boolean isAuthenticated(String username, String password) {
-		BeneficiaryController controller = BeneficiaryController.getInstance(em);
+	public boolean isAuthenticated(EntityManager em, String username, String password) {
+		BeneficiaryController controller = BeneficiaryController.getInstance();
 		
-		Optional<Beneficiary> optionalDependent = controller.findByUsername(username);
+		Optional<Beneficiary> optionalDependent = controller.findByUsername(em, username);
 		if (optionalDependent.isEmpty()) {
 			return false;
 		}

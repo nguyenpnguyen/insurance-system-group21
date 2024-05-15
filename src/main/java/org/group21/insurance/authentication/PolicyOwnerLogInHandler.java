@@ -8,25 +8,23 @@ import java.util.Optional;
 
 public class PolicyOwnerLogInHandler implements LogInHandler {
 	private static final String ROLE = "PolicyOwner";
-	private static EntityManager em;
 	private static PolicyOwnerLogInHandler instance = null;
 	
 	private PolicyOwnerLogInHandler(PolicyOwnerController policyOwnerController) {
 	}
 	
-	public static PolicyOwnerLogInHandler getInstance(EntityManager entityManager) {
-		em = entityManager;
+	public static PolicyOwnerLogInHandler getInstance() {
 		if (instance == null) {
-			instance = new PolicyOwnerLogInHandler(PolicyOwnerController.getInstance(em));
+			instance = new PolicyOwnerLogInHandler(PolicyOwnerController.getInstance());
 		}
 		return instance;
 	}
 	
 	@Override
-	public boolean isAuthenticated(String username, String password) {
-		PolicyOwnerController controller = PolicyOwnerController.getInstance(em);
+	public boolean isAuthenticated(EntityManager em, String username, String password) {
+		PolicyOwnerController controller = PolicyOwnerController.getInstance();
 		
-		Optional<PolicyOwner> optionalPo = controller.findByUsername(username);
+		Optional<PolicyOwner> optionalPo = controller.findByUsername(em, username);
 		if (optionalPo.isEmpty()) {
 			return false;
 		}

@@ -24,19 +24,18 @@ class ClaimControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		claimController = ClaimController.getInstance(em);
+		claimController = ClaimController.getInstance();
 	}
 	
 	@AfterEach
@@ -50,6 +49,7 @@ class ClaimControllerTest {
 		}
 		createdEntities.clear();
 		claimController = null;
+		em.close();
 	}
 	
 	@Test
@@ -61,7 +61,7 @@ class ClaimControllerTest {
 		claim.setExamDate(LocalDate.now().plusDays(1));
 		claim.setStatus(Claim.ClaimStatus.NEW);
 		
-		claimController.create(claim);
+		claimController.create(em, claim);
 		
 		createdEntities.add(claim);
 		
@@ -79,7 +79,7 @@ class ClaimControllerTest {
 	void read() {
 		Claim savedClaim = createAndPersist();
 		
-		Optional<Claim> optionalClaim = claimController.read(savedClaim.getClaimId());
+		Optional<Claim> optionalClaim = claimController.read(em, savedClaim.getClaimId());
 		
 		assertTrue(optionalClaim.isPresent());
 		
@@ -99,7 +99,7 @@ class ClaimControllerTest {
 		Claim c2 = createAndPersist();
 		Claim c3 = createAndPersist();
 		
-		List<Claim> claims = claimController.readAll();
+		List<Claim> claims = claimController.readAll(em);
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -121,7 +121,7 @@ class ClaimControllerTest {
 		savedClaim.setExamDate(LocalDate.now().minusDays(2));
 		savedClaim.setStatus(Claim.ClaimStatus.PROCESSING);
 		
-		claimController.update(savedClaim);
+		claimController.update(em, savedClaim);
 		
 		Claim updatedClaim = em.find(Claim.class, savedClaim.getClaimId());
 		
@@ -137,7 +137,7 @@ class ClaimControllerTest {
 	void delete() {
 		Claim savedClaim = createAndPersist();
 		
-		claimController.delete(savedClaim);
+		claimController.delete(em, savedClaim);
 		
 		Claim deletedClaim = em.find(Claim.class, savedClaim.getClaimId());
 		
@@ -151,8 +151,6 @@ class ClaimControllerTest {
 		claim.setClaimDate(LocalDate.now());
 		claim.setExamDate(LocalDate.now().plusDays(1));
 		claim.setStatus(Claim.ClaimStatus.NEW);
-		
-		claimController.create(claim);
 		
 		createdEntities.add(claim);
 		

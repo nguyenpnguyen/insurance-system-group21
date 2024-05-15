@@ -24,18 +24,17 @@ class InsuranceProviderControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
-		ipController = InsuranceProviderController.getInstance(em);
+		em = emf.createEntityManager();
+		ipController = InsuranceProviderController.getInstance();
 		createdEntities = new ArrayList<>();
 	}
 	
@@ -50,6 +49,7 @@ class InsuranceProviderControllerTest {
 		}
 		createdEntities.clear();
 		ipController = null;
+		em.close();
 	}
 	
 	@Test
@@ -63,7 +63,7 @@ class InsuranceProviderControllerTest {
 		ip.setHashedPassword(pAuthenticator.hash(testPassword));
 		ip.setInsuranceManager(true);
 		
-		ipController.create(ip);
+		ipController.create(em, ip);
 		
 		createdEntities.add(ip);
 		
@@ -79,7 +79,7 @@ class InsuranceProviderControllerTest {
 	void read() {
 		InsuranceProvider savedIp = createAndPersistIManager();
 		
-		Optional<InsuranceProvider> optionalIp = ipController.read(savedIp.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIp = ipController.read(em, savedIp.getInsuranceProviderId());
 		
 		assertTrue(optionalIp.isPresent());
 		
@@ -94,7 +94,7 @@ class InsuranceProviderControllerTest {
 	void readInsuranceManager() {
 		InsuranceProvider savedIm = createAndPersistIManager();
 		
-		Optional<InsuranceProvider> optionalIm = ipController.readInsuranceManager(savedIm.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIm = ipController.readInsuranceManager(em, savedIm.getInsuranceProviderId());
 		
 		assertTrue(optionalIm.isPresent());
 		
@@ -110,7 +110,7 @@ class InsuranceProviderControllerTest {
 	void readInsuranceSurveyor() {
 		InsuranceProvider savedIs = createAndPersistISurveyor();
 		
-		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceSurveyor(savedIs.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceSurveyor(em, savedIs.getInsuranceProviderId());
 		
 		assertTrue(optionalIs.isPresent());
 		assertFalse(optionalIs.get().isInsuranceManager());
@@ -130,7 +130,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider ip3 = createAndPersistISurveyor();
 		InsuranceProvider ip4 = createAndPersistISurveyor();
 		
-		List<InsuranceProvider> insuranceProviderList = ipController.readAll();
+		List<InsuranceProvider> insuranceProviderList = ipController.readAll(em);
 		
 		int expectedSize = 4;
 		expectedSize += createdEntities.size();
@@ -149,7 +149,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider im2 = createAndPersistIManager();
 		InsuranceProvider im3 = createAndPersistIManager();
 		
-		List<InsuranceProvider> insuranceManagerList = ipController.readAllInsuranceManagers();
+		List<InsuranceProvider> insuranceManagerList = ipController.readAllInsuranceManagers(em);
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size();
@@ -169,7 +169,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider is2 = createAndPersistISurveyor();
 		InsuranceProvider is3 = createAndPersistISurveyor();
 		
-		List<InsuranceProvider> insuranceSurveyorList = ipController.readAllInsuranceSurveyors();
+		List<InsuranceProvider> insuranceSurveyorList = ipController.readAllInsuranceSurveyors(em);
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size();
@@ -195,7 +195,7 @@ class InsuranceProviderControllerTest {
 		savedIp.setHashedPassword(pAuthenticator.hash(testPassword));
 		savedIp.setInsuranceManager(!savedIp.isInsuranceManager());
 		
-		ipController.update(savedIp);
+		ipController.update(em, savedIp);
 		
 		InsuranceProvider updatedIp = em.find(InsuranceProvider.class, savedIp.getInsuranceProviderId());
 		
@@ -211,7 +211,7 @@ class InsuranceProviderControllerTest {
 	void delete() {
 		InsuranceProvider savedIp = createAndPersistIManager();
 		
-		ipController.delete(savedIp);
+		ipController.delete(em, savedIp);
 		
 		InsuranceProvider deletedIp = em.find(InsuranceProvider.class, savedIp.getInsuranceProviderId());
 		

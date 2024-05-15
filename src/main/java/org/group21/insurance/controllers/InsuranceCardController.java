@@ -7,43 +7,40 @@ import java.util.List;
 import java.util.Optional;
 
 public class InsuranceCardController implements GenericController<InsuranceCard> {
-	EntityManager em;
-	
 	private static InsuranceCardController instance = null;
 	
-	private InsuranceCardController(EntityManager em) {
-		this.em = em;
+	private InsuranceCardController() {
 	}
 	
-	public static InsuranceCardController getInstance(EntityManager em) {
+	public static InsuranceCardController getInstance() {
 		if (instance == null) {
-			instance = new InsuranceCardController(em);
+			instance = new InsuranceCardController();
 		}
 		return instance;
 	}
 	
 	@Override
-	public Optional<InsuranceCard> read(String cardNumber) {
+	public Optional<InsuranceCard> read(EntityManager em, String cardNumber) {
 		return Optional.empty();
 	}
 	
 	@Override
-	public List<InsuranceCard> readAll() {
+	public List<InsuranceCard> readAll(EntityManager em) {
 		return List.of();
 	}
 	
 	@Override
-	public void create(InsuranceCard ic) {
+	public void create(EntityManager em, InsuranceCard ic) {
 	
 	}
 	
 	@Override
-	public void update(InsuranceCard ic) {
+	public void update(EntityManager em, InsuranceCard ic) {
 	
 	}
 	
 	@Override
-	public void delete(InsuranceCard ic) {
+	public void delete(EntityManager em, InsuranceCard ic) {
 	
 	}
 }

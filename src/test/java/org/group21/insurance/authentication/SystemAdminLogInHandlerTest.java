@@ -4,10 +4,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;
 import org.group21.insurance.models.SystemAdmin;
-import org.junit.jupiter.api.AfterAll;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
@@ -22,18 +19,22 @@ class SystemAdminLogInHandlerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
-		systemAdminLogInHandler = SystemAdminLogInHandler.getInstance(em);
+		em = emf.createEntityManager();
+		systemAdminLogInHandler = SystemAdminLogInHandler.getInstance();
+	}
+	
+	@AfterEach
+	void tearDown() {
+		em.close();
 	}
 	
 	@Test
@@ -51,7 +52,7 @@ class SystemAdminLogInHandlerTest {
 		em.persist(systemAdmin);
 		em.getTransaction().commit();
 		
-		boolean authenticated = systemAdminLogInHandler.isAuthenticated(TEST_USERNAME, TEST_PASSWORD);
+		boolean authenticated = systemAdminLogInHandler.isAuthenticated(em, TEST_USERNAME, TEST_PASSWORD);
 		
 		assertTrue(authenticated);
 		

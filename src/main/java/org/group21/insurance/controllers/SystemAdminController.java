@@ -11,26 +11,24 @@ import java.util.List;
 import java.util.Optional;
 
 public class SystemAdminController implements GenericController<SystemAdmin>, UserController<SystemAdmin> {
-	EntityManager em;
 	private static SystemAdminController instance = null;
 	
-	private SystemAdminController(EntityManager em) {
-		this.em = em;
+	private SystemAdminController() {
 	}
 	
-	public static SystemAdminController getInstance(EntityManager em) {
+	public static SystemAdminController getInstance() {
 		if (instance == null) {
-			instance = new SystemAdminController(em);
+			instance = new SystemAdminController();
 		}
 		return instance;
 	}
 	
-	public Optional<SystemAdmin> read(String id) {
+	public Optional<SystemAdmin> read(EntityManager em, String id) {
 		return Optional.ofNullable(em.find(SystemAdmin.class, id));
 	}
 	
 	@Override
-	public List<SystemAdmin> readAll() {
+	public List<SystemAdmin> readAll(EntityManager em) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
 		cq.from(SystemAdmin.class);
@@ -38,7 +36,7 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	}
 	
 	@Override
-	public void create(SystemAdmin systemAdmin) {
+	public void create(EntityManager em, SystemAdmin systemAdmin) {
 		if (!em.getTransaction().isActive()) {
 			em.getTransaction().begin();
 		}
@@ -47,7 +45,7 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	}
 	
 	@Override
-	public void update(SystemAdmin systemAdmin) {
+	public void update(EntityManager em, SystemAdmin systemAdmin) {
 		if (!em.getTransaction().isActive()) {
 			em.getTransaction().begin();
 		}
@@ -56,7 +54,7 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	}
 	
 	@Override
-	public void delete(SystemAdmin systemAdmin) {
+	public void delete(EntityManager em, SystemAdmin systemAdmin) {
 		if (!em.getTransaction().isActive()) {
 			em.getTransaction().begin();
 		}
@@ -65,7 +63,7 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	}
 	
 	@Override
-	public Optional<SystemAdmin> findByUsername(String username) {
+	public Optional<SystemAdmin> findByUsername(EntityManager em, String username) {
 		try {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);

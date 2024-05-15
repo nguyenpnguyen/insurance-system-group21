@@ -8,25 +8,23 @@ import java.util.Optional;
 
 public class InsuranceSurveyorLogInHandler implements LogInHandler {
 	private static final String ROLE = "InsuranceSurveyor";
-	private static EntityManager em;
 	private static InsuranceSurveyorLogInHandler instance = null;
 	
 	private InsuranceSurveyorLogInHandler(InsuranceProviderController ipController) {
 	}
 	
-	public static InsuranceSurveyorLogInHandler getInstance(EntityManager entityManager) {
-		em = entityManager;
+	public static InsuranceSurveyorLogInHandler getInstance() {
 		if (instance == null) {
-			instance = new InsuranceSurveyorLogInHandler(InsuranceProviderController.getInstance(em));
+			instance = new InsuranceSurveyorLogInHandler(InsuranceProviderController.getInstance());
 		}
 		return instance;
 	}
 	
 	@Override
-	public boolean isAuthenticated(String username, String password) {
-		InsuranceProviderController controller = InsuranceProviderController.getInstance(em);
+	public boolean isAuthenticated(EntityManager em, String username, String password) {
+		InsuranceProviderController controller = InsuranceProviderController.getInstance();
 		
-		Optional<InsuranceProvider> optionalIs = controller.findByUsername(username);
+		Optional<InsuranceProvider> optionalIs = controller.findByUsername(em, username);
 		if (optionalIs.isEmpty()) {
 			return false;
 		}

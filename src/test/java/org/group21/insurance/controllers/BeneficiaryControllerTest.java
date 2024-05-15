@@ -24,19 +24,18 @@ class BeneficiaryControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		bController = BeneficiaryController.getInstance(em);
+		bController = BeneficiaryController.getInstance();
 	}
 	
 	@AfterEach
@@ -50,6 +49,7 @@ class BeneficiaryControllerTest {
 		}
 		createdEntities.clear();
 		bController = null;
+		em.close();
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ class BeneficiaryControllerTest {
 		b.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		b.setIsPolicyHolder(true);
 		
-		bController.create(b);
+		bController.create(em, b);
 		
 		createdEntities.add(b);
 		
@@ -87,7 +87,7 @@ class BeneficiaryControllerTest {
 	void read() {
 		Beneficiary savedBeneficiary = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalBeneficiary = bController.read(savedBeneficiary.getCustomerId());
+		Optional<Beneficiary> optionalBeneficiary = bController.read(em, savedBeneficiary.getCustomerId());
 		
 		assertTrue(optionalBeneficiary.isPresent());
 		
@@ -106,7 +106,7 @@ class BeneficiaryControllerTest {
 	void readPolicyHolder() {
 		Beneficiary savedPolicyHolder = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalPolicyHolder = bController.readPolicyHolder(savedPolicyHolder.getCustomerId());
+		Optional<Beneficiary> optionalPolicyHolder = bController.readPolicyHolder(em, savedPolicyHolder.getCustomerId());
 		
 		assertTrue(optionalPolicyHolder.isPresent());
 		
@@ -126,7 +126,7 @@ class BeneficiaryControllerTest {
 	void readDependent() {
 		Beneficiary savedDependent = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalDependent = bController.readDependent(savedDependent.getCustomerId());
+		Optional<Beneficiary> optionalDependent = bController.readDependent(em, savedDependent.getCustomerId());
 		
 		assertTrue(optionalDependent.isPresent());
 		
@@ -149,7 +149,7 @@ class BeneficiaryControllerTest {
 		Beneficiary b3 = createAndPersistDependent();
 		Beneficiary b4 = createAndPersistDependent();
 		
-		List<Beneficiary> bList = bController.readAll();
+		List<Beneficiary> bList = bController.readAll(em);
 		
 		int expectedSize = 4; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -168,7 +168,7 @@ class BeneficiaryControllerTest {
 		Beneficiary ph2 = createAndPersistPolicyHolder();
 		Beneficiary ph3 = createAndPersistPolicyHolder();
 		
-		List<Beneficiary> phList = bController.readAllPolicyHolders();
+		List<Beneficiary> phList = bController.readAllPolicyHolders(em);
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -187,7 +187,7 @@ class BeneficiaryControllerTest {
 		Beneficiary d2 = createAndPersistDependent();
 		Beneficiary d3 = createAndPersistDependent();
 		
-		List<Beneficiary> dList = bController.readAllDependents();
+		List<Beneficiary> dList = bController.readAllDependents(em);
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -216,7 +216,7 @@ class BeneficiaryControllerTest {
 		savedBeneficiary.setPhoneNumber("UpdatedPhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBeneficiary.setIsPolicyHolder(!savedBeneficiary.isPolicyHolder());
 		
-		bController.update(savedBeneficiary);
+		bController.update(em, savedBeneficiary);
 		
 		Beneficiary updatedBeneficiary = em.find(Beneficiary.class, savedBeneficiary.getCustomerId());
 		
@@ -234,7 +234,7 @@ class BeneficiaryControllerTest {
 	void delete() {
 		Beneficiary savedBeneficiary = createAndPersistPolicyHolder();
 		
-		bController.delete(savedBeneficiary);
+		bController.delete(em, savedBeneficiary);
 		
 		Beneficiary deletedBeneficiary = em.find(Beneficiary.class, savedBeneficiary.getCustomerId());
 		

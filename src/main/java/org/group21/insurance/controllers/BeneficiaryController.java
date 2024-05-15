@@ -7,64 +7,61 @@ import java.util.List;
 import java.util.Optional;
 
 public class BeneficiaryController implements GenericController<Beneficiary>, UserController<Beneficiary> {
-	EntityManager em;
-	
 	private static BeneficiaryController instance = null;
 	
-	private BeneficiaryController(EntityManager em) {
-		this.em = em;
+	private BeneficiaryController() {
 	}
 	
-	public static BeneficiaryController getInstance(EntityManager em) {
+	public static BeneficiaryController getInstance() {
 		if (instance == null) {
-			instance = new BeneficiaryController(em);
+			instance = new BeneficiaryController();
 		}
 		return instance;
 	}
 	
-	public Optional<Beneficiary> readPolicyHolder(String policyHolderId) {
+	public Optional<Beneficiary> readPolicyHolder(EntityManager em, String policyHolderId) {
 		return Optional.empty();
 	}
 	
-	public Optional<Beneficiary> readDependent(String dependentId) {
+	public Optional<Beneficiary> readDependent(EntityManager em, String dependentId) {
 		return Optional.empty();
 	}
 	
-	public List<Beneficiary> readAllPolicyHolders() {
+	public List<Beneficiary> readAllPolicyHolders(EntityManager em) {
 		return List.of();
 	}
 	
-	public List<Beneficiary> readAllDependents() {
-		return List.of();
-	}
-	
-	@Override
-	public Optional<Beneficiary> read(String beneficiaryId) {
-		return Optional.empty();
-	}
-	
-	@Override
-	public List<Beneficiary> readAll() {
+	public List<Beneficiary> readAllDependents(EntityManager em) {
 		return List.of();
 	}
 	
 	@Override
-	public void create(Beneficiary b) {
+	public Optional<Beneficiary> read(EntityManager em, String beneficiaryId) {
+		return Optional.empty();
+	}
+	
+	@Override
+	public List<Beneficiary> readAll(EntityManager em) {
+		return List.of();
+	}
+	
+	@Override
+	public void create(EntityManager em, Beneficiary b) {
 	
 	}
 	
 	@Override
-	public void update(Beneficiary b) {
+	public void update(EntityManager em, Beneficiary b) {
 	
 	}
 	
 	@Override
-	public void delete(Beneficiary b) {
+	public void delete(EntityManager em, Beneficiary b) {
 	
 	}
 	
 	@Override
-	public Optional<Beneficiary> findByUsername(String username) {
+	public Optional<Beneficiary> findByUsername(EntityManager em, String username) {
 		return Optional.empty();
 	}
 }

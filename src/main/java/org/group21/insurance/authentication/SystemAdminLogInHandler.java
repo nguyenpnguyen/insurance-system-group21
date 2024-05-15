@@ -8,25 +8,23 @@ import java.util.Optional;
 
 public class SystemAdminLogInHandler implements LogInHandler {
 	private static final String ROLE = "SystemAdmin";
-	private static EntityManager em;
 	private static SystemAdminLogInHandler instance = null;
 	
 	private SystemAdminLogInHandler(SystemAdminController systemAdminController) {
 	}
 	
-	public static SystemAdminLogInHandler getInstance(EntityManager entityManager) {
-		em = entityManager;
+	public static SystemAdminLogInHandler getInstance() {
 		if (instance == null) {
-			instance = new SystemAdminLogInHandler(SystemAdminController.getInstance(em));
+			instance = new SystemAdminLogInHandler(SystemAdminController.getInstance());
 		}
 		return instance;
 	}
 	
 	@Override
-	public boolean isAuthenticated(String username, String password) {
-		SystemAdminController controller = SystemAdminController.getInstance(em);
+	public boolean isAuthenticated(EntityManager em, String username, String password) {
+		SystemAdminController controller = SystemAdminController.getInstance();
 		
-		Optional<SystemAdmin> optionalAdmin = controller.findByUsername(username);
+		Optional<SystemAdmin> optionalAdmin = controller.findByUsername(em, username);
 		if (optionalAdmin.isEmpty()) {
 			return false;
 		}

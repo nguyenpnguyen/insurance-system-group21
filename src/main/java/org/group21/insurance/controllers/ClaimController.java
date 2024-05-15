@@ -7,43 +7,40 @@ import java.util.List;
 import java.util.Optional;
 
 public class ClaimController implements GenericController<Claim> {
-	EntityManager em;
-	
 	private static ClaimController instance = null;
 	
-	private ClaimController(EntityManager em) {
-		this.em = em;
+	private ClaimController() {
 	}
 	
-	public static ClaimController getInstance(EntityManager em) {
+	public static ClaimController getInstance() {
 		if (instance == null) {
-			instance = new ClaimController(em);
+			instance = new ClaimController();
 		}
 		return instance;
 	}
 	
 	@Override
-	public Optional<Claim> read(String claimId) {
+	public Optional<Claim> read(EntityManager em, String claimId) {
 		return Optional.empty();
 	}
 	
 	@Override
-	public List<Claim> readAll() {
+	public List<Claim> readAll(EntityManager em) {
 		return List.of();
 	}
 	
 	@Override
-	public void create(Claim c) {
+	public void create(EntityManager em, Claim c) {
 	
 	}
 	
 	@Override
-	public void update(Claim c) {
+	public void update(EntityManager em, Claim c) {
 	
 	}
 	
 	@Override
-	public void delete(Claim c) {
+	public void delete(EntityManager em, Claim c) {
 	
 	}
 }

@@ -7,64 +7,61 @@ import java.util.List;
 import java.util.Optional;
 
 public class InsuranceProviderController implements GenericController<InsuranceProvider>, UserController<InsuranceProvider> {
-	EntityManager em;
-	
 	private static InsuranceProviderController instance = null;
 	
-	private InsuranceProviderController(EntityManager em) {
-		this.em = em;
+	private InsuranceProviderController() {
 	}
 	
-	public static InsuranceProviderController getInstance(EntityManager em) {
+	public static InsuranceProviderController getInstance() {
 		if (instance == null) {
-			instance = new InsuranceProviderController(em);
+			instance = new InsuranceProviderController();
 		}
 		return instance;
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceManager(String insuranceManagerId) {
+	public Optional<InsuranceProvider> readInsuranceManager(EntityManager em, String insuranceManagerId) {
 		return Optional.empty();
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceSurveyor(String insuranceSurveyorId) {
+	public Optional<InsuranceProvider> readInsuranceSurveyor(EntityManager em, String insuranceSurveyorId) {
 		return Optional.empty();
 	}
 	
-	public List<InsuranceProvider> readAllInsuranceManagers() {
+	public List<InsuranceProvider> readAllInsuranceManagers(EntityManager em) {
 		return List.of();
 	}
 	
-	public List<InsuranceProvider> readAllInsuranceSurveyors() {
-		return List.of();
-	}
-	
-	@Override
-	public Optional<InsuranceProvider> read(String insuranceProviderId) {
-		return Optional.empty();
-	}
-	
-	@Override
-	public List<InsuranceProvider> readAll() {
+	public List<InsuranceProvider> readAllInsuranceSurveyors(EntityManager em) {
 		return List.of();
 	}
 	
 	@Override
-	public void create(InsuranceProvider ip) {
+	public Optional<InsuranceProvider> read(EntityManager em, String insuranceProviderId) {
+		return Optional.empty();
+	}
+	
+	@Override
+	public List<InsuranceProvider> readAll(EntityManager em) {
+		return List.of();
+	}
+	
+	@Override
+	public void create(EntityManager em, InsuranceProvider ip) {
 	
 	}
 	
 	@Override
-	public void update(InsuranceProvider ip) {
+	public void update(EntityManager em, InsuranceProvider ip) {
 	
 	}
 	
 	@Override
-	public void delete(InsuranceProvider ip) {
+	public void delete(EntityManager em, InsuranceProvider ip) {
 	
 	}
 	
 	@Override
-	public Optional<InsuranceProvider> findByUsername(String username) {
+	public Optional<InsuranceProvider> findByUsername(EntityManager em, String username) {
 		return Optional.empty();
 	}
 }

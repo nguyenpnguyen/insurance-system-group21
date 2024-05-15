@@ -24,32 +24,32 @@ class PolicyOwnerControllerTest {
 	@BeforeAll
 	static void setUpAll() {
 		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
-		em = emf.createEntityManager();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		em.close();
 		emf.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
+		em = emf.createEntityManager();
 		createdEntities = new ArrayList<>();
-		poController = PolicyOwnerController.getInstance(em);
+		poController = PolicyOwnerController.getInstance();
 	}
 	
 	@AfterEach
 	void tearDown() {
 		for (PolicyOwner entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+			if (em.getTransaction().isActive()) {
+				em.getTransaction().rollback();
 			}
-			em.remove(entity);
+			PolicyOwner managedEntity = em.merge(entity);
+			em.remove(managedEntity);
 			em.getTransaction().commit();
 		}
 		createdEntities.clear();
-		poController = null;
+		em.close();
 	}
 	
 	@Test
@@ -66,7 +66,7 @@ class PolicyOwnerControllerTest {
 		po.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		
-		poController.create(po);
+		poController.create(em, po);
 		
 		createdEntities.add(po);
 		
@@ -85,7 +85,7 @@ class PolicyOwnerControllerTest {
 	void read() {
 		PolicyOwner savedPo = createAndPersist();
 		
-		Optional<PolicyOwner> optionalPo = poController.read(savedPo.getCustomerId());
+		Optional<PolicyOwner> optionalPo = poController.read(em, savedPo.getCustomerId());
 		
 		assertTrue(optionalPo.isPresent());
 		
@@ -105,7 +105,7 @@ class PolicyOwnerControllerTest {
 		PolicyOwner po2 = createAndPersist();
 		PolicyOwner po3 = createAndPersist();
 		
-		List<PolicyOwner> poList = poController.readAll();
+		List<PolicyOwner> poList = poController.readAll(em);
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -132,7 +132,7 @@ class PolicyOwnerControllerTest {
 		savedPo.setEmail("NewEmail_" + UUID.randomUUID().toString().substring(0, 8));
 		savedPo.setPhoneNumber("NewPhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		
-		poController.update(savedPo);
+		poController.update(em, savedPo);
 		
 		PolicyOwner updatedPo = em.find(PolicyOwner.class, savedPo.getCustomerId());
 		
@@ -148,7 +148,7 @@ class PolicyOwnerControllerTest {
 	void delete() {
 		PolicyOwner savedPo = createAndPersist();
 		
-		poController.delete(savedPo);
+		poController.delete(em, savedPo);
 		
 		PolicyOwner deletedPo = em.find(PolicyOwner.class, savedPo.getCustomerId());
 		
@@ -177,5 +177,19 @@ class PolicyOwnerControllerTest {
 		em.getTransaction().commit();
 		
 		return po;
+	}
+	
+	@Test
+	void findByUsername() {
+		PolicyOwner savedPo = createAndPersist();
+		
+		Optional<PolicyOwner> optionalPo = poController.findByUsername(em, savedPo.getUsername());
+		
+		assertTrue(optionalPo.isPresent());
+		
+		PolicyOwner retrievedPo = optionalPo.get();
+		
+		assertEquals(savedPo.getCustomerId(), retrievedPo.getCustomerId());
+		assertEquals(savedPo.getUsername(), retrievedPo.getUsername());
 	}
 }

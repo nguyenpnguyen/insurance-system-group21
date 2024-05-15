@@ -7,47 +7,44 @@ import java.util.List;
 import java.util.Optional;
 
 public class DocumentController implements GenericController<Document> {
-	EntityManager em;
-	
 	private static DocumentController instance = null;
 	
-	private DocumentController(EntityManager em) {
-		this.em = em;
+	private DocumentController() {
 	}
 	
-	public static DocumentController getInstance(EntityManager em) {
+	public static DocumentController getInstance() {
 		if (instance == null) {
-			instance = new DocumentController(em);
+			instance = new DocumentController();
 		}
 		return instance;
 	}
 	
-	public Optional<Document> findByFileName(String fileName) {
+	public Optional<Document> findByFileName(EntityManager em, String fileName) {
 		return Optional.empty();
 	}
 	
 	@Override
-	public Optional<Document> read(String documentId) {
+	public Optional<Document> read(EntityManager em, String documentId) {
 		return Optional.empty();
 	}
 	
 	@Override
-	public List<Document> readAll() {
+	public List<Document> readAll(EntityManager em) {
 		return List.of();
 	}
 	
 	@Override
-	public void create(Document document) {
+	public void create(EntityManager em, Document document) {
 	
 	}
 	
 	@Override
-	public void update(Document document) {
+	public void update(EntityManager em, Document document) {
 	
 	}
 	
 	@Override
-	public void delete(Document document) {
+	public void delete(EntityManager em, Document document) {
 	
 	}
 }
