@@ -1,6 +1,10 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.NoResultException;
+import jakarta.persistence.criteria.CriteriaBuilder;
+import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.SystemAdmin;
 
 import java.util.List;
@@ -22,34 +26,49 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 	}
 	
 	public Optional<SystemAdmin> read(String id) {
-		return Optional.empty();
+		return Optional.ofNullable(em.find(SystemAdmin.class, id));
 	}
 	
 	@Override
 	public List<SystemAdmin> readAll() {
-		String sysAdminIdString = Long.toString(1);
-		Optional<SystemAdmin> optionalSysAdmin = read(sysAdminIdString);
-		
-		return optionalSysAdmin.map(List::of).orElse(null);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
+		cq.from(SystemAdmin.class);
+		return em.createQuery(cq).getResultList();
 	}
 	
 	@Override
 	public void create(SystemAdmin systemAdmin) {
-	
+		em.getTransaction().begin();
+		em.persist(systemAdmin);
+		em.getTransaction().commit();
 	}
 	
 	@Override
 	public void update(SystemAdmin systemAdmin) {
-	
+		em.getTransaction().begin();
+		em.persist(systemAdmin);
+		em.getTransaction().commit();
 	}
 	
 	@Override
 	public void delete(SystemAdmin systemAdmin) {
-	
+		em.getTransaction().begin();
+		em.remove(systemAdmin);
+		em.getTransaction().commit();
 	}
 	
 	@Override
 	public Optional<SystemAdmin> findByUsername(String username) {
-		return Optional.empty();
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
+			Root<SystemAdmin> admin = cq.from(SystemAdmin.class);
+			cq.select(admin).where(cb.equal(admin.get("username"), username));
+			SystemAdmin result = em.createQuery(cq).getSingleResult();
+			return Optional.ofNullable(result);
+		} catch (NoResultException e) {
+			return Optional.empty();
+		}
 	}
 }

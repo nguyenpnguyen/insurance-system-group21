@@ -41,7 +41,9 @@ class DocumentControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (Object entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -170,7 +172,9 @@ class DocumentControllerTest {
 		createdEntities.add(claim);
 		createdEntities.add(document);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(document);
 		em.getTransaction().commit();
 		

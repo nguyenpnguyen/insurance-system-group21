@@ -42,7 +42,9 @@ class InsuranceProviderControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (InsuranceProvider entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -229,7 +231,9 @@ class InsuranceProviderControllerTest {
 		
 		createdEntities.add(ip);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(ip);
 		em.getTransaction().commit();
 		return ip;
@@ -248,7 +252,9 @@ class InsuranceProviderControllerTest {
 		
 		createdEntities.add(ip);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(ip);
 		em.getTransaction().commit();
 		return ip;

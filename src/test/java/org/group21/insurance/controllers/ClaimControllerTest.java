@@ -42,7 +42,9 @@ class ClaimControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (Claim entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -154,7 +156,9 @@ class ClaimControllerTest {
 		
 		createdEntities.add(claim);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(claim);
 		em.getTransaction().commit();
 		

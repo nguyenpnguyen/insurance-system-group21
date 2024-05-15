@@ -42,7 +42,9 @@ class BeneficiaryControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (Beneficiary entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -254,9 +256,13 @@ class BeneficiaryControllerTest {
 		ph.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		ph.setIsPolicyHolder(true);
 		
-		bController.create(ph);
-		
 		createdEntities.add(ph);
+		
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
+		em.persist(ph);
+		em.getTransaction().commit();
 		
 		return ph;
 	}
@@ -275,9 +281,13 @@ class BeneficiaryControllerTest {
 		d.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		d.setIsPolicyHolder(false);
 		
-		bController.create(d);
-		
 		createdEntities.add(d);
+		
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
+		em.persist(d);
+		em.getTransaction().commit();
 		
 		return d;
 	}

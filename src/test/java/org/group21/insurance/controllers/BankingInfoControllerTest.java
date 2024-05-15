@@ -40,7 +40,9 @@ class BankingInfoControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (BankingInfo entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -160,7 +162,9 @@ class BankingInfoControllerTest {
 		
 		createdEntities.add(bi);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(bi);
 		em.getTransaction().commit();
 		return bi;

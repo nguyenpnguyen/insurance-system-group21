@@ -42,7 +42,9 @@ class PolicyOwnerControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (PolicyOwner entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -168,7 +170,9 @@ class PolicyOwnerControllerTest {
 		
 		createdEntities.add(po);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(po);
 		em.getTransaction().commit();
 		

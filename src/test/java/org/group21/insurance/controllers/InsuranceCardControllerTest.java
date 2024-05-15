@@ -42,7 +42,9 @@ class InsuranceCardControllerTest {
 	@AfterEach
 	void tearDown() {
 		for (InsuranceCard entity : createdEntities) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.remove(entity);
 			em.getTransaction().commit();
 		}
@@ -141,7 +143,9 @@ class InsuranceCardControllerTest {
 		
 		createdEntities.add(ic);
 		
-		em.getTransaction().begin();
+		if (!em.getTransaction().isActive()) {
+			em.getTransaction().begin();
+		}
 		em.persist(ic);
 		em.getTransaction().commit();
 		return ic;
