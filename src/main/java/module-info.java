@@ -2,6 +2,7 @@ module org.group21.insurance {
 	requires javafx.controls;
 	requires jakarta.persistence;
 	requires org.hibernate.orm.core;
+	requires storage.java;
 	exports org.group21.insurance;
 	exports org.group21.insurance.views;
 	exports org.group21.insurance.controllers;
