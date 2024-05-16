@@ -2,28 +2,27 @@ package org.group21.insurance.authentication;
 
 import jakarta.persistence.EntityManager;
 import org.group21.insurance.controllers.BeneficiaryController;
+import org.group21.insurance.exceptions.UserNotAuthenticatedException;
+import org.group21.insurance.exceptions.UserNotFoundException;
 import org.group21.insurance.models.Beneficiary;
 
 import java.util.Optional;
 
-public class PolicyHolderLogInHandler extends LogInHandler {
+public class PolicyHolderLogInHandler extends LogInHandler<Beneficiary> {
 	
 	@Override
-	public boolean isAuthenticated(EntityManager em, String username, String password) {
+	public Beneficiary getUser(EntityManager em, String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		BeneficiaryController controller = BeneficiaryController.getInstance();
-		
 		Optional<Beneficiary> optionalPh = controller.findByUsername(em, username);
-		if (optionalPh.isEmpty()) {
-			return false;
+		if (optionalPh.isPresent()) {
+			Beneficiary ph = optionalPh.get();
+			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
+			if (passwordAuthenticator.authenticate(password.toCharArray(), ph.getHashedPassword()) && ph.isPolicyHolder()) {
+				return ph;
+			} else {
+				throw new UserNotAuthenticatedException("User " + username + " is not authenticated.");
+			}
 		}
-		
-		Beneficiary ph = optionalPh.get();
-		if (!ph.isPolicyHolder()) {
-			return false;
-		}
-		
-		PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
-		
-		return passwordAuthenticator.authenticate(password.toCharArray(), ph.getHashedPassword());
+		throw new UserNotFoundException("User " + username + " not found.");
 	}
 }

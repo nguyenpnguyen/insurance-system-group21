@@ -8,7 +8,15 @@ public class LogInHandlerFactory {
 	private static final String INSURANCE_MANAGER = "Insurance manager";
 	private static final String INSURANCE_SURVEYOR = "Insurance surveyor";
 	
-	public LogInHandler getLogInHandler(String userType) {
+	/**
+	 * <p>Returns the appropriate LogInHandler based on the user type</p>
+	 * Use to verify the user's credentials
+	 *
+	 * @param userType The type of user
+	 *
+	 * @return LogInHandler<?> object to authenticate user
+	 */
+	public LogInHandler<?> getLogInHandler(String userType) {
 		switch (userType) {
 			case POLICY_OWNER:
 				return new PolicyOwnerLogInHandler();
