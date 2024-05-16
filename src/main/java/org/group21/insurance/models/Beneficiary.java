@@ -31,6 +31,7 @@ public class Beneficiary extends Customer implements Serializable {
 	private boolean isPolicyHolder;
 	
 	public Beneficiary() {
+		super();
 	}
 
 	public Beneficiary(String id, String username, String hashedPassword, boolean isPolicyHolder) {
