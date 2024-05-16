@@ -6,6 +6,7 @@ import org.hibernate.annotations.GenericGenerator;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Objects;
 
 @Entity(name = "Claim")
 @Table(name = "claims")
@@ -132,5 +133,18 @@ public class Claim implements Serializable {
 		NEW,
 		PROCESSING,
 		DONE
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Claim claim = (Claim) o;
+		return Objects.equals(getClaimId(), claim.getClaimId());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getClaimId());
 	}
 }

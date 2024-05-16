@@ -3,6 +3,7 @@ package org.group21.insurance.models;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name = "SystemAdmin")
 @Table(name = "system_admin")
@@ -44,5 +45,18 @@ public class SystemAdmin implements Serializable {
 	
 	public void setHashedPassword(String hashedPassword) {
 		this.hashedPassword = hashedPassword;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		SystemAdmin that = (SystemAdmin) o;
+		return getSysAdminId() == that.getSysAdminId() && Objects.equals(getUsername(), that.getUsername());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(getSysAdminId(), getUsername());
 	}
 }

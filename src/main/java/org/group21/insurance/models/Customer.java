@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Parameter;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Inheritance(strategy = InheritanceType.TABLE_PER_CLASS)
@@ -101,5 +102,18 @@ public abstract class Customer implements Serializable {
 	
 	public void setEmail(String email) {
 		this.email = email;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Customer customer = (Customer) o;
+		return Objects.equals(getCustomerId(), customer.getCustomerId()) && Objects.equals(getUsername(), customer.getUsername());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(getCustomerId(), getUsername());
 	}
 }

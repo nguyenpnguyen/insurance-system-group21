@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name = "InsuranceProvider")
 @Table(name = "insurance_providers")
@@ -101,5 +102,18 @@ public class InsuranceProvider implements Serializable {
 	
 	public void setInsuranceManager(boolean insuranceManager) {
 		isInsuranceManager = insuranceManager;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		InsuranceProvider that = (InsuranceProvider) o;
+		return Objects.equals(getInsuranceProviderId(), that.getInsuranceProviderId()) && Objects.equals(getUsername(), that.getUsername());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hash(getInsuranceProviderId(), getUsername());
 	}
 }

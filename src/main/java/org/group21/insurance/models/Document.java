@@ -3,6 +3,7 @@ package org.group21.insurance.models;
 import jakarta.persistence.*;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity(name = "Document")
 @Table(name = "document_list")
@@ -58,5 +59,18 @@ public class Document implements Serializable {
 	
 	public void setFileUrl(String fileUrl) {
 		this.fileUrl = fileUrl;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		Document document = (Document) o;
+		return getDocumentId() == document.getDocumentId();
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getDocumentId());
 	}
 }

@@ -6,6 +6,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 import java.io.Serializable;
+import java.util.Objects;
 
 @Entity
 @Table(name = "banking_infos")
@@ -49,5 +50,18 @@ public class BankingInfo implements Serializable {
 	
 	public void setBank(String bank) {
 		this.bank = bank;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		BankingInfo that = (BankingInfo) o;
+		return Objects.equals(getAccountNumber(), that.getAccountNumber());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getAccountNumber());
 	}
 }

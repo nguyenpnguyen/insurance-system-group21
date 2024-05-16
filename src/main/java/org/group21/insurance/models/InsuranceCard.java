@@ -5,6 +5,7 @@ import org.hibernate.annotations.GenericGenerator;
 
 import java.io.Serializable;
 import java.time.LocalDate;
+import java.util.Objects;
 
 @Entity(name = "InsuranceCard")
 @Table(name = "insurance_cards")
@@ -66,7 +67,21 @@ public class InsuranceCard implements Serializable {
 		return expirationDate;
 	}
 	
+	
 	public void setExpirationDate(LocalDate expirationDate) {
 		this.expirationDate = expirationDate;
+	}
+	
+	@Override
+	public boolean equals(Object o) {
+		if (this == o) return true;
+		if (o == null || getClass() != o.getClass()) return false;
+		InsuranceCard that = (InsuranceCard) o;
+		return Objects.equals(getCardNumber(), that.getCardNumber());
+	}
+	
+	@Override
+	public int hashCode() {
+		return Objects.hashCode(getCardNumber());
 	}
 }
