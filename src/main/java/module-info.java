@@ -8,5 +8,6 @@ module org.group21.insurance {
 	exports org.group21.insurance.authentication;
 	exports org.group21.insurance.utils;
 	exports org.group21.insurance.models;
+	exports org.group21.insurance.exceptions;
 	opens org.group21.insurance.models;
 }
