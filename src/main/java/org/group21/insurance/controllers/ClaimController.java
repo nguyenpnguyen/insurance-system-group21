@@ -5,6 +5,7 @@ import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
+import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.Claim;
 import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
@@ -84,6 +85,20 @@ public class ClaimController implements GenericController<Claim> {
 			}
 			em.remove(c);
 			em.getTransaction().commit();
+		}
+	}
+	
+	public List<Claim> getClaimByStatus(Claim.ClaimStatus status) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Claim> cq = cb.createQuery(Claim.class);
+			Root<Claim> claim = cq.from(Claim.class);
+			cq.select(claim).where(cb.equal(claim.get("status"), status));
+			return em.createQuery(cq).getResultList();
+		} catch (NoResultException e) {
+			return Collections.emptyList();
 		}
 	}
 }
