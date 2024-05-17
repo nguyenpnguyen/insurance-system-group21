@@ -9,13 +9,16 @@ import javafx.scene.Scene;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.effect.DropShadow;
+import javafx.scene.input.MouseButton;
 import javafx.scene.layout.*;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
+import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.group21.insurance.models.*;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Random;
@@ -122,11 +125,15 @@ public class DashboardScreen extends Application {
         claimBtn.setOnAction(e -> {
             TableView claimTable = createClaimTable(root);
             Button addClaimBtn = new Button("Add Claim");
+            VBox vbox = new VBox(addClaimBtn);
+            vbox.setAlignment(Pos.CENTER);
+
             root.setCenter(claimTable);
             if(this.userRole != "Dependent"){
-                root.setRight(addClaimBtn);
+                root.setRight(vbox);
                 addClaimBtn.setOnAction(e2 -> {
                     root.setRight(null);
+                    root.setCenter(addNewClaimForm());
                 });
             }
         });
@@ -143,8 +150,6 @@ public class DashboardScreen extends Application {
 
         paidBtn.setOnAction(e -> root.setCenter(new Label("Payment Content")));
         propposedClaimBtn.setOnAction(e -> root.setCenter(new Label("Propose Claim action")));
-
-
 
         switch (userRole) {
             case "Dependent":
@@ -269,6 +274,22 @@ public class DashboardScreen extends Application {
 
         table.getColumns().addAll(idColumn, claimDateColumn, beneficiaryColumn, insuranceCardNumberColumn, examDateColumn, documentsColumn, claimAmountColumn, statusColumn, receiverBankingInfoColumn);
 
+        ContextMenu deleteOrUpdateContextMenu = new ContextMenu();
+        MenuItem updateItem = new MenuItem("Update");
+        MenuItem deleteItem = new MenuItem("Delete");
+        deleteOrUpdateContextMenu.getItems().addAll(updateItem, deleteItem);
+
+        deleteItem.setOnAction(e -> {
+            Claim selectedClaim = table.getSelectionModel().getSelectedItem();
+            table.getItems().remove(selectedClaim);
+        });
+
+        updateItem.setOnAction(e -> {
+            Claim selectedClaim = table.getSelectionModel().getSelectedItem();
+            GridPane claimPane = showClaimDetails(selectedClaim, "update", table);
+            root.setCenter(claimPane);
+        });
+
         ObservableList<Claim> claimData = FXCollections.observableArrayList();
         for (int i = 1; i <= 30; i++) {
             Claim claim = new Claim();
@@ -281,7 +302,6 @@ public class DashboardScreen extends Application {
             claim.setClaimAmount(new Random().nextInt(1000) + 1);
             claim.setReceiverBankingInfo(new BankingInfo());
 //          claim.setStatus(Claim.getClaimStatus.PENDING);
-
             claimData.add(claim);
         }
 
@@ -289,19 +309,26 @@ public class DashboardScreen extends Application {
 
         table.setRowFactory(tv -> {
             TableRow<Claim> row = new TableRow<>();
+
+            row.setContextMenu(deleteOrUpdateContextMenu);
+
             row.setOnMouseClicked(e -> {
-                Claim clickedClaim = row.getItem();
-                GridPane claimPane = showClaimDetails(clickedClaim);
-                root.setCenter(claimPane);
-                System.out.println("Claim ID: " + clickedClaim.getClaimId());
+                if (e.getButton() == MouseButton.SECONDARY && (! row.isEmpty())) {
+                    deleteOrUpdateContextMenu.show(row, e.getScreenX(), e.getScreenY());
+                } else if (e.getButton() == MouseButton.PRIMARY && (! row.isEmpty())) {
+                    Claim clickedClaim = row.getItem();
+                    GridPane claimPane = showClaimDetails(clickedClaim, "view", table);
+                    root.setCenter(claimPane);
+                }
             });
+
             return row;
         });
 
         return table;
     }
 
-    private static GridPane showClaimDetails(Claim claim) {
+    private static GridPane showClaimDetails(Claim claim, String action, TableView<Claim> table) {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -378,88 +405,98 @@ public class DashboardScreen extends Application {
         gridPane.add(documentListLabel, 0, 8);
         gridPane.add(documentListField, 1, 8);
 
+        if(action.equals("update")){
+            userIdField.setEditable(true);
+            fullNameField.setEditable(true);
+            roleField.setEditable(true);
+            insuranceCardNumberField.setEditable(true);
+            claimAmountField.setEditable(true);
+            claimDateField.setEditable(true);
+            insuredPersonField.setEditable(true);
+            examDateField.setEditable(true);
+            documentListField.setEditable(true);
+            Button saveBtn = new Button("Save");
+            gridPane.add(saveBtn, 1, 9);
+            saveBtn.setOnAction(e -> {
+                String updatedUserId = userIdField.getText();
+                String updatedFullName = fullNameField.getText();
+                String updatedRole = roleField.getText();
+                String updatedInsuranceCardNumber = insuranceCardNumberField.getText();
+                String updatedClaimAmount = claimAmountField.getText();
+                String updatedClaimDate = claimDateField.getText();
+                String updatedInsuredPerson = insuredPersonField.getText();
+                String updatedExamDate = examDateField.getText();
+                String updatedDocumentList = documentListField.getText();
+
+                Claim updatedClaim = new Claim();
+                updatedClaim.setClaimId(updatedUserId);
+                updatedClaim.setClaimDate(LocalDate.now());
+//                updatedClaim.setInsuredPerson(new Beneficiary());
+                updatedClaim.setExamDate(LocalDate.now());
+//                updatedClaim.setInsuranceCard(new InsuranceCard());
+//                updatedClaim.setDocumentList(new ArrayList<>());
+//                updatedClaim.setClaimAmount(new Random().nextInt(1000) + 1);
+//                updatedClaim.setReceiverBankingInfo(new BankingInfo());
+
+
+                int index = table.getItems().indexOf(claim);
+                if (index != -1) {
+                    table.getItems().set(index, updatedClaim);
+                }
+            });
+        }
+
         return gridPane;
     }
 
     private static GridPane addNewClaimForm(){
         GridPane gridPane = new GridPane();
-//        gridPane.setAlignment(Pos.TOP_CENTER);
-//        gridPane.setHgap(10);
-//        gridPane.setVgap(10);
-//        gridPane.setPadding(new Insets(25, 25, 25, 25));
-//
-//        // Define column constraints for the GridPane
-//        ColumnConstraints column1 = new ColumnConstraints();
-//        column1.setPercentWidth(20);
-//        ColumnConstraints column2 = new ColumnConstraints();
-//        column2.setPercentWidth(80);
-//        gridPane.getColumnConstraints().addAll(column1, column2);
-//
-//        Label userIdLabel = new Label("User ID:");
-//        TextField userIdField = new TextField();
-//        userIdField.setText(claim.getClaimId());
-//        userIdField.setEditable(false);
-//        gridPane.add(userIdLabel, 0, 0);
-//        gridPane.add(userIdField, 1, 0);
-//
-//        Label fullNameLabel = new Label("Full Name:");
-//        TextField fullNameField = new TextField();
-//        fullNameField.setText("Default Full Name");
-//        fullNameField.setEditable(false);
-//        gridPane.add(fullNameLabel, 0, 1);
-//        gridPane.add(fullNameField, 1, 1);
-//
-//        Label roleLabel = new Label("Role:");
-//        TextField roleField = new TextField();
-//        roleField.setText("Default Role");
-//        roleField.setEditable(false);
-//        gridPane.add(roleLabel, 0, 2);
-//        gridPane.add(roleField, 1, 2);
-//
-//        Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
-//        TextField insuranceCardNumberField = new TextField();
-//        insuranceCardNumberField.setText("Default Insurance Card Number");
-//        insuranceCardNumberField.setEditable(false);
-//        gridPane.add(insuranceCardNumberLabel, 0, 3);
-//        gridPane.add(insuranceCardNumberField, 1, 3);
-//
-//        Label claimAmountLabel = new Label("Claim Amount:");
-//        TextField claimAmountField = new TextField();
-//        claimAmountField.setText("Default Claim Amount");
-//        claimAmountField.setEditable(false);
-//        gridPane.add(claimAmountLabel, 0, 4);
-//        gridPane.add(claimAmountField, 1, 4);
-//
-//        Label claimDateLabel = new Label("Claim Date:");
-//        TextField claimDateField = new TextField();
-//        claimDateField.setText("Default Claim Date");
-//        claimDateField.setEditable(false);
-//        gridPane.add(claimDateLabel, 0, 5);
-//        gridPane.add(claimDateField, 1, 5);
-//
-//        Label insuredPersonLabel = new Label("Insured Person:");
-//        TextField insuredPersonField = new TextField();
-//        insuredPersonField.setText("Default Insured Person");
-//        insuredPersonField.setEditable(false);
-//        gridPane.add(insuredPersonLabel, 0, 6);
-//        gridPane.add(insuredPersonField, 1, 6);
-//
-//        Label examDateLabel = new Label("Exam Date:");
-//        TextField examDateField = new TextField();
-//        examDateField.setText("Default Exam Date");
-//        examDateField.setEditable(false);
-//        gridPane.add(examDateLabel, 0, 7);
-//        gridPane.add(examDateField, 1, 7);
-//
-//        Label documentListLabel = new Label("Document List:");
-//        TextField documentListField = new TextField();
-//        documentListField.setText("Default Document List");
-//        documentListField.setEditable(false);
-//        gridPane.add(documentListLabel, 0, 8);
-//        gridPane.add(documentListField, 1, 8);
-//
-//        Button submitButton = new Button("Submit");
-//        gridPane.add(submitButton, 1, 9);
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        // Define column constraints for the GridPane
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(20);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(80);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+        Label userIdLabel = new Label("User ID:");
+        TextField userIdField = new TextField();
+        gridPane.add(userIdLabel, 0, 0);
+        gridPane.add(userIdField, 1, 0);
+
+        Label fullNameLabel = new Label("Full Name:");
+        TextField fullNameField = new TextField();
+        gridPane.add(fullNameLabel, 0, 1);
+        gridPane.add(fullNameField, 1, 1);
+
+        Label insuranceCardLabel = new Label("Insurance Card:");
+        TextField insuranceCardField = new TextField();
+        gridPane.add(insuranceCardLabel, 0, 2);
+        gridPane.add(insuranceCardField, 1, 2);
+
+        Button uploadButton = new Button("Upload PDF");
+        gridPane.add(uploadButton, 0, 3);
+
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
+
+        // Set the action for the upload button
+        uploadButton.setOnAction(e -> {
+            File selectedFile = fileChooser.showOpenDialog(null);
+            if (selectedFile != null) {
+                // Handle the selected file. For example, you can print its path:
+                System.out.println(selectedFile);
+            } else {
+                System.out.println("File selection cancelled.");
+            }
+        });
+
+        Button submitButton = new Button("Submit");
+        gridPane.add(submitButton, 1, 4);
 
         return gridPane;
     }
