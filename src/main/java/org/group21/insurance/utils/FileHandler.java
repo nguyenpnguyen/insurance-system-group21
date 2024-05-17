@@ -35,16 +35,22 @@ public class FileHandler {
 	}
 	
 	public static String uploadFile(Drive service, java.io.File filePath) throws IOException {
-		File fileMetadata = new File();
-		fileMetadata.setMimeType("application/pdf");
-		
-		FileContent mediaContent = new FileContent("application/pdf", filePath);
-		
-		File file = service.files().create(fileMetadata, mediaContent)
-				.setFields("id")
-				.execute();
-		System.out.println("File ID: " + file.getId());
-		return file.getId();
+		try {
+			File fileMetadata = new File();
+			fileMetadata.setMimeType("application/pdf");
+			fileMetadata.setName(filePath.getName());
+			
+			FileContent mediaContent = new FileContent("application/pdf", filePath);
+			
+			File file = service.files().create(fileMetadata, mediaContent)
+					.setFields("id")
+					.execute();
+			System.out.println("File ID: " + file.getId());
+			return file.getId();
+		} catch (IOException e) {
+			System.err.println("An error occurred during file upload: " + e);
+			throw e;
+		}
 	}
 	
 	public static List<String> listFiles(Drive service) throws IOException {
@@ -119,12 +125,14 @@ public class FileHandler {
 	
 	public static File changeFileName(Drive service, String fileId, String newName) throws IOException {
 		// Retrieve the existing file
-		File file = service.files().get(fileId).execute();
-		
-		// Set the new name
-		file.setName(newName);
-		
-		// Update the file on Google Drive
-		return service.files().update(fileId, file).execute();
+		try {
+			File file = service.files().get(fileId).execute();
+			file.setName(newName);
+			
+			return service.files().update(fileId, file).execute();
+		} catch (IOException e) {
+			System.err.println("An error occurred while trying to change the name of the file with ID " + fileId + ": " + e);
+			throw e;
+		}
 	}
 }
