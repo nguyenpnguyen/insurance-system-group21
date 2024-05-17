@@ -1,11 +1,13 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.PolicyOwner;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.util.Collections;
 import java.util.List;
@@ -26,13 +28,19 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	
 	
 	@Override
-	public Optional<PolicyOwner> read(EntityManager em, String policyOwnerId) {
-		return Optional.ofNullable(em.find(PolicyOwner.class, policyOwnerId));
+	public Optional<PolicyOwner> read(String policyOwnerId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			return Optional.ofNullable(em.find(PolicyOwner.class, policyOwnerId));
+		}
 	}
 	
 	@Override
-	public List<PolicyOwner> readAll(EntityManager em) {
-		try {
+	public List<PolicyOwner> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PolicyOwner> cq = cb.createQuery(PolicyOwner.class);
 			cq.from(PolicyOwner.class);
@@ -43,47 +51,49 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	}
 	
 	@Override
-	public void create(EntityManager em, PolicyOwner po) {
-		if (!em.contains(po)) {
-			po = em.merge(po);
-		}
+	public void create(PolicyOwner po) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(po);
+			em.getTransaction().commit();
 		}
-		em.persist(po);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, PolicyOwner po) {
-		if (!em.contains(po)) {
-			po = em.merge(po);
-		}
+	public void update(PolicyOwner po) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(po);
+			em.getTransaction().commit();
 		}
-		em.persist(po);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, PolicyOwner po) {
-		if (!em.contains(po)) {
-			po = em.merge(po);
-		}
+	public void delete(PolicyOwner po) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(po);
+			em.getTransaction().commit();
 		}
-		em.remove(po);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public Optional<PolicyOwner> findByUsername(EntityManager em, String username) {
-		try {
+	public Optional<PolicyOwner> findByUsername(String username) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<PolicyOwner> cq = cb.createQuery(PolicyOwner.class);
 			Root<PolicyOwner> policyOwner = cq.from(PolicyOwner.class);

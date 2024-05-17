@@ -2,9 +2,9 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.SystemAdmin;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -14,41 +14,42 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class SystemAdminControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
-	private static EntityManagerFactory emf;
-	private static EntityManager em;
 	private SystemAdminController systemAdminController;
 	private List<SystemAdmin> createdEntities;
+	private EntityManager em;
+	private static EntityManagerFactory emf;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
+		
 		createdEntities = new ArrayList<>();
 		systemAdminController = SystemAdminController.getInstance();
 	}
 	
 	@AfterEach
 	void tearDown() {
-		for (SystemAdmin entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			for (SystemAdmin entity : createdEntities) {
+				if (!em.getTransaction().isActive()) {
+					em.getTransaction().begin();
+				}
+				SystemAdmin managedEntity = em.merge(entity);
+				em.remove(managedEntity);
+				em.getTransaction().commit();
 			}
-			SystemAdmin managedEntity = em.merge(entity);
-			em.remove(managedEntity);
-			em.getTransaction().commit();
+			createdEntities.clear();
 		}
-		createdEntities.clear();
-		em.close();
 	}
 	
 	@Test
@@ -59,7 +60,7 @@ class SystemAdminControllerTest {
 		testAdmin.setUsername("testAdmin");
 		testAdmin.setHashedPassword(pAuthenticator.hash("testAdmin".toCharArray()));
 		
-		systemAdminController.create(em, testAdmin);
+		systemAdminController.create(testAdmin);
 		
 		createdEntities.add(testAdmin);
 		
@@ -74,7 +75,7 @@ class SystemAdminControllerTest {
 	void read() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		Optional<SystemAdmin> optionalAdmin = systemAdminController.read(em, Long.toString(savedAdmin.getSysAdminId()));
+		Optional<SystemAdmin> optionalAdmin = systemAdminController.read(Long.toString(savedAdmin.getSysAdminId()));
 		
 		assertTrue(optionalAdmin.isPresent());
 		
@@ -88,11 +89,11 @@ class SystemAdminControllerTest {
 	void readAll() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		List<SystemAdmin> admins = systemAdminController.readAll(em);
+		List<SystemAdmin> admins = systemAdminController.readAll();
 		
 		assertEquals(1, admins.size());
 		
-		SystemAdmin retrievedAdmin = admins.get(0);
+		SystemAdmin retrievedAdmin = admins.getFirst();
 		
 		assertEquals(savedAdmin.getSysAdminId(), retrievedAdmin.getSysAdminId());
 		assertEquals(savedAdmin.getUsername(), retrievedAdmin.getUsername());
@@ -104,7 +105,7 @@ class SystemAdminControllerTest {
 		
 		savedAdmin.setUsername("updatedUsername");
 		
-		systemAdminController.update(em, savedAdmin);
+		systemAdminController.update(savedAdmin);
 		
 		SystemAdmin updatedAdmin = em.find(SystemAdmin.class, savedAdmin.getSysAdminId());
 		
@@ -117,7 +118,7 @@ class SystemAdminControllerTest {
 	void delete() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		systemAdminController.delete(em, savedAdmin);
+		systemAdminController.delete(savedAdmin);
 		
 		SystemAdmin deletedAdmin = em.find(SystemAdmin.class, savedAdmin.getSysAdminId());
 		
@@ -128,7 +129,7 @@ class SystemAdminControllerTest {
 	void findByUsername() {
 		SystemAdmin savedAdmin = createAndPersist();
 		
-		Optional<SystemAdmin> optionalAdmin = systemAdminController.findByUsername(em, savedAdmin.getUsername());
+		Optional<SystemAdmin> optionalAdmin = systemAdminController.findByUsername(savedAdmin.getUsername());
 		
 		assertTrue(optionalAdmin.isPresent());
 		

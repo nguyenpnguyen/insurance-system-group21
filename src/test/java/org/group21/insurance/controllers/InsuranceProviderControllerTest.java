@@ -2,9 +2,9 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.InsuranceProvider;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -15,20 +15,19 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InsuranceProviderControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private InsuranceProviderController ipController;
 	private List<InsuranceProvider> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
@@ -40,16 +39,17 @@ class InsuranceProviderControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		for (InsuranceProvider entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			for (InsuranceProvider entity : createdEntities) {
+				if (!em.getTransaction().isActive()) {
+					em.getTransaction().begin();
+				}
+				em.remove(entity);
+				em.getTransaction().commit();
 			}
-			em.remove(entity);
-			em.getTransaction().commit();
+			createdEntities.clear();
+			ipController = null;
 		}
-		createdEntities.clear();
-		ipController = null;
-		em.close();
 	}
 	
 	@Test
@@ -63,7 +63,7 @@ class InsuranceProviderControllerTest {
 		ip.setHashedPassword(pAuthenticator.hash(testPassword));
 		ip.setInsuranceManager(true);
 		
-		ipController.create(em, ip);
+		ipController.create(ip);
 		
 		createdEntities.add(ip);
 		
@@ -79,7 +79,7 @@ class InsuranceProviderControllerTest {
 	void read() {
 		InsuranceProvider savedIp = createAndPersistIManager();
 		
-		Optional<InsuranceProvider> optionalIp = ipController.read(em, savedIp.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIp = ipController.read(savedIp.getInsuranceProviderId());
 		
 		assertTrue(optionalIp.isPresent());
 		
@@ -94,7 +94,7 @@ class InsuranceProviderControllerTest {
 	void readInsuranceManager() {
 		InsuranceProvider savedIm = createAndPersistIManager();
 		
-		Optional<InsuranceProvider> optionalIm = ipController.readInsuranceManager(em, savedIm.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIm = ipController.readInsuranceManager(savedIm.getInsuranceProviderId());
 		
 		assertTrue(optionalIm.isPresent());
 		
@@ -110,7 +110,7 @@ class InsuranceProviderControllerTest {
 	void readInsuranceSurveyor() {
 		InsuranceProvider savedIs = createAndPersistISurveyor();
 		
-		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceSurveyor(em, savedIs.getInsuranceProviderId());
+		Optional<InsuranceProvider> optionalIs = ipController.readInsuranceSurveyor(savedIs.getInsuranceProviderId());
 		
 		assertTrue(optionalIs.isPresent());
 		assertFalse(optionalIs.get().isInsuranceManager());
@@ -130,7 +130,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider ip3 = createAndPersistISurveyor();
 		InsuranceProvider ip4 = createAndPersistISurveyor();
 		
-		List<InsuranceProvider> insuranceProviderList = ipController.readAll(em);
+		List<InsuranceProvider> insuranceProviderList = ipController.readAll();
 		
 		int expectedSize = 4;
 		expectedSize += createdEntities.size();
@@ -149,7 +149,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider im2 = createAndPersistIManager();
 		InsuranceProvider im3 = createAndPersistIManager();
 		
-		List<InsuranceProvider> insuranceManagerList = ipController.readAllInsuranceManagers(em);
+		List<InsuranceProvider> insuranceManagerList = ipController.readAllInsuranceManagers();
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size();
@@ -169,7 +169,7 @@ class InsuranceProviderControllerTest {
 		InsuranceProvider is2 = createAndPersistISurveyor();
 		InsuranceProvider is3 = createAndPersistISurveyor();
 		
-		List<InsuranceProvider> insuranceSurveyorList = ipController.readAllInsuranceSurveyors(em);
+		List<InsuranceProvider> insuranceSurveyorList = ipController.readAllInsuranceSurveyors();
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size();
@@ -195,7 +195,7 @@ class InsuranceProviderControllerTest {
 		savedIp.setHashedPassword(pAuthenticator.hash(testPassword));
 		savedIp.setInsuranceManager(!savedIp.isInsuranceManager());
 		
-		ipController.update(em, savedIp);
+		ipController.update(savedIp);
 		
 		InsuranceProvider updatedIp = em.find(InsuranceProvider.class, savedIp.getInsuranceProviderId());
 		
@@ -211,7 +211,7 @@ class InsuranceProviderControllerTest {
 	void delete() {
 		InsuranceProvider savedIp = createAndPersistIManager();
 		
-		ipController.delete(em, savedIp);
+		ipController.delete(savedIp);
 		
 		InsuranceProvider deletedIp = em.find(InsuranceProvider.class, savedIp.getInsuranceProviderId());
 		

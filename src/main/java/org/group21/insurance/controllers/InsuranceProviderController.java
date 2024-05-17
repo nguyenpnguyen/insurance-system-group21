@@ -1,11 +1,13 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.InsuranceProvider;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,24 +26,34 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		return instance;
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceManager(EntityManager em, String insuranceManagerId) {
-		Optional<InsuranceProvider> optionalIm = Optional.ofNullable(em.find(InsuranceProvider.class, insuranceManagerId));
-		if (optionalIm.isPresent() && optionalIm.get().isInsuranceManager()) {
-			return optionalIm;
+	public Optional<InsuranceProvider> readInsuranceManager(String insuranceManagerId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			Optional<InsuranceProvider> optionalIm = Optional.ofNullable(em.find(InsuranceProvider.class, insuranceManagerId));
+			if (optionalIm.isPresent() && optionalIm.get().isInsuranceManager()) {
+				return optionalIm;
+			}
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 	
-	public Optional<InsuranceProvider> readInsuranceSurveyor(EntityManager em, String insuranceSurveyorId) {
-		Optional<InsuranceProvider> optionalIs = Optional.ofNullable(em.find(InsuranceProvider.class, insuranceSurveyorId));
-		if (optionalIs.isPresent() && !optionalIs.get().isInsuranceManager()) {
-			return optionalIs;
+	public Optional<InsuranceProvider> readInsuranceSurveyor(String insuranceSurveyorId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			Optional<InsuranceProvider> optionalIs = Optional.ofNullable(em.find(InsuranceProvider.class, insuranceSurveyorId));
+			if (optionalIs.isPresent() && !optionalIs.get().isInsuranceManager()) {
+				return optionalIs;
+			}
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 	
-	public List<InsuranceProvider> readAllInsuranceManagers(EntityManager em) {
-		try {
+	public List<InsuranceProvider> readAllInsuranceManagers() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
@@ -52,8 +64,10 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
-	public List<InsuranceProvider> readAllInsuranceSurveyors(EntityManager em) {
-		try {
+	public List<InsuranceProvider> readAllInsuranceSurveyors() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
@@ -65,13 +79,19 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 	}
 	
 	@Override
-	public Optional<InsuranceProvider> read(EntityManager em, String insuranceProviderId) {
-		return Optional.ofNullable(em.find(InsuranceProvider.class, insuranceProviderId));
+	public Optional<InsuranceProvider> read(String insuranceProviderId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			return Optional.ofNullable(em.find(InsuranceProvider.class, insuranceProviderId));
+		}
 	}
 	
 	@Override
-	public List<InsuranceProvider> readAll(EntityManager em) {
-		try {
+	public List<InsuranceProvider> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			cq.from(InsuranceProvider.class);
@@ -82,47 +102,49 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 	}
 	
 	@Override
-	public void create(EntityManager em, InsuranceProvider ip) {
-		if (!em.contains(ip)) {
-			ip = em.merge(ip);
-		}
+	public void create(InsuranceProvider ip) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(ip);
+			em.getTransaction().commit();
 		}
-		em.persist(ip);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, InsuranceProvider ip) {
-		if (!em.contains(ip)) {
-			ip = em.merge(ip);
-		}
+	public void update(InsuranceProvider ip) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(ip);
+			em.getTransaction().commit();
 		}
-		em.persist(ip);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, InsuranceProvider ip) {
-		if (!em.contains(ip)) {
-			ip = em.merge(ip);
-		}
+	public void delete(InsuranceProvider ip) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(ip);
+			em.getTransaction().commit();
 		}
-		em.remove(ip);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public Optional<InsuranceProvider> findByUsername(EntityManager em, String username) {
-		try {
+	public Optional<InsuranceProvider> findByUsername(String username) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> insuranceProviderRoot = cq.from(InsuranceProvider.class);

@@ -1,11 +1,13 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.Beneficiary;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,24 +26,34 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		return instance;
 	}
 	
-	public Optional<Beneficiary> readPolicyHolder(EntityManager em, String policyHolderId) {
-		Optional<Beneficiary> optionalPh = Optional.ofNullable(em.find(Beneficiary.class, policyHolderId));
-		if (optionalPh.isPresent() && optionalPh.get().isPolicyHolder()) {
-			return optionalPh;
+	public Optional<Beneficiary> readPolicyHolder(String policyHolderId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			Optional<Beneficiary> optionalPh = Optional.ofNullable(em.find(Beneficiary.class, policyHolderId));
+			if (optionalPh.isPresent() && optionalPh.get().isPolicyHolder()) {
+				return optionalPh;
+			}
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 	
-	public Optional<Beneficiary> readDependent(EntityManager em, String dependentId) {
-		Optional<Beneficiary> optionalDependent = Optional.ofNullable(em.find(Beneficiary.class, dependentId));
-		if (optionalDependent.isPresent() && !optionalDependent.get().isPolicyHolder()) {
-			return optionalDependent;
+	public Optional<Beneficiary> readDependent(String dependentId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			Optional<Beneficiary> optionalDependent = Optional.ofNullable(em.find(Beneficiary.class, dependentId));
+			if (optionalDependent.isPresent() && !optionalDependent.get().isPolicyHolder()) {
+				return optionalDependent;
+			}
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 	
-	public List<Beneficiary> readAllPolicyHolders(EntityManager em) {
-		try {
+	public List<Beneficiary> readAllPolicyHolders() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			Root<Beneficiary> root = cq.from(Beneficiary.class);
@@ -52,8 +64,10 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
-	public List<Beneficiary> readAllDependents(EntityManager em) {
-		try {
+	public List<Beneficiary> readAllDependents() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			Root<Beneficiary> root = cq.from(Beneficiary.class);
@@ -65,13 +79,19 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 	}
 	
 	@Override
-	public Optional<Beneficiary> read(EntityManager em, String beneficiaryId) {
-		return Optional.ofNullable(em.find(Beneficiary.class, beneficiaryId));
+	public Optional<Beneficiary> read(String beneficiaryId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			return Optional.ofNullable(em.find(Beneficiary.class, beneficiaryId));
+		}
 	}
 	
 	@Override
-	public List<Beneficiary> readAll(EntityManager em) {
-		try {
+	public List<Beneficiary> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			cq.from(Beneficiary.class);
@@ -82,47 +102,49 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 	}
 	
 	@Override
-	public void create(EntityManager em, Beneficiary b) {
-		if (!em.contains(b)) {
-			b = em.merge(b);
-		}
+	public void create(Beneficiary b) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(b);
+			em.getTransaction().commit();
 		}
-		em.persist(b);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, Beneficiary b) {
-		if (!em.contains(b)) {
-			b = em.merge(b);
-		}
+	public void update(Beneficiary b) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(b);
+			em.getTransaction().commit();
 		}
-		em.persist(b);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, Beneficiary b) {
-		if (!em.contains(b)) {
-			b = em.merge(b);
-		}
+	public void delete(Beneficiary b) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(b);
+			em.getTransaction().commit();
 		}
-		em.remove(b);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public Optional<Beneficiary> findByUsername(EntityManager em, String username) {
-		try {
+	public Optional<Beneficiary> findByUsername(String username) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			Root<Beneficiary> beneficiaryRoot = cq.from(Beneficiary.class);

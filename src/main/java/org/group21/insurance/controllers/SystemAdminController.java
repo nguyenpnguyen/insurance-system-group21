@@ -1,11 +1,13 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import jakarta.persistence.criteria.Root;
 import org.group21.insurance.models.SystemAdmin;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.util.List;
 import java.util.Optional;
@@ -23,48 +25,70 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		return instance;
 	}
 	
-	public Optional<SystemAdmin> read(EntityManager em, String id) {
-		return Optional.ofNullable(em.find(SystemAdmin.class, id));
-	}
-	
-	@Override
-	public List<SystemAdmin> readAll(EntityManager em) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
-		cq.from(SystemAdmin.class);
-		return em.createQuery(cq).getResultList();
-	}
-	
-	@Override
-	public void create(EntityManager em, SystemAdmin systemAdmin) {
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+	public Optional<SystemAdmin> read(String id) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			return Optional.ofNullable(em.find(SystemAdmin.class, id));
 		}
-		em.persist(systemAdmin);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, SystemAdmin systemAdmin) {
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+	public List<SystemAdmin> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
+			cq.from(SystemAdmin.class);
+			return em.createQuery(cq).getResultList();
 		}
-		em.persist(systemAdmin);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, SystemAdmin systemAdmin) {
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+	public void create(SystemAdmin systemAdmin) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(systemAdmin);
+			em.getTransaction().commit();
 		}
-		em.remove(systemAdmin);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public Optional<SystemAdmin> findByUsername(EntityManager em, String username) {
-		try {
+	public void update(SystemAdmin systemAdmin) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(systemAdmin);
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void delete(SystemAdmin systemAdmin) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(systemAdmin);
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public Optional<SystemAdmin> findByUsername(String username) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<SystemAdmin> cq = cb.createQuery(SystemAdmin.class);
 			Root<SystemAdmin> admin = cq.from(SystemAdmin.class);

@@ -2,8 +2,8 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.models.Claim;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
@@ -15,22 +15,19 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class ClaimControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private ClaimController claimController;
 	private List<Claim> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		if (emf.isOpen()) {
-			emf.close();
-		}
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
@@ -42,15 +39,14 @@ class ClaimControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		em.getTransaction().begin(); // Start a transaction
-		for (Claim entity : createdEntities) {
-			Claim managedEntity = em.merge(entity); // Merge the entity back into the persistence context
-			em.remove(managedEntity); // Remove the entity
-		}
-		em.getTransaction().commit(); // Commit the transaction
-		createdEntities.clear(); // Clear the list for the next test
-		if (em.isOpen()) {
-			em.close();
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin(); // Start a transaction
+			for (Claim entity : createdEntities) {
+				Claim managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+				em.remove(managedEntity); // Remove the entity
+			}
+			em.getTransaction().commit(); // Commit the transaction
+			createdEntities.clear(); // Clear the list for the next test
 		}
 	}
 	
@@ -63,7 +59,7 @@ class ClaimControllerTest {
 		claim.setExamDate(LocalDate.now().plusDays(1));
 		claim.setStatus(Claim.ClaimStatus.NEW);
 		
-		claimController.create(em, claim);
+		claimController.create(claim);
 		
 		createdEntities.add(claim);
 		
@@ -81,7 +77,7 @@ class ClaimControllerTest {
 	void read() {
 		Claim savedClaim = createAndPersist();
 		
-		Optional<Claim> optionalClaim = claimController.read(em, savedClaim.getClaimId());
+		Optional<Claim> optionalClaim = claimController.read(savedClaim.getClaimId());
 		
 		assertTrue(optionalClaim.isPresent());
 		
@@ -101,7 +97,7 @@ class ClaimControllerTest {
 		Claim c2 = createAndPersist();
 		Claim c3 = createAndPersist();
 		
-		List<Claim> claims = claimController.readAll(em);
+		List<Claim> claims = claimController.readAll();
 		
 		int expectedSize = 3;
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -123,7 +119,7 @@ class ClaimControllerTest {
 		savedClaim.setExamDate(LocalDate.now().minusDays(2));
 		savedClaim.setStatus(Claim.ClaimStatus.PROCESSING);
 		
-		claimController.update(em, savedClaim);
+		claimController.update(savedClaim);
 		
 		Claim updatedClaim = em.find(Claim.class, savedClaim.getClaimId());
 		
@@ -139,7 +135,7 @@ class ClaimControllerTest {
 	void delete() {
 		Claim savedClaim = createAndPersist();
 		
-		claimController.delete(em, savedClaim);
+		claimController.delete(savedClaim);
 		
 		Claim deletedClaim = em.find(Claim.class, savedClaim.getClaimId());
 		

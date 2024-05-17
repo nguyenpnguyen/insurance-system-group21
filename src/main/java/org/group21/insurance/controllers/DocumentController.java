@@ -2,10 +2,12 @@ package org.group21.insurance.controllers;
 
 import com.google.api.services.drive.Drive;
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.group21.insurance.models.Claim;
 import org.group21.insurance.models.Document;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.io.File;
 import java.io.IOException;
@@ -29,91 +31,102 @@ public class DocumentController implements GenericController<Document> {
 		return instance;
 	}
 	
-	public Optional<Document> findByFileName(EntityManager em, String fileName) throws GeneralSecurityException, IOException {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Document> cq = cb.createQuery(Document.class);
-		cq.from(Document.class);
+	public Optional<Document> findByFileName(String fileName) throws GeneralSecurityException, IOException {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		Optional<Document> optionalDocument = em.createQuery(cq).getResultList().stream().filter(d -> d.getFileName().equals(fileName)).findFirst();
-		if (optionalDocument.isPresent() && fileExistsInDrive(optionalDocument.get().getDocumentId())) {
-			return optionalDocument;
-		}
-		return Optional.empty();
-	}
-	
-	@Override
-	public Optional<Document> read(EntityManager em, String documentId) {
-		Optional<Document> optionalDocument = Optional.ofNullable(em.find(Document.class, documentId));
-		try {
-			if (optionalDocument.isPresent() && fileExistsInDrive(documentId)) {
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Document> cq = cb.createQuery(Document.class);
+			cq.from(Document.class);
+			
+			Optional<Document> optionalDocument = em.createQuery(cq).getResultList().stream().filter(d -> d.getFileName().equals(fileName)).findFirst();
+			if (optionalDocument.isPresent() && fileExistsInDrive(optionalDocument.get().getDocumentId())) {
 				return optionalDocument;
 			}
-		} catch (GeneralSecurityException | IOException e) {
-			System.err.println("An error occurred during file existence check: " + e.getMessage());
+			return Optional.empty();
 		}
-		return Optional.empty();
 	}
 	
 	@Override
-	public List<Document> readAll(EntityManager em) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Document> cq = cb.createQuery(Document.class);
-		cq.from(Document.class);
-		List<Document> documentListFromDb = em.createQuery(cq).getResultList();
-		for (Document document : documentListFromDb) {
+	public Optional<Document> read(String documentId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			Optional<Document> optionalDocument = Optional.ofNullable(em.find(Document.class, documentId));
 			try {
-				if (!fileExistsInDrive(document.getDocumentId())) {
-					delete(em, document);
+				if (optionalDocument.isPresent() && fileExistsInDrive(documentId)) {
+					return optionalDocument;
 				}
 			} catch (GeneralSecurityException | IOException e) {
 				System.err.println("An error occurred during file existence check: " + e.getMessage());
 			}
+			return Optional.empty();
 		}
-		return documentListFromDb;
 	}
 	
 	@Override
-	public void create(EntityManager em, Document document) {
-		if (!em.contains(document)) {
-			document = em.merge(document);
-		}
+	public List<Document> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Document> cq = cb.createQuery(Document.class);
+			cq.from(Document.class);
+			List<Document> documentListFromDb = em.createQuery(cq).getResultList();
+			for (Document document : documentListFromDb) {
+				try {
+					if (!fileExistsInDrive(document.getDocumentId())) {
+						delete(document);
+					}
+				} catch (GeneralSecurityException | IOException e) {
+					System.err.println("An error occurred during file existence check: " + e.getMessage());
+				}
+			}
+			return documentListFromDb;
 		}
-		em.persist(document);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, Document document) {
-		if (!em.contains(document)) {
-			document = em.merge(document);
-		}
+	public void create(Document document) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(document);
+			em.getTransaction().commit();
 		}
-		
-		em.persist(document);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, Document document) {
-		if (!em.contains(document)) {
-			document = em.merge(document);
-		}
+	public void update(Document document) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(document);
+			em.getTransaction().commit();
 		}
-		
-		em.remove(document);
-		em.getTransaction().commit();
 	}
 	
-	public void uploadDocument(EntityManager em, File filePath, Claim claim) throws IOException, GeneralSecurityException {
+	@Override
+	public void delete(Document document) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(document);
+			em.getTransaction().commit();
+		}
+	}
+	
+	public void uploadDocument(File filePath, Claim claim) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		String fileId = uploadFile(service, filePath);
 		
@@ -124,29 +137,29 @@ public class DocumentController implements GenericController<Document> {
 		document.setClaim(claim);
 		document.setFileName(fileName);
 		
-		create(em, document);
+		create(document);
 	}
 	
-	public void downloadDocument(EntityManager em, String documentId, String destinationPath) throws IOException, GeneralSecurityException {
+	public void downloadDocument(String documentId, String destinationPath) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
-		Document document = read(em, documentId).orElseThrow();
+		Document document = read(documentId).orElseThrow();
 		
 		String fileName = document.getFileName();
 		
 		downloadFile(service, documentId, destinationPath + separator + fileName);
 	}
 	
-	public void deleteDocument(EntityManager em, String documentId) throws IOException, GeneralSecurityException {
+	public void deleteDocument(String documentId) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
-		Document document = read(em, documentId).orElseThrow();
+		Document document = read(documentId).orElseThrow();
 		
 		deleteFile(service, documentId);
-		delete(em, document);
+		delete(document);
 	}
 	
-	public void replaceDocument(EntityManager em, String documentId, File newFilePath) throws IOException, GeneralSecurityException {
+	public void replaceDocument(String documentId, File newFilePath) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
-		Document document = read(em, documentId).orElseThrow();
+		Document document = read(documentId).orElseThrow();
 		
 		String fileId = document.getDocumentId();
 		
@@ -154,7 +167,7 @@ public class DocumentController implements GenericController<Document> {
 		
 		document.setDocumentId(newFileId);
 		document.setFileName(newFilePath.getName());
-		update(em, document);
+		update(document);
 	}
 	
 	private boolean fileExistsInDrive(String documentId) throws GeneralSecurityException, IOException {

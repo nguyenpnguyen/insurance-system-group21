@@ -17,21 +17,14 @@ public class LogInHandlerFactory {
 	 * @return LogInHandler<?> object to authenticate user
 	 */
 	public LogInHandler<?> getLogInHandler(String userType) {
-		switch (userType) {
-			case POLICY_OWNER:
-				return new PolicyOwnerLogInHandler();
-			case SYSTEM_ADMIN:
-				return new SystemAdminLogInHandler();
-			case POLICY_HOLDER:
-				return new PolicyHolderLogInHandler();
-			case DEPENDENT:
-				return new DependentLogInHandler();
-			case INSURANCE_MANAGER:
-				return new InsuranceManagerLogInHandler();
-			case INSURANCE_SURVEYOR:
-				return new InsuranceSurveyorLogInHandler();
-			default:
-				return null;
-		}
+		return switch (userType) {
+			case POLICY_OWNER -> new PolicyOwnerLogInHandler();
+			case SYSTEM_ADMIN -> new SystemAdminLogInHandler();
+			case POLICY_HOLDER -> new PolicyHolderLogInHandler();
+			case DEPENDENT -> new DependentLogInHandler();
+			case INSURANCE_MANAGER -> new InsuranceManagerLogInHandler();
+			case INSURANCE_SURVEYOR -> new InsuranceSurveyorLogInHandler();
+			default -> null;
+		};
 	}
 }

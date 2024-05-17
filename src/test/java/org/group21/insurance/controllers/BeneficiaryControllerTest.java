@@ -2,9 +2,9 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.Beneficiary;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -15,20 +15,19 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BeneficiaryControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private BeneficiaryController bController;
 	private List<Beneficiary> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
@@ -40,16 +39,17 @@ class BeneficiaryControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		for (Beneficiary entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			for (Beneficiary entity : createdEntities) {
+				if (!em.getTransaction().isActive()) {
+					em.getTransaction().begin();
+				}
+				em.remove(entity);
+				em.getTransaction().commit();
 			}
-			em.remove(entity);
-			em.getTransaction().commit();
+			createdEntities.clear();
+			bController = null;
 		}
-		createdEntities.clear();
-		bController = null;
-		em.close();
 	}
 	
 	@Test
@@ -67,7 +67,7 @@ class BeneficiaryControllerTest {
 		b.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		b.setIsPolicyHolder(true);
 		
-		bController.create(em, b);
+		bController.create(b);
 		
 		createdEntities.add(b);
 		
@@ -87,7 +87,7 @@ class BeneficiaryControllerTest {
 	void read() {
 		Beneficiary savedBeneficiary = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalBeneficiary = bController.read(em, savedBeneficiary.getCustomerId());
+		Optional<Beneficiary> optionalBeneficiary = bController.read(savedBeneficiary.getCustomerId());
 		
 		assertTrue(optionalBeneficiary.isPresent());
 		
@@ -106,7 +106,7 @@ class BeneficiaryControllerTest {
 	void readPolicyHolder() {
 		Beneficiary savedPolicyHolder = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalPolicyHolder = bController.readPolicyHolder(em, savedPolicyHolder.getCustomerId());
+		Optional<Beneficiary> optionalPolicyHolder = bController.readPolicyHolder(savedPolicyHolder.getCustomerId());
 		
 		assertTrue(optionalPolicyHolder.isPresent());
 		
@@ -126,7 +126,7 @@ class BeneficiaryControllerTest {
 	void readDependent() {
 		Beneficiary savedDependent = createAndPersistPolicyHolder();
 		
-		Optional<Beneficiary> optionalDependent = bController.readDependent(em, savedDependent.getCustomerId());
+		Optional<Beneficiary> optionalDependent = bController.readDependent(savedDependent.getCustomerId());
 		
 		assertTrue(optionalDependent.isPresent());
 		
@@ -149,7 +149,7 @@ class BeneficiaryControllerTest {
 		Beneficiary b3 = createAndPersistDependent();
 		Beneficiary b4 = createAndPersistDependent();
 		
-		List<Beneficiary> bList = bController.readAll(em);
+		List<Beneficiary> bList = bController.readAll();
 		
 		int expectedSize = 4; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -168,7 +168,7 @@ class BeneficiaryControllerTest {
 		Beneficiary ph2 = createAndPersistPolicyHolder();
 		Beneficiary ph3 = createAndPersistPolicyHolder();
 		
-		List<Beneficiary> phList = bController.readAllPolicyHolders(em);
+		List<Beneficiary> phList = bController.readAllPolicyHolders();
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -187,7 +187,7 @@ class BeneficiaryControllerTest {
 		Beneficiary d2 = createAndPersistDependent();
 		Beneficiary d3 = createAndPersistDependent();
 		
-		List<Beneficiary> dList = bController.readAllDependents(em);
+		List<Beneficiary> dList = bController.readAllDependents();
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -216,7 +216,7 @@ class BeneficiaryControllerTest {
 		savedBeneficiary.setPhoneNumber("UpdatedPhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBeneficiary.setIsPolicyHolder(!savedBeneficiary.isPolicyHolder());
 		
-		bController.update(em, savedBeneficiary);
+		bController.update(savedBeneficiary);
 		
 		Beneficiary updatedBeneficiary = em.find(Beneficiary.class, savedBeneficiary.getCustomerId());
 		
@@ -234,7 +234,7 @@ class BeneficiaryControllerTest {
 	void delete() {
 		Beneficiary savedBeneficiary = createAndPersistPolicyHolder();
 		
-		bController.delete(em, savedBeneficiary);
+		bController.delete(savedBeneficiary);
 		
 		Beneficiary deletedBeneficiary = em.find(Beneficiary.class, savedBeneficiary.getCustomerId());
 		

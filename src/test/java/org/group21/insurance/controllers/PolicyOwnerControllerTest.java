@@ -2,9 +2,9 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.PolicyOwner;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -15,42 +15,39 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class PolicyOwnerControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
+	private EntityManager em;
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
 	private PolicyOwnerController poController;
 	private List<PolicyOwner> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		if (emf.isOpen()) {
-			emf.close();
-		}
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
+		
 		createdEntities = new ArrayList<>();
 		poController = PolicyOwnerController.getInstance();
 	}
 	
 	@AfterEach
 	void tearDown() {
-		em.getTransaction().begin(); // Start a transaction
-		for (PolicyOwner entity : createdEntities) {
-			PolicyOwner managedEntity = em.merge(entity); // Merge the entity back into the persistence context
-			em.remove(managedEntity); // Remove the entity
-		}
-		em.getTransaction().commit(); // Commit the transaction
-		createdEntities.clear(); // Clear the list for the next test
-		if (em.isOpen()) {
-			em.close();
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin(); // Start a transaction
+			for (PolicyOwner entity : createdEntities) {
+				PolicyOwner managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+				em.remove(managedEntity); // Remove the entity
+			}
+			em.getTransaction().commit(); // Commit the transaction
+			createdEntities.clear(); // Clear the list for the next test
 		}
 	}
 	
@@ -68,7 +65,7 @@ class PolicyOwnerControllerTest {
 		po.setEmail("Email_" + UUID.randomUUID().toString().substring(0, 8));
 		po.setPhoneNumber("PhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		
-		poController.create(em, po);
+		poController.create(po);
 		
 		createdEntities.add(po);
 		
@@ -87,7 +84,7 @@ class PolicyOwnerControllerTest {
 	void read() {
 		PolicyOwner savedPo = createAndPersist();
 		
-		Optional<PolicyOwner> optionalPo = poController.read(em, savedPo.getCustomerId());
+		Optional<PolicyOwner> optionalPo = poController.read(savedPo.getCustomerId());
 		
 		assertTrue(optionalPo.isPresent());
 		
@@ -107,7 +104,7 @@ class PolicyOwnerControllerTest {
 		PolicyOwner po2 = createAndPersist();
 		PolicyOwner po3 = createAndPersist();
 		
-		List<PolicyOwner> poList = poController.readAll(em);
+		List<PolicyOwner> poList = poController.readAll();
 		
 		int expectedSize = 3; // Initial expected size
 		expectedSize += createdEntities.size(); // Add the count of entities created during the test
@@ -134,7 +131,7 @@ class PolicyOwnerControllerTest {
 		savedPo.setEmail("NewEmail_" + UUID.randomUUID().toString().substring(0, 8));
 		savedPo.setPhoneNumber("NewPhoneNumber_" + UUID.randomUUID().toString().substring(0, 8));
 		
-		poController.update(em, savedPo);
+		poController.update(savedPo);
 		
 		PolicyOwner updatedPo = em.find(PolicyOwner.class, savedPo.getCustomerId());
 		
@@ -150,7 +147,7 @@ class PolicyOwnerControllerTest {
 	void delete() {
 		PolicyOwner savedPo = createAndPersist();
 		
-		poController.delete(em, savedPo);
+		poController.delete(savedPo);
 		
 		PolicyOwner deletedPo = em.find(PolicyOwner.class, savedPo.getCustomerId());
 		
@@ -185,7 +182,7 @@ class PolicyOwnerControllerTest {
 	void findByUsername() {
 		PolicyOwner savedPo = createAndPersist();
 		
-		Optional<PolicyOwner> optionalPo = poController.findByUsername(em, savedPo.getUsername());
+		Optional<PolicyOwner> optionalPo = poController.findByUsername(savedPo.getUsername());
 		
 		assertTrue(optionalPo.isPresent());
 		

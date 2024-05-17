@@ -1,19 +1,17 @@
 package org.group21.insurance.controllers;
 
-import jakarta.persistence.EntityManager;
-
 import java.util.List;
 import java.util.Optional;
 
 interface GenericController<T> {
 	
-	Optional<T> read(EntityManager em, String id);
+	Optional<T> read(String id);
 	
-	List<T> readAll(EntityManager em);
+	List<T> readAll();
 	
-	void create(EntityManager em, T t);
+	void create(T t);
 	
-	void update(EntityManager em, T t);
+	void update(T t);
 	
-	void delete(EntityManager em, T t);
+	void delete(T t);
 }

@@ -2,11 +2,13 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.models.Claim;
 import org.group21.insurance.models.Document;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
+import java.io.IOException;
+import java.security.GeneralSecurityException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -14,20 +16,19 @@ import java.util.Optional;
 import static org.junit.jupiter.api.Assertions.*;
 
 class DocumentControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private DocumentController documentController;
 	private List<Object> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		emf.close();
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
@@ -39,16 +40,17 @@ class DocumentControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		for (Object entity : createdEntities) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			for (Object entity : createdEntities) {
+				if (!em.getTransaction().isActive()) {
+					em.getTransaction().begin();
+				}
+				em.remove(entity);
+				em.getTransaction().commit();
 			}
-			em.remove(entity);
-			em.getTransaction().commit();
+			createdEntities.clear();
+			documentController = null;
 		}
-		createdEntities.clear();
-		documentController = null;
-		em.close();
 	}
 	
 	@Test
@@ -62,10 +64,9 @@ class DocumentControllerTest {
 		
 		Document document = new Document();
 		document.setFileName("FileName");
-		document.setFileUrl("FileUrl");
 		document.setClaim(claim);
 		
-		documentController.create(em, document);
+		documentController.create(document);
 		
 		createdEntities.add(document);
 		
@@ -73,7 +74,6 @@ class DocumentControllerTest {
 		
 		assertEquals(document.getDocumentId(), savedDocument.getDocumentId());
 		assertEquals(document.getFileName(), savedDocument.getFileName());
-		assertEquals(document.getFileUrl(), savedDocument.getFileUrl());
 		assertEquals(document.getClaim().getClaimId(), savedDocument.getClaim().getClaimId());
 	}
 	
@@ -83,13 +83,17 @@ class DocumentControllerTest {
 		
 		String fileName = "FileName";
 		
-		Optional<Document> optionalDocument = documentController.findByFileName(em, fileName);
+		Optional<Document> optionalDocument = Optional.empty();
+		try {
+			optionalDocument = documentController.findByFileName(fileName);
+		} catch (GeneralSecurityException | IOException e) {
+			System.err.println("Error: " + e.getMessage());
+		}
 		
 		assertTrue(optionalDocument.isPresent());
 		
 		Document retrievedDocument = optionalDocument.get();
 		assertEquals(document.getDocumentId(), retrievedDocument.getDocumentId());
-		assertEquals(document.getFileUrl(), retrievedDocument.getFileUrl());
 		assertEquals(document.getClaim().getClaimId(), retrievedDocument.getClaim().getClaimId());
 	}
 	
@@ -97,7 +101,7 @@ class DocumentControllerTest {
 	void read() {
 		Document savedDocument = createAndPersist();
 		
-		Optional<Document> optionalDocument = documentController.read(em, Long.toString(savedDocument.getDocumentId()));
+		Optional<Document> optionalDocument = documentController.read(savedDocument.getDocumentId());
 		
 		assertTrue(optionalDocument.isPresent());
 		
@@ -105,7 +109,6 @@ class DocumentControllerTest {
 		
 		assertEquals(savedDocument.getDocumentId(), retrievedDocument.getDocumentId());
 		assertEquals(savedDocument.getFileName(), retrievedDocument.getFileName());
-		assertEquals(savedDocument.getFileUrl(), retrievedDocument.getFileUrl());
 		assertEquals(savedDocument.getClaim().getClaimId(), retrievedDocument.getClaim().getClaimId());
 	}
 	
@@ -115,7 +118,7 @@ class DocumentControllerTest {
 		Document d2 = createAndPersist();
 		Document d3 = createAndPersist();
 		
-		List<Document> documents = documentController.readAll(em);
+		List<Document> documents = documentController.readAll();
 		
 		int expectedSize = 3;
 		
@@ -132,15 +135,13 @@ class DocumentControllerTest {
 		Document savedDocument = createAndPersist();
 		
 		savedDocument.setFileName("NewFileName");
-		savedDocument.setFileUrl("NewFileUrl");
 		
-		documentController.update(em, savedDocument);
+		documentController.update(savedDocument);
 		
 		Document updatedDocument = em.find(Document.class, savedDocument.getDocumentId());
 		
 		assertEquals(savedDocument.getDocumentId(), updatedDocument.getDocumentId());
 		assertEquals(savedDocument.getFileName(), updatedDocument.getFileName());
-		assertEquals(savedDocument.getFileUrl(), updatedDocument.getFileUrl());
 		assertEquals(savedDocument.getClaim().getClaimId(), updatedDocument.getClaim().getClaimId());
 	}
 	
@@ -148,7 +149,7 @@ class DocumentControllerTest {
 	void delete() {
 		Document savedDocument = createAndPersist();
 		
-		documentController.delete(em, savedDocument);
+		documentController.delete(savedDocument);
 		
 		Document deletedDocument = em.find(Document.class, savedDocument.getDocumentId());
 		
@@ -167,7 +168,6 @@ class DocumentControllerTest {
 		
 		Document document = new Document();
 		document.setFileName("FileName");
-		document.setFileUrl("FileUrl");
 		document.setClaim(claim);
 		
 		createdEntities.add(claim);
