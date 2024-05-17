@@ -28,7 +28,7 @@ public class Beneficiary extends Customer implements Serializable {
 	private PolicyOwner policyOwner;
 	
 	@Column(name = "insurance_rate")
-	private double insuranceRate;
+	private long insuranceRate;
 	
 	@Column(name = "is_policy_holder", nullable = false)
 	private boolean isPolicyHolder;
@@ -100,13 +100,14 @@ public class Beneficiary extends Customer implements Serializable {
 		isPolicyHolder = policyHolder;
 	}
 	
-	public double getInsuranceRate() {
+	public long getInsuranceRate() {
 		return insuranceRate;
 	}
 	
-	public void setInsuranceRate(double insuranceRate) {
+	public void setInsuranceRate(long insuranceRate) {
+		// Insurance rate for dependents is 60% of the policy holder's insurance rate
 		if (!isPolicyHolder) {
-			this.insuranceRate = getPolicyHolder().getInsuranceRate() * 0.6;
+			this.insuranceRate = Math.round(getPolicyHolder().getInsuranceRate() * 0.6);
 		} else {
 			this.insuranceRate = insuranceRate;
 		}
