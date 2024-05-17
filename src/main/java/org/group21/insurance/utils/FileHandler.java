@@ -7,16 +7,13 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
-import com.google.api.services.drive.model.FileList;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
-import java.util.ArrayList;
 import java.util.Collections;
-import java.util.List;
 
 public class FileHandler {
 	
@@ -53,6 +50,9 @@ public class FileHandler {
 		}
 	}
 	
+	/*
+	// This method is not used in the project
+	
 	public static List<String> listFiles(Drive service) throws IOException {
 		Drive.Files.List request = service.files().list().setPageSize(10)
 				.setFields("nextPageToken, files(id, name)");
@@ -69,6 +69,7 @@ public class FileHandler {
 		} while (request.getPageToken() != null &&
 				!request.getPageToken().isEmpty());
 	}
+	*/
 	
 	public static File findFileById(Drive service, String fileId) throws IOException {
 		// Attempt to retrieve the file by its ID
@@ -78,20 +79,6 @@ public class FileHandler {
 			System.err.println("An error occurred: " + e);
 			throw e;
 		}
-	}
-	
-	public static List<File> findFilesByIds(Drive service, List<String> fileIds) {
-		List<File> files = new ArrayList<>();
-		for (String fileId : fileIds) {
-			try {
-				File file = service.files().get(fileId).execute();
-				files.add(file);
-			} catch (IOException e) {
-				System.err.println("An error occurred while retrieving file with ID " + fileId + ": " + e);
-				// Instead of throwing an error, continue to the next file
-			}
-		}
-		return files;
 	}
 	
 	public static void downloadFile(Drive service, String fileId, String destinationPath) throws IOException {
@@ -121,18 +108,5 @@ public class FileHandler {
 		
 		// Upload the new file and return its ID
 		return uploadFile(service, newFilePath);
-	}
-	
-	public static File changeFileName(Drive service, String fileId, String newName) throws IOException {
-		// Retrieve the existing file
-		try {
-			File file = service.files().get(fileId).execute();
-			file.setName(newName);
-			
-			return service.files().update(fileId, file).execute();
-		} catch (IOException e) {
-			System.err.println("An error occurred while trying to change the name of the file with ID " + fileId + ": " + e);
-			throw e;
-		}
 	}
 }

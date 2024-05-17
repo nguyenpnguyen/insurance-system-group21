@@ -1,6 +1,5 @@
 package org.group21.insurance.authentication;
 
-import jakarta.persistence.EntityManager;
 import org.group21.insurance.controllers.SystemAdminController;
 import org.group21.insurance.exceptions.UserNotAuthenticatedException;
 import org.group21.insurance.exceptions.UserNotFoundException;
@@ -11,9 +10,9 @@ import java.util.Optional;
 public class SystemAdminLogInHandler extends LogInHandler<SystemAdmin> {
 	
 	@Override
-	public SystemAdmin getUser(EntityManager em, String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
+	public SystemAdmin getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		SystemAdminController controller = SystemAdminController.getInstance();
-		Optional<SystemAdmin> optionalAdmin = controller.findByUsername(em, username);
+		Optional<SystemAdmin> optionalAdmin = controller.findByUsername(username);
 		if (optionalAdmin.isPresent()) {
 			SystemAdmin admin = optionalAdmin.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();

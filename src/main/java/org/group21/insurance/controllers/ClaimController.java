@@ -1,10 +1,12 @@
 package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
+import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.criteria.CriteriaBuilder;
 import jakarta.persistence.criteria.CriteriaQuery;
 import org.group21.insurance.models.Claim;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 
 import java.util.Collections;
 import java.util.List;
@@ -24,13 +26,19 @@ public class ClaimController implements GenericController<Claim> {
 	}
 	
 	@Override
-	public Optional<Claim> read(EntityManager em, String claimId) {
-		return Optional.ofNullable(em.find(Claim.class, claimId));
+	public Optional<Claim> read(String claimId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			return Optional.ofNullable(em.find(Claim.class, claimId));
+		}
 	}
 	
 	@Override
-	public List<Claim> readAll(EntityManager em) {
-		try {
+	public List<Claim> readAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Claim> cq = cb.createQuery(Claim.class);
 			cq.from(Claim.class);
@@ -41,41 +49,41 @@ public class ClaimController implements GenericController<Claim> {
 	}
 	
 	@Override
-	public void create(EntityManager em, Claim c) {
-		if (!em.contains(c)) {
-			c = em.merge(c);
-		}
+	public void create(Claim c) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.persist(c);
+			em.getTransaction().commit();
 		}
-		em.persist(c);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void update(EntityManager em, Claim c) {
-		if (!em.contains(c)) {
-			c = em.merge(c);
-		}
+	public void update(Claim c) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.merge(c);
+			em.getTransaction().commit();
 		}
-		em.persist(c);
-		em.getTransaction().commit();
 	}
 	
 	@Override
-	public void delete(EntityManager em, Claim c) {
-		if (!em.contains(c)) {
-			c = em.merge(c);
-		}
+	public void delete(Claim c) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
-		if (!em.getTransaction().isActive()) {
-			em.getTransaction().begin();
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.remove(c);
+			em.getTransaction().commit();
 		}
-		em.remove(c);
-		em.getTransaction().commit();
 	}
 }

@@ -2,8 +2,8 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.models.BankingInfo;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.util.ArrayList;
@@ -14,41 +14,38 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class BankingInfoControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private BankingInfoController biController;
-	private final List<BankingInfo> createdEntities = new ArrayList<>();
+	private List<BankingInfo> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		if (emf.isOpen()) {
-			emf.close();
-		}
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
 	void setUp() {
 		em = emf.createEntityManager();
 		biController = BankingInfoController.getInstance();
+		createdEntities = new ArrayList<>();
 	}
 	
 	@AfterEach
 	void tearDown() {
-		em.getTransaction().begin(); // Start a transaction
-		for (BankingInfo entity : createdEntities) {
-			BankingInfo managedEntity = em.merge(entity); // Merge the entity back into the persistence context
-			em.remove(managedEntity); // Remove the entity
-		}
-		em.getTransaction().commit(); // Commit the transaction
-		createdEntities.clear(); // Clear the list for the next test
-		if (em.isOpen()) {
-			em.close();
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin(); // Start a transaction
+			for (BankingInfo entity : createdEntities) {
+				BankingInfo managedEntity = em.merge(entity); // Merge the entity back into the persistence context
+				em.remove(managedEntity); // Remove the entity
+			}
+			em.getTransaction().commit(); // Commit the transaction
+			createdEntities.clear(); // Clear the list for the next test
 		}
 	}
 	
@@ -59,7 +56,7 @@ class BankingInfoControllerTest {
 		bi.setAccountNumber("1234567890");
 		bi.setBank("Bank of America");
 		bi.setName("John Doe");
-		biController.create(em, bi);
+		biController.create(bi);
 		
 		// Add the created entity to the list of created entities
 		createdEntities.add(bi);
@@ -81,7 +78,7 @@ class BankingInfoControllerTest {
 		BankingInfo savedBi = createAndPersist();
 		
 		// Read the BankingInfo using its ID
-		Optional<BankingInfo> optionalBi = biController.read(em, savedBi.getAccountNumber());
+		Optional<BankingInfo> optionalBi = biController.read(savedBi.getAccountNumber());
 		
 		// Assert that the optionalBi is present
 		assertTrue(optionalBi.isPresent());
@@ -103,7 +100,7 @@ class BankingInfoControllerTest {
 		BankingInfo bi3 = createAndPersist();
 		
 		// Read all BankingInfo entities
-		List<BankingInfo> bankingInfoList = biController.readAll(em);
+		List<BankingInfo> bankingInfoList = biController.readAll();
 		
 		// Count the number of entities created during the test
 		int expectedSize = 3; // Initial expected size
@@ -126,7 +123,7 @@ class BankingInfoControllerTest {
 		// Update the BankingInfo entity
 		savedBi.setBank("UpdatedBank_" + UUID.randomUUID().toString().substring(0, 8));
 		savedBi.setName("UpdatedName_" + UUID.randomUUID().toString().substring(0, 8));
-		biController.update(em, savedBi);
+		biController.update(savedBi);
 		
 		// Retrieve the updated BankingInfo from the database
 		BankingInfo updatedBi = em.find(BankingInfo.class, savedBi.getAccountNumber());
@@ -143,7 +140,7 @@ class BankingInfoControllerTest {
 		BankingInfo savedBi = createAndPersist();
 		
 		// Delete the BankingInfo entity
-		biController.delete(em, savedBi);
+		biController.delete(savedBi);
 		
 		// Try to retrieve the deleted BankingInfo from the database
 		BankingInfo deletedBi = em.find(BankingInfo.class, savedBi.getAccountNumber());

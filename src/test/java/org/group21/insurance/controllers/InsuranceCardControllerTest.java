@@ -2,10 +2,10 @@ package org.group21.insurance.controllers;
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
-import jakarta.persistence.Persistence;
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.models.Beneficiary;
 import org.group21.insurance.models.InsuranceCard;
+import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import org.junit.jupiter.api.*;
 
 import java.time.LocalDate;
@@ -17,22 +17,19 @@ import java.util.UUID;
 import static org.junit.jupiter.api.Assertions.*;
 
 class InsuranceCardControllerTest {
-	private static final String PERSISTENCE_UNIT_NAME = "insurance";
 	private static EntityManagerFactory emf;
-	private static EntityManager em;
+	private EntityManager em;
 	private InsuranceCardController icController;
 	private List<Object> createdEntities;
 	
 	@BeforeAll
 	static void setUpAll() {
-		emf = Persistence.createEntityManagerFactory(PERSISTENCE_UNIT_NAME);
+		emf = EntityManagerFactorySingleton.getInstance();
 	}
 	
 	@AfterAll
 	static void tearDownAll() {
-		if (emf.isOpen()) {
-			emf.close();
-		}
+		EntityManagerFactorySingleton.close();
 	}
 	
 	@BeforeEach
@@ -44,26 +41,23 @@ class InsuranceCardControllerTest {
 	
 	@AfterEach
 	void tearDown() {
-		em.getTransaction().begin();
-		for (Object entity : createdEntities) {
-			if (entity instanceof InsuranceCard) {
-				InsuranceCard ic = (InsuranceCard) entity;
-				InsuranceCard found = em.find(InsuranceCard.class, ic.getCardNumber());
-				if (found != null) {
-					em.remove(found);
-				}
-			} else if (entity instanceof Beneficiary) {
-				Beneficiary beneficiary = (Beneficiary) entity;
-				Beneficiary found = em.find(Beneficiary.class, beneficiary.getCustomerId());
-				if (found != null) {
-					em.remove(found);
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (Object entity : createdEntities) {
+				if (entity instanceof InsuranceCard ic) {
+					InsuranceCard found = em.find(InsuranceCard.class, ic.getCardNumber());
+					if (found != null) {
+						em.remove(found);
+					}
+				} else if (entity instanceof Beneficiary beneficiary) {
+					Beneficiary found = em.find(Beneficiary.class, beneficiary.getCustomerId());
+					if (found != null) {
+						em.remove(found);
+					}
 				}
 			}
-		}
-		em.getTransaction().commit();
-		createdEntities.clear();
-		if (em.isOpen()) {
-			em.close();
+			em.getTransaction().commit();
+			createdEntities.clear();
 		}
 	}
 	
@@ -89,7 +83,7 @@ class InsuranceCardControllerTest {
 		ic.setExpirationDate(LocalDate.now());
 		ic.setCardHolder(testBeneficiary);
 		
-		icController.create(em, ic);
+		icController.create(ic);
 		
 		createdEntities.add(ic);
 		
@@ -106,7 +100,7 @@ class InsuranceCardControllerTest {
 	void read() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		Optional<InsuranceCard> optionalIc = icController.read(em, savedIc.getCardNumber());
+		Optional<InsuranceCard> optionalIc = icController.read(savedIc.getCardNumber());
 		
 		assertTrue(optionalIc.isPresent());
 		
@@ -123,7 +117,7 @@ class InsuranceCardControllerTest {
 		InsuranceCard ic2 = createAndPersist();
 		InsuranceCard ic3 = createAndPersist();
 		
-		List<InsuranceCard> insuranceCards = icController.readAll(em);
+		List<InsuranceCard> insuranceCards = icController.readAll();
 		
 		int expectedSize = 6; // Initial expected size
 		
@@ -142,7 +136,7 @@ class InsuranceCardControllerTest {
 		InsuranceCard savedIc = createAndPersist();
 		
 		savedIc.setExpirationDate(LocalDate.now().plusDays(1));
-		icController.update(em, savedIc);
+		icController.update(savedIc);
 		
 		InsuranceCard updatedIc = em.find(InsuranceCard.class, savedIc.getCardNumber());
 		
@@ -156,7 +150,7 @@ class InsuranceCardControllerTest {
 	void delete() {
 		InsuranceCard savedIc = createAndPersist();
 		
-		icController.delete(em, savedIc);
+		icController.delete(savedIc);
 		
 		InsuranceCard deletedIc = em.find(InsuranceCard.class, savedIc.getCardNumber());
 		

@@ -1,6 +1,5 @@
 package org.group21.insurance.authentication;
 
-import jakarta.persistence.EntityManager;
 import org.group21.insurance.controllers.BeneficiaryController;
 import org.group21.insurance.exceptions.UserNotAuthenticatedException;
 import org.group21.insurance.exceptions.UserNotFoundException;
@@ -11,9 +10,9 @@ import java.util.Optional;
 public class PolicyHolderLogInHandler extends LogInHandler<Beneficiary> {
 	
 	@Override
-	public Beneficiary getUser(EntityManager em, String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
+	public Beneficiary getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		BeneficiaryController controller = BeneficiaryController.getInstance();
-		Optional<Beneficiary> optionalPh = controller.findByUsername(em, username);
+		Optional<Beneficiary> optionalPh = controller.findByUsername(username);
 		if (optionalPh.isPresent()) {
 			Beneficiary ph = optionalPh.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
