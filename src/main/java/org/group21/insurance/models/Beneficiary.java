@@ -27,16 +27,19 @@ public class Beneficiary extends Customer implements Serializable {
 	@JoinColumn(name = "policy_owner_id", referencedColumnName = "customer_id")
 	private PolicyOwner policyOwner;
 	
+	@Column(name = "insurance_rate")
+	private double insuranceRate;
+	
 	@Column(name = "is_policy_holder", nullable = false)
 	private boolean isPolicyHolder;
 	
 	public Beneficiary() {
 		super();
 	}
-
+	
 	public Beneficiary(String id, String username, String hashedPassword, boolean isPolicyHolder) {
-			super(id, username, hashedPassword);
-			this.isPolicyHolder = isPolicyHolder;
+		super(id, username, hashedPassword);
+		this.isPolicyHolder = isPolicyHolder;
 	}
 	
 	public InsuranceCard getInsuranceCard() {
@@ -95,5 +98,17 @@ public class Beneficiary extends Customer implements Serializable {
 	
 	public void setIsPolicyHolder(boolean policyHolder) {
 		isPolicyHolder = policyHolder;
+	}
+	
+	public double getInsuranceRate() {
+		return insuranceRate;
+	}
+	
+	public void setInsuranceRate(double insuranceRate) {
+		if (!isPolicyHolder) {
+			this.insuranceRate = getPolicyHolder().getInsuranceRate() * 0.6;
+		} else {
+			this.insuranceRate = insuranceRate;
+		}
 	}
 }

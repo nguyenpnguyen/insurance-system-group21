@@ -18,6 +18,8 @@ public class App extends Application {
 	}
 	
 	public static void main(String[] args) {
+		
+		// Close EntityManagerFactory when the application is closed
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			EntityManagerFactorySingleton.close();
 			System.out.println("Closing EntityManagerFactory");
