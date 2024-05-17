@@ -104,12 +104,17 @@ public class Beneficiary extends Customer implements Serializable {
 		return insuranceRate;
 	}
 	
-	public void setInsuranceRate(long insuranceRate) {
+	public void setInsuranceRate() {
 		// Insurance rate for dependents is 60% of the policy holder's insurance rate
 		if (!isPolicyHolder) {
 			this.insuranceRate = Math.round(getPolicyHolder().getInsuranceRate() * 0.6);
-		} else {
+		}
+	}
+	
+	public void setInsuranceRate(long insuranceRate) {
+		if (isPolicyHolder) {
 			this.insuranceRate = insuranceRate;
 		}
 	}
 }
+
