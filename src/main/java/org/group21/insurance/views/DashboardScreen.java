@@ -21,6 +21,7 @@ import org.group21.insurance.models.*;
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 public class DashboardScreen extends Application {
@@ -105,7 +106,6 @@ public class DashboardScreen extends Application {
         return header;
     }
 
-
     private VBox createSidebar(Stage stage, BorderPane root) {
         VBox sidebar = new VBox();
         sidebar.setStyle("-fx-background-color: #ffffff; -fx-border-color: grey; -fx-border-width: 0 2 0 0; -fx-padding: 0; -fx-min-width: 150px;");
@@ -121,7 +121,6 @@ public class DashboardScreen extends Application {
         dashboardBtn.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
         dependentBtn.setOnAction(e -> root.setCenter(new Label("Content for Dependent")));
 
-
         claimBtn.setOnAction(e -> {
             TableView claimTable = createClaimTable(root);
             Button addClaimBtn = new Button("Add Claim");
@@ -133,7 +132,7 @@ public class DashboardScreen extends Application {
                 root.setRight(vbox);
                 addClaimBtn.setOnAction(e2 -> {
                     root.setRight(null);
-                    root.setCenter(addNewClaimForm());
+                    root.setCenter(addNewClaimForm(root, claimTable, vbox));
                 });
             }
         });
@@ -449,7 +448,7 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private static GridPane addNewClaimForm(){
+    private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table, VBox addClaimBtn){
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -478,25 +477,63 @@ public class DashboardScreen extends Application {
         gridPane.add(insuranceCardLabel, 0, 2);
         gridPane.add(insuranceCardField, 1, 2);
 
+        Label uploadLabel = new Label("Upload Document:");
         Button uploadButton = new Button("Upload PDF");
-        gridPane.add(uploadButton, 0, 3);
+        Label fileNamesLabel = new Label("");
+
+        gridPane.add(uploadLabel, 0, 3);
+        gridPane.add(uploadButton, 1, 3);
+        ListView<HBox> fileListView = new ListView<>();
+        gridPane.add(fileListView, 1, 4);
 
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
 
         // Set the action for the upload button
         uploadButton.setOnAction(e -> {
-            File selectedFile = fileChooser.showOpenDialog(null);
-            if (selectedFile != null) {
-                // Handle the selected file. For example, you can print its path:
-                System.out.println(selectedFile);
+            List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
+            if (selectedFiles != null) {
+                StringBuilder fileNames = new StringBuilder();
+                for (File file : selectedFiles) {
+                    // Append the name of the file to the fileNames string
+                    fileNames.append(file.getName()).append("\n");
+
+                    HBox fileBox = new HBox();
+
+                    // Create a Label for the file name
+                    Label fileNameLabel = new Label(file.getName());
+                    fileBox.getChildren().add(fileNameLabel);
+
+                    // Create a Button for deleting the file
+                    Button deleteButton = new Button("X");
+                    deleteButton.setOnAction(e2 -> {
+                        // Remove the HBox from the ListView when the delete button is clicked
+                        fileListView.getItems().remove(fileBox);
+                    });
+                    fileBox.getChildren().add(deleteButton);
+
+                    // Add the HBox to the ListView
+                    fileListView.getItems().add(fileBox);
+                }
+
+                // Set the text of the fileNamesLabel to the names of the selected files
+                fileNamesLabel.setText(fileNames.toString());
+
             } else {
                 System.out.println("File selection cancelled.");
             }
         });
 
         Button submitButton = new Button("Submit");
-        gridPane.add(submitButton, 1, 4);
+        gridPane.add(submitButton, 1, 5);
+
+        submitButton.setOnAction(e -> {
+            //TODO: Add new Claim to the database, then make the database down by hosting
+            root.setCenter(table);
+            root.setRight(addClaimBtn);
+        });
+
+
 
         return gridPane;
     }
