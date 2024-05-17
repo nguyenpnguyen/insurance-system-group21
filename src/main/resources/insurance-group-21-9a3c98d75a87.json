@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "insurance-group-21",
+  "private_key_id": "9a3c98d75a876e671fe63df68c9d49b71fc463d4",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQDtoMqvuQN9HgPy\nJpZczJCp5TWCxbPzj7pt2auijwG7PtGKLU/zlo45SEzNiDH/0di2I1KRzC0/Gp/Z\nnEiQppwyrqQYSQreWylxKd4mJIWT4tFzOZePG8qWBiz/5onYu/+BpQdpUZMiwyMU\nyZ7Z3fcVIssb+4Slco9T7PnwpxeVe/op8D0Mb4UQDZWBNfpP1ug8zFx3fzJYjPtA\nFCKs15eSDz4FE/+kj+sUSw/r2Ah68Jto3W+hIq7ZlnJfvxSP8LGiSSxdhyUHAket\n4nanhuXX0DIIXc1us4F+6s+SWbHxs0/wnXGTWO7V+mP3MTpMom2iE9Fet0Jgkkky\nxPfMAsErAgMBAAECggEAOW4V7lg5pqB9daWry2vJPrZds2hSsHe5J9lmqNgFJBrv\ni4SeARIO93sozLew1dICnSp2RzRgbxLhNTeXNhZ+Q6V/lTr5/Hltz6K9xNwoyHAW\nDNILdhPSZ2XAtGwkPpRZER0waFzFwa4FqX18/cyubZZGHlIwYcgJKdBpK6dGhOLF\nf4B+Y6LX/A7S5KgXCDwUQwjVuWycMZjdc/Mbry+s2VOTXG6QEmn+5oDIazaFXuSZ\nz6obTM+ulRC5jpXwqmUmPxDFIn4HNtblvpBQgcyrKjOxRpE9EW78LdfJBaUhAe/f\ny6nVMBxpSuWYUc07dVEApreuYQMuPal1wD7LxotWqQKBgQD4Ce3XOaC+pZdNSB3a\n0NvxanOq5+lhiU8Jc3iZVOX+T7u6xPrv16lps6qqqDj9de9qoP8zRJXMAb5SvfNi\nlpJ4Q1HWhsEBJ2DXoqHEbCS4H9IfKpn6S1wesH3P6wlIDma6L6fyrJn7RxQMN/9p\nr24gXBwc1eWue/o+8gLa1pf9/wKBgQD1QVIY863CzAn6IjEp+vZNINjJUNYiCiM+\nOBzDP98sNbJDW/7vTDZgRK+8M/oPw8GtGXVbZSYurqxL7cSpECTqzQiPurJk5eI9\ni198Ij9t831MWkHmMvhCSjdK2fL/y5cp6G8jW2oPB5qqcdTPlkNZi5dC3hmP3vlh\nhRGiCUuU1QKBgQCBbfz0MBgXI6V+KEGb6xy6LwhIiFeaE+JwVhb6O/j/6W9WmG8x\nNGIszBokjz+d0yqpg3VntURNfiNoXcJhEZ1AsDBGN28DQR8hprWvH5dRlRk6Niq/\nFw/s27/q/QSM2ybzxOZolXSMUJy/e4EGDwryS95Hlb4SfJMqwXKH6y7I1QKBgQDr\nF1s/6c2FLZret4nTCOqyEitcBm3MoVUZHiaMDpy5vxsKsJOWBMMW0qB10okANZBg\ngkfZfQL1uqAUBG3/9Sa+IB310GuShj2w6vlzf0y387AG0Xnb1L3epU+NI5BoHFrh\nZBmslcL7dzmN6qGo/wu+OS2cflOYco8wKKM3ZJubpQKBgHxn1yESnjHfz1Oqay7L\nNsRNkRBvkLbZzp8RkssjwSiGuW1hHDVSXKO4PvZtIK9sF+9IeU5Sj2idnFMXDdtq\n0KN0vYEMSOQY9/0He2Z39mVkYBf1wkbczWepqolpDnQhRapyc//wnZME2B1AIcxs\n/39f1WcQZ+7hd5EC8kJEp6As\n-----END PRIVATE KEY-----\n",
+  "client_email": "javafx-app@insurance-group-21.iam.gserviceaccount.com",
+  "client_id": "117439228961751515817",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/javafx-app%40insurance-group-21.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}
