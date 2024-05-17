@@ -29,16 +29,29 @@ public class DocumentController implements GenericController<Document> {
 		return instance;
 	}
 	
-	public Optional<Document> findByFileName(EntityManager em, String fileName) {
+	public Optional<Document> findByFileName(EntityManager em, String fileName) throws GeneralSecurityException, IOException {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(Document.class);
 		cq.from(Document.class);
-		return em.createQuery(cq).getResultList().stream().filter(d -> d.getFileName().equals(fileName)).findFirst();
+		
+		Optional<Document> optionalDocument = em.createQuery(cq).getResultList().stream().filter(d -> d.getFileName().equals(fileName)).findFirst();
+		if (optionalDocument.isPresent() && fileExistsInDrive(optionalDocument.get().getDocumentId())) {
+			return optionalDocument;
+		}
+		return Optional.empty();
 	}
 	
 	@Override
 	public Optional<Document> read(EntityManager em, String documentId) {
-		return Optional.ofNullable(em.find(Document.class, documentId));
+		Optional<Document> optionalDocument = Optional.ofNullable(em.find(Document.class, documentId));
+		try {
+			if (optionalDocument.isPresent() && fileExistsInDrive(documentId)) {
+				return optionalDocument;
+			}
+		} catch (GeneralSecurityException | IOException e) {
+			System.err.println("An error occurred during file existence check: " + e.getMessage());
+		}
+		return Optional.empty();
 	}
 	
 	@Override
@@ -46,7 +59,17 @@ public class DocumentController implements GenericController<Document> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Document> cq = cb.createQuery(Document.class);
 		cq.from(Document.class);
-		return em.createQuery(cq).getResultList();
+		List<Document> documentListFromDb = em.createQuery(cq).getResultList();
+		for (Document document : documentListFromDb) {
+			try {
+				if (!fileExistsInDrive(document.getDocumentId())) {
+					delete(em, document);
+				}
+			} catch (GeneralSecurityException | IOException e) {
+				System.err.println("An error occurred during file existence check: " + e.getMessage());
+			}
+		}
+		return documentListFromDb;
 	}
 	
 	@Override
@@ -91,86 +114,50 @@ public class DocumentController implements GenericController<Document> {
 	}
 	
 	public void uploadDocument(EntityManager em, File filePath, Claim claim) throws IOException, GeneralSecurityException {
-		try {
-			Drive service = getDriveService();
-			String fileId = uploadFile(service, filePath);
-			
-			String fileName = filePath.getName();
-			
-			Document document = new Document();
-			document.setDocumentId(fileId);
-			document.setClaim(claim);
-			document.setFileName(fileName);
-			
-			create(em, document);
-		} catch (IOException e) {
-			// Handle IOException (e.g., logging, user notification)
-			System.err.println("An error occurred during file upload: " + e.getMessage());
-			throw e;
-		} catch (GeneralSecurityException e) {
-			// Handle GeneralSecurityException (e.g., logging, user notification)
-			System.err.println("A security error occurred: " + e.getMessage());
-			throw e;
-		}
+		Drive service = getDriveService();
+		String fileId = uploadFile(service, filePath);
+		
+		String fileName = filePath.getName();
+		
+		Document document = new Document();
+		document.setDocumentId(fileId);
+		document.setClaim(claim);
+		document.setFileName(fileName);
+		
+		create(em, document);
 	}
 	
 	public void downloadDocument(EntityManager em, String documentId, String destinationPath) throws IOException, GeneralSecurityException {
-		try {
-			Drive service = getDriveService();
-			Document document = read(em, documentId).orElseThrow();
-			
-			String fileName = document.getFileName();
-			
-			downloadFile(service, documentId, destinationPath + separator + fileName);
-		} catch (IOException e) {
-			// Handle IOException (e.g., logging, user notification)
-			System.err.println("An error occurred during file download: " + e.getMessage());
-			throw e;
-		} catch (GeneralSecurityException e) {
-			// Handle GeneralSecurityException (e.g., logging, user notification)
-			System.err.println("A security error occurred: " + e.getMessage());
-			throw e;
-		}
+		Drive service = getDriveService();
+		Document document = read(em, documentId).orElseThrow();
+		
+		String fileName = document.getFileName();
+		
+		downloadFile(service, documentId, destinationPath + separator + fileName);
 	}
 	
 	public void deleteDocument(EntityManager em, String documentId) throws IOException, GeneralSecurityException {
-		try {
-			Drive service = getDriveService();
-			Document document = read(em, documentId).orElseThrow();
-			
-			deleteFile(service, documentId);
-			delete(em, document);
-		} catch (IOException e) {
-			// Handle IOException (e.g., logging, user notification)
-			System.err.println("An error occurred during file deletion: " + e.getMessage());
-			throw e;
-		} catch (GeneralSecurityException e) {
-			// Handle GeneralSecurityException (e.g., logging, user notification)
-			System.err.println("A security error occurred: " + e.getMessage());
-			throw e;
-		}
+		Drive service = getDriveService();
+		Document document = read(em, documentId).orElseThrow();
+		
+		deleteFile(service, documentId);
+		delete(em, document);
 	}
 	
 	public void replaceDocument(EntityManager em, String documentId, File newFilePath) throws IOException, GeneralSecurityException {
-		try {
-			Drive service = getDriveService();
-			Document document = read(em, documentId).orElseThrow();
-			
-			String fileId = document.getDocumentId();
-			
-			String newFileId = replaceFile(service, fileId, newFilePath);
-			
-			document.setDocumentId(newFileId);
-			document.setFileName(newFilePath.getName());
-			update(em, document);
-		} catch (IOException e) {
-			// Handle IOException (e.g., logging, user notification)
-			System.err.println("An error occurred during file replacement: " + e.getMessage());
-			throw e;
-		} catch (GeneralSecurityException e) {
-			// Handle GeneralSecurityException (e.g., logging, user notification)
-			System.err.println("A security error occurred: " + e.getMessage());
-			throw e;
-		}
+		Drive service = getDriveService();
+		Document document = read(em, documentId).orElseThrow();
+		
+		String fileId = document.getDocumentId();
+		
+		String newFileId = replaceFile(service, fileId, newFilePath);
+		
+		document.setDocumentId(newFileId);
+		document.setFileName(newFilePath.getName());
+		update(em, document);
+	}
+	
+	private boolean fileExistsInDrive(String documentId) throws GeneralSecurityException, IOException {
+		return !findFileById(getDriveService(), documentId).isEmpty();
 	}
 }
