@@ -126,11 +126,11 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
-	public void uploadDocument(File filePath, Claim claim) throws IOException, GeneralSecurityException {
+	public void uploadDocument(File file, Claim claim) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
-		String fileId = uploadFile(service, filePath);
+		String fileId = uploadFile(service, file);
 		
-		String fileName = filePath.getName();
+		String fileName = file.getName();
 		
 		Document document = new Document();
 		document.setDocumentId(fileId);
@@ -157,16 +157,16 @@ public class DocumentController implements GenericController<Document> {
 		delete(document);
 	}
 	
-	public void replaceDocument(String documentId, File newFilePath) throws IOException, GeneralSecurityException {
+	public void replaceDocument(String documentId, File newFile) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		Document document = read(documentId).orElseThrow();
 		
 		String fileId = document.getDocumentId();
 		
-		String newFileId = replaceFile(service, fileId, newFilePath);
+		String newFileId = replaceFile(service, fileId, newFile);
 		
 		document.setDocumentId(newFileId);
-		document.setFileName(newFilePath.getName());
+		document.setFileName(newFile.getName());
 		update(document);
 	}
 	
