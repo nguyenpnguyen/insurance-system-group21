@@ -9,10 +9,8 @@ import java.util.Objects;
 @Table(name = "document_list")
 public class Document implements Serializable {
 	@Id
-	@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "document_list_seq")
-	@SequenceGenerator(name = "document_list_seq", sequenceName = "document_list_seq", allocationSize = 1)
 	@Column(name = "document_id", nullable = false)
-	private long documentId;
+	private String documentId;
 	
 	@ManyToOne(targetEntity = Claim.class)
 	@JoinColumn(name = "claim_id", referencedColumnName = "claim_id")
@@ -21,20 +19,21 @@ public class Document implements Serializable {
 	@Column(name = "file_name")
 	private String fileName;
 	
-	@Column(name = "file_url")
-	private String fileUrl;
-	
 	public Document() {
 	}
 	
-	public Document(Claim claim, String fileName, String fileUrl) {
+	public Document(String documentId, Claim claim, String fileName) {
+		this.documentId = documentId;
 		this.claim = claim;
 		this.fileName = fileName;
-		this.fileUrl = fileUrl;
 	}
 	
-	public long getDocumentId() {
+	public String getDocumentId() {
 		return documentId;
+	}
+	
+	public void setDocumentId(String documentId) {
+		this.documentId = documentId;
 	}
 	
 	public Claim getClaim() {
@@ -53,20 +52,12 @@ public class Document implements Serializable {
 		this.fileName = fileName;
 	}
 	
-	public String getFileUrl() {
-		return fileUrl;
-	}
-	
-	public void setFileUrl(String fileUrl) {
-		this.fileUrl = fileUrl;
-	}
-	
 	@Override
 	public boolean equals(Object o) {
 		if (this == o) return true;
 		if (o == null || getClass() != o.getClass()) return false;
 		Document document = (Document) o;
-		return getDocumentId() == document.getDocumentId();
+		return Objects.equals(getDocumentId(), document.getDocumentId());
 	}
 	
 	@Override

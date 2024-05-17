@@ -34,7 +34,7 @@ public class FileHandler {
 				.build();
 	}
 	
-	public static void uploadFile(Drive service, java.io.File filePath) throws IOException {
+	public static String uploadFile(Drive service, java.io.File filePath) throws IOException {
 		File fileMetadata = new File();
 		fileMetadata.setMimeType("application/pdf");
 		
@@ -44,6 +44,7 @@ public class FileHandler {
 				.setFields("id")
 				.execute();
 		System.out.println("File ID: " + file.getId());
+		return file.getId();
 	}
 	
 	public static List<String> listFiles(Drive service) throws IOException {
@@ -73,7 +74,7 @@ public class FileHandler {
 		}
 	}
 	
-	public static List<File> findFilesByIds(Drive service, List<String> fileIds) throws IOException {
+	public static List<File> findFilesByIds(Drive service, List<String> fileIds) {
 		List<File> files = new ArrayList<>();
 		for (String fileId : fileIds) {
 			try {
@@ -82,7 +83,6 @@ public class FileHandler {
 			} catch (IOException e) {
 				System.err.println("An error occurred while retrieving file with ID " + fileId + ": " + e);
 				// Instead of throwing an error, continue to the next file
-				continue;
 			}
 		}
 		return files;
@@ -107,5 +107,24 @@ public class FileHandler {
 			System.err.println("An error occurred during file deletion: " + e);
 			throw e;
 		}
+	}
+	
+	public static String replaceFile(Drive service, String fileIdToReplace, java.io.File newFilePath) throws IOException {
+		// Delete the existing file
+		deleteFile(service, fileIdToReplace);
+		
+		// Upload the new file and return its ID
+		return uploadFile(service, newFilePath);
+	}
+	
+	public static File changeFileName(Drive service, String fileId, String newName) throws IOException {
+		// Retrieve the existing file
+		File file = service.files().get(fileId).execute();
+		
+		// Set the new name
+		file.setName(newName);
+		
+		// Update the file on Google Drive
+		return service.files().update(fileId, file).execute();
 	}
 }
