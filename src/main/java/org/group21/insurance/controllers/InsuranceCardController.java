@@ -116,4 +116,22 @@ public class InsuranceCardController implements GenericController<InsuranceCard>
 			em.getTransaction().commit();
 		}
 	}
+	
+	public InsuranceCard findCardByCardHolder(Beneficiary cardHolder) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<InsuranceCard> cq = cb.createQuery(InsuranceCard.class);
+			cq.from(InsuranceCard.class);
+			List<InsuranceCard> insuranceCards = em.createQuery(cq).getResultList();
+			
+			for (InsuranceCard ic : insuranceCards) {
+				if (ic.getCardHolder().equals(cardHolder)) {
+					return ic;
+				}
+			}
+			return null;
+		}
+	}
 }
