@@ -58,12 +58,12 @@ public class DashboardScreen extends Application {
         Region spacer = new Region();
         HBox.setHgrow(spacer, Priority.ALWAYS);
 
-        // Create a new button with "Hello Alex"
-        Button helloAlexButton = new Button("Hello Alex");
-        helloAlexButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;");
-        helloAlexButton.setOnMouseEntered(e -> helloAlexButton.setStyle("-fx-background-color: #dddddd; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
-        helloAlexButton.setOnMouseExited(e -> helloAlexButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
-        helloAlexButton.setMaxHeight(Double.MAX_VALUE);
+        Button helloUserButton = new Button("Hello Alex");
+        // TODO: Change this to Hello User First Name
+        helloUserButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;");
+        helloUserButton.setOnMouseEntered(e -> helloUserButton.setStyle("-fx-background-color: #dddddd; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
+        helloUserButton.setOnMouseExited(e -> helloUserButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
+        helloUserButton.setMaxHeight(Double.MAX_VALUE);
 
         // Create a context menu (popup) with "Profile" and "Logout" options
         ContextMenu contextMenu = new ContextMenu();
@@ -74,10 +74,10 @@ public class DashboardScreen extends Application {
         contextMenu.getItems().addAll(profileItem, logoutItem);
 
         // Set the context menu to the button
-        helloAlexButton.setContextMenu(contextMenu);
+        helloUserButton.setContextMenu(contextMenu);
 
         // Show the context menu when the button is clicked
-        helloAlexButton.setOnMouseClicked(e -> contextMenu.show(helloAlexButton, e.getScreenX(), e.getScreenY()));
+        helloUserButton.setOnMouseClicked(e -> contextMenu.show(helloUserButton, e.getScreenX(), e.getScreenY()));
 
         // Set the action for the "Logout" menu item
         logoutItem.setOnAction(e -> {
@@ -92,11 +92,11 @@ public class DashboardScreen extends Application {
 
         // Set the action for the "Profile" menu item
         profileItem.setOnAction(e -> {
-            GridPane profilePane = showBeneficiaryProfile();
+            GridPane profilePane = showUserProfile();
             root.setCenter(profilePane);
         });
 
-        header.getChildren().addAll(welcomeText, spacer, helloAlexButton);
+        header.getChildren().addAll(welcomeText, spacer, helloUserButton);
 
         DropShadow ds = new DropShadow();
         ds.setOffsetY(3.0);
@@ -117,17 +117,26 @@ public class DashboardScreen extends Application {
         Button insuranceBtn = createSectionButton("Insurance Card");
         Button paidBtn = createSectionButton("Payment Calculation");
         Button propposedClaimBtn = createSectionButton("Proposed Claim");
+        Button addClaimBtn = new Button("Add Claim");
+        Button addInsuranceBtn = new Button("Add Insurance Card");
+        Button addBeneficiaryBtn = new Button("Add Beneficiary");
 
-        dashboardBtn.setOnAction(e -> root.setCenter(new Label("Content for Dashboard")));
-        dependentBtn.setOnAction(e -> root.setCenter(new Label("Content for Dependent")));
-
+        dashboardBtn.setOnAction(e -> {
+            root.setCenter(new Label("Content for Dashboard"));
+            root.setRight(null);
+        });
+        dependentBtn.setOnAction(e -> {
+            TableView beneficiaryTable = createBeneficiaryTable(root);
+            root.setCenter(beneficiaryTable);
+            root.setRight(null);
+        });
         claimBtn.setOnAction(e -> {
             TableView claimTable = createClaimTable(root);
-            Button addClaimBtn = new Button("Add Claim");
+            root.setCenter(claimTable);
+
             VBox vbox = new VBox(addClaimBtn);
             vbox.setAlignment(Pos.CENTER);
 
-            root.setCenter(claimTable);
             if(this.userRole != "Dependent"){
                 root.setRight(vbox);
                 addClaimBtn.setOnAction(e2 -> {
@@ -140,14 +149,37 @@ public class DashboardScreen extends Application {
         beneficiaryBtn.setOnAction(e -> {
             TableView beneficiaryTable = createBeneficiaryTable(root);
             root.setCenter(beneficiaryTable);
+
+            VBox vbox = new VBox(addBeneficiaryBtn);
+            vbox.setAlignment(Pos.CENTER);
+
+            root.setRight(vbox);
+            addBeneficiaryBtn.setOnAction(e2 -> {
+                root.setRight(null);
+                root.setCenter(addNewBeneficiaryForm(root, beneficiaryTable, vbox));
+            });
         });
 
         insuranceBtn.setOnAction(e -> {
             TableView insuranceTable = createInsuranceTable(root);
             root.setCenter(insuranceTable);
+
+            addInsuranceBtn.setMaxHeight(Double.MAX_VALUE);
+            VBox vbox = new VBox(addInsuranceBtn);
+            vbox.setAlignment(Pos.CENTER);
+            vbox.setMaxHeight(Double.MAX_VALUE);
+
+            root.setRight(vbox);
+            addInsuranceBtn.setOnAction(e2 -> {
+                root.setRight(null);
+                root.setCenter(addNewInsuranceCardForm(root, insuranceTable, vbox));
+            });
         });
 
-        paidBtn.setOnAction(e -> root.setCenter(new Label("Payment Content")));
+        paidBtn.setOnAction(e -> {
+            root.setCenter(new Label("Payment Content"));
+            root.setRight(null);
+        });
         propposedClaimBtn.setOnAction(e -> root.setCenter(new Label("Propose Claim action")));
 
         switch (userRole) {
@@ -246,18 +278,6 @@ public class DashboardScreen extends Application {
 
         TableColumn<Claim, String> examDateColumn = new TableColumn<>("Exam Date");
         examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
-//        examDateColumn.setCellFactory(tc -> new TableCell<Claim, String>() {
-//            @Override
-//            protected void updateItem(String item, boolean empty) {
-//                super.updateItem(item, empty);
-//                if (empty) {
-//                    setText(null);
-//                } else {
-//                    setText(item.toString());
-//                    setAlignment(Pos.CENTER);
-//                }
-//            }
-//        });
 
         TableColumn<Claim, String> documentsColumn = new TableColumn<>("Documents");
         documentsColumn.setCellValueFactory(new PropertyValueFactory<>("documents"));
@@ -289,6 +309,7 @@ public class DashboardScreen extends Application {
             root.setCenter(claimPane);
         });
 
+        //TODO: Change this Testing data to the real data from the database
         ObservableList<Claim> claimData = FXCollections.observableArrayList();
         for (int i = 1; i <= 30; i++) {
             Claim claim = new Claim();
@@ -308,11 +329,9 @@ public class DashboardScreen extends Application {
 
         table.setRowFactory(tv -> {
             TableRow<Claim> row = new TableRow<>();
-
             row.setContextMenu(deleteOrUpdateContextMenu);
-
             row.setOnMouseClicked(e -> {
-                if (e.getButton() == MouseButton.SECONDARY && (! row.isEmpty())) {
+                if (e.getButton() == MouseButton.SECONDARY && (! row.isEmpty()) && this.userRole != "Dependent") {
                     deleteOrUpdateContextMenu.show(row, e.getScreenX(), e.getScreenY());
                 } else if (e.getButton() == MouseButton.PRIMARY && (! row.isEmpty())) {
                     Claim clickedClaim = row.getItem();
@@ -417,6 +436,7 @@ public class DashboardScreen extends Application {
             Button saveBtn = new Button("Save");
             gridPane.add(saveBtn, 1, 9);
             saveBtn.setOnAction(e -> {
+                // TODO: Change this to update the claim in the database
                 String updatedUserId = userIdField.getText();
                 String updatedFullName = fullNameField.getText();
                 String updatedRole = roleField.getText();
@@ -430,14 +450,9 @@ public class DashboardScreen extends Application {
                 Claim updatedClaim = new Claim();
                 updatedClaim.setClaimId(updatedUserId);
                 updatedClaim.setClaimDate(LocalDate.now());
-//                updatedClaim.setInsuredPerson(new Beneficiary());
                 updatedClaim.setExamDate(LocalDate.now());
-//                updatedClaim.setInsuranceCard(new InsuranceCard());
-//                updatedClaim.setDocumentList(new ArrayList<>());
-//                updatedClaim.setClaimAmount(new Random().nextInt(1000) + 1);
-//                updatedClaim.setReceiverBankingInfo(new BankingInfo());
 
-
+                // TODO: Replace this byb reloading the table from the database
                 int index = table.getItems().indexOf(claim);
                 if (index != -1) {
                     table.getItems().set(index, updatedClaim);
@@ -448,14 +463,13 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table, VBox addClaimBtn){
+    private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table, VBox addBtn){
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(25, 25, 25, 25));
 
-        // Define column constraints for the GridPane
         ColumnConstraints column1 = new ColumnConstraints();
         column1.setPercentWidth(20);
         ColumnConstraints column2 = new ColumnConstraints();
@@ -489,7 +503,6 @@ public class DashboardScreen extends Application {
         FileChooser fileChooser = new FileChooser();
         fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
 
-        // Set the action for the upload button
         uploadButton.setOnAction(e -> {
             List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
             if (selectedFiles != null) {
@@ -530,10 +543,8 @@ public class DashboardScreen extends Application {
         submitButton.setOnAction(e -> {
             //TODO: Add new Claim to the database, then make the database down by hosting
             root.setCenter(table);
-            root.setRight(addClaimBtn);
+            root.setRight(addBtn);
         });
-
-
 
         return gridPane;
     }
@@ -543,7 +554,7 @@ public class DashboardScreen extends Application {
 
         TableColumn<InsuranceCard, String> cardNumberColumn = new TableColumn<>("Card Number");
         cardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("cardNumber"));
-        cardNumberColumn.setPrefWidth(40);
+        cardNumberColumn.setPrefWidth(100);
         cardNumberColumn.setCellFactory(tc -> new TableCell<InsuranceCard, String>() {
             @Override
             protected void updateItem(String item, boolean empty) {
@@ -566,10 +577,7 @@ public class DashboardScreen extends Application {
         TableColumn<InsuranceCard, String> exprirationColumn = new TableColumn<>("Expiration Date");
         exprirationColumn.setCellValueFactory(new PropertyValueFactory<>("expirationDate"));
 
-        table.getColumns().add(cardNumberColumn);
-        table.getColumns().add(policyOwnerColumn);
-        table.getColumns().add(cardHolderColumn);
-        table.getColumns().add(exprirationColumn);
+        table.getColumns().addAll(cardNumberColumn, policyOwnerColumn, cardHolderColumn, exprirationColumn);
 
         ObservableList<InsuranceCard> insuranceCardData = FXCollections.observableArrayList();
         for (int i = 1; i <= 30; i++) {
@@ -637,6 +645,49 @@ public class DashboardScreen extends Application {
         expirationDateField.setEditable(false);
         gridPane.add(expirationDateLabel, 0, 3);
         gridPane.add(expirationDateField, 1, 3);
+
+        return gridPane;
+    }
+
+    private static GridPane addNewInsuranceCardForm (BorderPane root, TableView<InsuranceCard> table, VBox addBtn){
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(20);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(80);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+        Label cardNumberLabel = new Label("Card Number:");
+        TextField cardNumberField = new TextField();
+        gridPane.add(cardNumberLabel, 0, 0);
+        gridPane.add(cardNumberField, 1, 0);
+
+        Label fullNameLabel = new Label("Full Name:");
+        TextField fullNameField = new TextField();
+        gridPane.add(fullNameLabel, 0, 1);
+        gridPane.add(fullNameField, 1, 1);
+
+        Label insuranceCardLabel = new Label("Policy Holder:");
+        TextField insuranceCardField = new TextField();
+        gridPane.add(insuranceCardLabel, 0, 2);
+        gridPane.add(insuranceCardField, 1, 2);
+
+        Label expirationDateLabel = new Label("Expiration Date:");
+        DatePicker expirationDateField = new DatePicker();
+
+        Button submitButton = new Button("Submit");
+        gridPane.add(submitButton, 1, 3);
+
+        submitButton.setOnAction(e -> {
+            //TODO: Add new Insurance to the database, then make the database down by hosting
+            root.setCenter(table);
+            root.setRight(addBtn);
+        });
 
         return gridPane;
     }
@@ -717,14 +768,13 @@ public class DashboardScreen extends Application {
     }
 
 
-    private GridPane showBeneficiaryProfile() {
+    private GridPane showUserProfile() {
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
         gridPane.setVgap(10);
         gridPane.setPadding(new Insets(25, 25, 25, 25));
 
-        // Define column constraints for the GridPane
         ColumnConstraints column1 = new ColumnConstraints();
         column1.setPercentWidth(15);
         ColumnConstraints column2 = new ColumnConstraints();
@@ -829,6 +879,63 @@ public class DashboardScreen extends Application {
         emailField.setEditable(false);
         gridPane.add(emailLabel, 0, 4);
         gridPane.add(emailField, 1, 4);
+
+        return gridPane;
+    }
+
+    private static GridPane  addNewBeneficiaryForm(BorderPane root, TableView<Beneficiary> beneficiaryTable, VBox vbox){
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(20);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(80);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+        Label beneficiaryFullNameLabel = new Label("Full Name:");
+        TextField beneficiaryFullNameField = new TextField();
+        gridPane.add(beneficiaryFullNameLabel, 0, 0);
+        gridPane.add(beneficiaryFullNameField, 1, 0);
+
+        Label roleLabel = new Label("Role:");
+        TextField roleField = new TextField();
+        gridPane.add(roleLabel, 0, 1);
+        gridPane.add(roleField, 1, 1);
+
+        Label phoneNumberLabel = new Label("Phone Number:");
+        TextField phoneNumberField = new TextField();
+        gridPane.add(phoneNumberLabel, 0, 2);
+        gridPane.add(phoneNumberField, 1, 2);
+
+        Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
+        TextField insuranceCardNumberField = new TextField();
+        gridPane.add(insuranceCardNumberLabel, 0, 3);
+        gridPane.add(insuranceCardNumberField, 1, 3);
+
+        // TODO: Add Insurance Card verification here to check if the insurance card number is valid
+
+        Label addressLabel = new Label("Address:");
+        TextField addressField = new TextField();
+        gridPane.add(addressLabel, 0, 4);
+        gridPane.add(addressField, 1, 4);
+
+        Label emailLabel = new Label("Email:");
+        TextField emailField = new TextField();
+        gridPane.add(emailLabel, 0, 5);
+        gridPane.add(emailField, 1, 5);
+
+        Button submitButton = new Button("Submit");
+        gridPane.add(submitButton, 1, 6);
+
+        submitButton.setOnAction(e -> {
+            // TODO: Create new beneficiary and add to the database, if the user the dependent then add to the beneficiary
+            root.setCenter(beneficiaryTable);
+            root.setRight(vbox);
+        });
 
         return gridPane;
     }
