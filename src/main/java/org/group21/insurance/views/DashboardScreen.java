@@ -16,22 +16,27 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.group21.insurance.models.*;
+import org.group21.insurance.controllers.ClaimController;
+import org.group21.insurance.models.Beneficiary;
+import org.group21.insurance.models.Claim;
+import org.group21.insurance.models.InsuranceCard;
+import org.group21.insurance.models.PolicyOwner;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 
 public class DashboardScreen extends Application {
 	private String userRole;
+	private String userId;
 	private ArrayList<Claim> claimList = new ArrayList<>();
 	private ArrayList<Beneficiary> beneficiaryList = new ArrayList<>();
 	private ArrayList<InsuranceCard> insuranceCardList = new ArrayList<>();
 	
-	public DashboardScreen(Object user, String role) {
+	public DashboardScreen(String userId, String role) {
 		this.userRole = role;
+		this.userId = userId;
 	}
 	
 	@Override
@@ -59,8 +64,7 @@ public class DashboardScreen extends Application {
 		Region spacer = new Region();
 		HBox.setHgrow(spacer, Priority.ALWAYS);
 		
-		Button helloUserButton = new Button("Hello Alex");
-		// TODO: Change this to Hello User First Name
+		Button helloUserButton = new Button("Hello user " + userId);
 		helloUserButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;");
 		helloUserButton.setOnMouseEntered(e -> helloUserButton.setStyle("-fx-background-color: #dddddd; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
 		helloUserButton.setOnMouseExited(e -> helloUserButton.setStyle("-fx-background-color: transparent; -fx-border-width: 0; -fx-border-radius: 0; -fx-background-radius: 0; -fx-padding: 0; -fx-line-spacing: 0;"));
@@ -226,17 +230,17 @@ public class DashboardScreen extends Application {
 		TableColumn<Claim, String> claimDateColumn = new TableColumn<>("Claim Date");
 		claimDateColumn.setCellValueFactory(new PropertyValueFactory<>("claimDate"));
 		
-		TableColumn<Claim, String> beneficiaryColumn = new TableColumn<>("Beneficiary");
-		beneficiaryColumn.setCellValueFactory(new PropertyValueFactory<>("beneficiary"));
+		TableColumn<Claim, String> beneficiaryColumn = new TableColumn<>("Insured Person");
+		beneficiaryColumn.setCellValueFactory(new PropertyValueFactory<>("insuredPerson"));
 		
 		TableColumn<Claim, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card");
-		insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCardNumber"));
+		insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCard"));
 		
 		TableColumn<Claim, String> examDateColumn = new TableColumn<>("Exam Date");
 		examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
 		
 		TableColumn<Claim, String> documentsColumn = new TableColumn<>("Documents");
-		documentsColumn.setCellValueFactory(new PropertyValueFactory<>("documents"));
+		documentsColumn.setCellValueFactory(new PropertyValueFactory<>("document"));
 		
 		TableColumn<Claim, String> claimAmountColumn = new TableColumn<>("Claim Amount");
 		claimAmountColumn.setCellValueFactory(new PropertyValueFactory<>("claimAmount"));
@@ -265,21 +269,12 @@ public class DashboardScreen extends Application {
 			root.setCenter(claimPane);
 		});
 		
-		//TODO: Change this Testing data to the real data from the database
+		ClaimController claimController = ClaimController.getInstance();
+		
+		List<Claim> claims = claimController.readAll();
 		ObservableList<Claim> claimData = FXCollections.observableArrayList();
-		for (int i = 1; i <= 30; i++) {
-			Claim claim = new Claim();
-			claim.setClaimId("ID" + i);
-			claim.setClaimDate(LocalDate.now());
-			claim.setInsuredPerson(new Beneficiary());
-			claim.setExamDate(LocalDate.now());
-			claim.setInsuranceCard(new InsuranceCard());
-			claim.setDocumentList(new ArrayList<>());
-			claim.setClaimAmount(new Random().nextInt(1000) + 1);
-			claim.setReceiverBankingInfo(new BankingInfo());
-//          claim.setStatus(Claim.getClaimStatus.PENDING);
-			claimData.add(claim);
-		}
+		
+		claimData.addAll(claims);
 		
 		table.setItems(claimData);
 		

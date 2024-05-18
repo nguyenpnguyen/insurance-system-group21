@@ -96,11 +96,11 @@ public class LoginScreen extends Application {
 		
 		LogInHandlerFactory logInHandlerFactory = new LogInHandlerFactory();
 		assert role != null;
-		LogInHandler<?> logInHandler = logInHandlerFactory.getLogInHandler(role);
+		LogInHandler logInHandler = logInHandlerFactory.getLogInHandler(role);
 		try {
-			Object user = logInHandler.getUser(username, password);
+			String userId = logInHandler.getUserId(username, password);
 			stage.close();
-			DashboardScreen dashboardScreen = new DashboardScreen(user, role);
+			DashboardScreen dashboardScreen = new DashboardScreen(userId, role);
 			dashboardScreen.start(stage);
 		} catch (UserNotFoundException e) {
 			errorLabel.setText("Error: User not found.");
