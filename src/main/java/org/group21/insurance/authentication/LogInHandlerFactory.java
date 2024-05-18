@@ -16,7 +16,7 @@ public class LogInHandlerFactory {
 	 *
 	 * @return LogInHandler<?> object to authenticate user
 	 */
-	public LogInHandler<?> getLogInHandler(String userType) {
+	public LogInHandler getLogInHandler(String userType) {
 		return switch (userType) {
 			case POLICY_OWNER -> new PolicyOwnerLogInHandler();
 			case SYSTEM_ADMIN -> new SystemAdminLogInHandler();
