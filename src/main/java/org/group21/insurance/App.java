@@ -26,6 +26,10 @@ public class App extends Application {
 			System.out.println("Shutting down...");
 		}));
 		
+		// Uncomment the following line before submission
+		// DataSeeder.seedData();
+		
+		
 		launch(args);
 	}
 }
