@@ -7,19 +7,17 @@ import org.group21.insurance.models.InsuranceProvider;
 
 import java.util.Optional;
 
-public class InsuranceManagerLogInHandler extends LogInHandler<InsuranceProvider> {
-	InsuranceProvider user;
+public class InsuranceManagerLogInHandler implements LogInHandler {
 	
 	@Override
-	public InsuranceProvider getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
+	public String getUserId(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		InsuranceProviderController controller = InsuranceProviderController.getInstance();
 		Optional<InsuranceProvider> optionalIm = controller.findByUsername(username);
 		if (optionalIm.isPresent()) {
 			InsuranceProvider im = optionalIm.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 			if (passwordAuthenticator.authenticate(password.toCharArray(), im.getHashedPassword()) && im.isInsuranceManager()) {
-				user = im;
-				return user;
+				return im.getInsuranceProviderId();
 			} else {
 				throw new UserNotAuthenticatedException("User " + username + " is not authenticated.");
 			}
