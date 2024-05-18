@@ -9,7 +9,7 @@ import java.util.List;
 @Table(name = "beneficiaries")
 public class Beneficiary extends Customer implements Serializable {
 	
-	@OneToOne(cascade = CascadeType.ALL)
+	@OneToOne(cascade = CascadeType.PERSIST)
 	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	

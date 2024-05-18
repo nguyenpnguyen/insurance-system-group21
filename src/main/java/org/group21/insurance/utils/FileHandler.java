@@ -7,6 +7,7 @@ import com.google.api.client.json.JsonFactory;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.drive.Drive;
 import com.google.api.services.drive.model.File;
+import com.google.api.services.drive.model.FileList;
 import com.google.auth.http.HttpCredentialsAdapter;
 import com.google.auth.oauth2.GoogleCredentials;
 
@@ -14,12 +15,22 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.security.GeneralSecurityException;
 import java.util.Collections;
+import java.util.List;
 
 public class FileHandler {
 	
 	private static final String APPLICATION_NAME = "Insurance Claim Management System - Group 21";
 	private static final JsonFactory JSON_FACTORY = GsonFactory.getDefaultInstance();
 	private static final String SERVICE_ACCOUNT_JSON_PATH = "./src/main/resources/insurance-group-21-9a3c98d75a87.json";
+	
+	public static void main(String[] args) {
+		try {
+			Drive service = getDriveService();
+			listFiles(service);
+		} catch (GeneralSecurityException | IOException e) {
+			e.printStackTrace();
+		}
+	}
 	
 	public static Drive getDriveService() throws GeneralSecurityException, IOException {
 		NetHttpTransport HTTP_TRANSPORT = GoogleNetHttpTransport.newTrustedTransport();
@@ -50,11 +61,10 @@ public class FileHandler {
 		}
 	}
 	
-	/*
 	// This method is not used in the project
 	
 	public static List<String> listFiles(Drive service) throws IOException {
-		Drive.Files.List request = service.files().list().setPageSize(10)
+		Drive.Files.List request = service.files().list().setPageSize(50)
 				.setFields("nextPageToken, files(id, name)");
 		
 		do {
@@ -69,7 +79,6 @@ public class FileHandler {
 		} while (request.getPageToken() != null &&
 				!request.getPageToken().isEmpty());
 	}
-	*/
 	
 	public static File findFileById(Drive service, String fileId) throws IOException {
 		// Attempt to retrieve the file by its ID

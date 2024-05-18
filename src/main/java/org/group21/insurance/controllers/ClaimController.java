@@ -57,6 +57,11 @@ public class ClaimController implements GenericController<Claim> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(c)) {
+				c = em.merge(c);
+			}
+			
 			em.persist(c);
 			em.getTransaction().commit();
 		}
@@ -70,7 +75,9 @@ public class ClaimController implements GenericController<Claim> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
-			em.merge(c);
+			if (!em.contains(c)) {
+				em.merge(c);
+			}
 			em.getTransaction().commit();
 		}
 	}
@@ -83,6 +90,11 @@ public class ClaimController implements GenericController<Claim> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(c)) {
+				c = em.merge(c);
+			}
+			
 			em.remove(c);
 			em.getTransaction().commit();
 		}
@@ -99,6 +111,67 @@ public class ClaimController implements GenericController<Claim> {
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
+		}
+	}
+	
+	@Override
+	public void batchCreate(List<Claim> claims) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (Claim claim : claims) {
+				if (!em.contains(claim)) {
+					claim = em.merge(claim);
+				}
+				em.persist(claim);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchUpdate(List<Claim> claims) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (Claim claim : claims) {
+				if (!em.contains(claim)) {
+					em.merge(claim);
+				}
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchDelete(List<Claim> claims) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (Claim claim : claims) {
+				em.remove(em.contains(claim) ? claim : em.merge(claim));
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.createQuery("DELETE FROM Claim").executeUpdate();
+			em.getTransaction().commit();
 		}
 	}
 }

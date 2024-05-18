@@ -56,6 +56,10 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(bi)) {
+				bi = em.merge(bi);
+			}
 			em.persist(bi);
 			em.getTransaction().commit();
 		}
@@ -69,7 +73,9 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
-			em.merge(bi);
+			if (!em.contains(bi)) {
+				em.merge(bi);
+			}
 			em.getTransaction().commit();
 		}
 	}
@@ -82,7 +88,77 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(bi)) {
+				bi = em.merge(bi);
+			}
+			
 			em.remove(bi);
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.createQuery("DELETE FROM BankingInfo").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchCreate(List<BankingInfo> bankingInfos) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (BankingInfo bankingInfo : bankingInfos) {
+				if (!em.contains(bankingInfo)) {
+					bankingInfo = em.merge(bankingInfo);
+				}
+				
+				em.persist(bankingInfo);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchUpdate(List<BankingInfo> bankingInfos) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (BankingInfo bankingInfo : bankingInfos) {
+				if (!em.contains(bankingInfo)) {
+					em.merge(bankingInfo);
+				}
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchDelete(List<BankingInfo> bankingInfos) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (BankingInfo bankingInfo : bankingInfos) {
+				if (!em.contains(bankingInfo)) {
+					bankingInfo = em.merge(bankingInfo);
+				}
+				em.remove(bankingInfo);
+			}
 			em.getTransaction().commit();
 		}
 	}

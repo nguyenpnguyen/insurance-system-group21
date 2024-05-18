@@ -53,7 +53,13 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			// merge entity if detached
+			if (!em.contains(systemAdmin)) {
+				systemAdmin = em.merge(systemAdmin);
+			}
 			em.persist(systemAdmin);
+			
 			em.getTransaction().commit();
 		}
 	}
@@ -66,7 +72,10 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
-			em.merge(systemAdmin);
+			
+			if (!em.contains(systemAdmin)) {
+				em.merge(systemAdmin);
+			}
 			em.getTransaction().commit();
 		}
 	}
@@ -79,6 +88,11 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(systemAdmin)) {
+				systemAdmin = em.merge(systemAdmin);
+			}
+			
 			em.remove(systemAdmin);
 			em.getTransaction().commit();
 		}
@@ -97,6 +111,72 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 			return Optional.ofNullable(result);
 		} catch (NoResultException e) {
 			return Optional.empty();
+		}
+	}
+	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.createQuery("DELETE FROM SystemAdmin").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchCreate(List<SystemAdmin> systemAdmins) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (SystemAdmin systemAdmin : systemAdmins) {
+				if (!em.contains(systemAdmin)) {
+					systemAdmin = em.merge(systemAdmin);
+				}
+				em.persist(systemAdmin);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchDelete(List<SystemAdmin> systemAdmins) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (SystemAdmin systemAdmin : systemAdmins) {
+				if (!em.contains(systemAdmin)) {
+					systemAdmin = em.merge(systemAdmin);
+				}
+				em.remove(systemAdmin);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchUpdate(List<SystemAdmin> systemAdmins) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (SystemAdmin systemAdmin : systemAdmins) {
+				if (!em.contains(systemAdmin)) {
+					em.merge(systemAdmin);
+				}
+			}
+			em.getTransaction().commit();
 		}
 	}
 }

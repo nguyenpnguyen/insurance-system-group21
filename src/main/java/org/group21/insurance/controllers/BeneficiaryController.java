@@ -57,7 +57,7 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			Root<Beneficiary> root = cq.from(Beneficiary.class);
-			cq.select(root).where(cb.equal(root.get("is_policy_holder"), true));
+			cq.select(root).where(cb.equal(root.get("isPolicyHolder"), true));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
@@ -71,7 +71,7 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<Beneficiary> cq = cb.createQuery(Beneficiary.class);
 			Root<Beneficiary> root = cq.from(Beneficiary.class);
-			cq.select(root).where(cb.equal(root.get("is_policy_holder"), false));
+			cq.select(root).where(cb.equal(root.get("isPolicyHolder"), false));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
@@ -109,6 +109,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(b)) {
+				b = em.merge(b);
+			}
+			
 			em.persist(b);
 			em.getTransaction().commit();
 		}
@@ -122,7 +127,9 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
-			em.merge(b);
+			if (!em.contains(b)) {
+				em.merge(b);
+			}
 			em.getTransaction().commit();
 		}
 	}
@@ -135,6 +142,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			
+			if (!em.contains(b)) {
+				b = em.merge(b);
+			}
+			
 			em.remove(b);
 			em.getTransaction().commit();
 		}
@@ -152,6 +164,59 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 			return Optional.ofNullable(em.createQuery(cq).getSingleResult());
 		} catch (NoResultException e) {
 			return Optional.empty();
+		}
+	}
+	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			em.createQuery("DELETE FROM Beneficiary").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchCreate(List<Beneficiary> beneficiaries) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (Beneficiary b : beneficiaries) {
+				if (!em.contains(b)) {
+					b = em.merge(b);
+				}
+				em.persist(b);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchUpdate(List<Beneficiary> beneficiaries) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (Beneficiary b : beneficiaries) {
+				em.merge(b);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchDelete(List<Beneficiary> beneficiaries) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			em.getTransaction().begin();
+			for (Beneficiary b : beneficiaries) {
+				em.remove(em.contains(b) ? b : em.merge(b));
+			}
+			em.getTransaction().commit();
 		}
 	}
 }

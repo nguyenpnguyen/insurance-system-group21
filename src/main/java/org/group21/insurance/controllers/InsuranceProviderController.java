@@ -57,7 +57,7 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
-			cq.select(root).where(cb.equal(root.get("is_insurance_manager"), true));
+			cq.select(root).where(cb.equal(root.get("isInsuranceManager"), true));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
@@ -71,7 +71,7 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<InsuranceProvider> cq = cb.createQuery(InsuranceProvider.class);
 			Root<InsuranceProvider> root = cq.from(InsuranceProvider.class);
-			cq.select(root).where(cb.equal(root.get("is_insurance_manager"), false));
+			cq.select(root).where(cb.equal(root.get("isInsuranceManager"), false));
 			return em.createQuery(cq).getResultList();
 		} catch (NoResultException e) {
 			return Collections.emptyList();
@@ -109,6 +109,9 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
+			if (!em.contains(ip)) {
+				ip = em.merge(ip);
+			}
 			em.persist(ip);
 			em.getTransaction().commit();
 		}
@@ -122,7 +125,9 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
 			}
-			em.merge(ip);
+			if (!em.contains(ip)) {
+				em.merge(ip);
+			}
 			em.getTransaction().commit();
 		}
 	}
@@ -134,6 +139,9 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		try (EntityManager em = emf.createEntityManager()) {
 			if (!em.getTransaction().isActive()) {
 				em.getTransaction().begin();
+			}
+			if (!em.contains(ip)) {
+				ip = em.merge(ip);
 			}
 			em.remove(ip);
 			em.getTransaction().commit();
@@ -152,6 +160,72 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 			return Optional.ofNullable(em.createQuery(cq).getSingleResult());
 		} catch (NoResultException e) {
 			return Optional.empty();
+		}
+	}
+	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.createQuery("DELETE FROM InsuranceProvider").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchCreate(List<InsuranceProvider> insuranceProviders) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (InsuranceProvider ip : insuranceProviders) {
+				if (!em.contains(ip)) {
+					ip = em.merge(ip);
+				}
+				em.persist(ip);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchDelete(List<InsuranceProvider> insuranceProviders) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (InsuranceProvider ip : insuranceProviders) {
+				if (!em.contains(ip)) {
+					ip = em.merge(ip);
+				}
+				em.remove(ip);
+			}
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
+	public void batchUpdate(List<InsuranceProvider> insuranceProviders) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			for (InsuranceProvider ip : insuranceProviders) {
+				if (!em.contains(ip)) {
+					em.merge(ip);
+				}
+			}
+			em.getTransaction().commit();
 		}
 	}
 }
