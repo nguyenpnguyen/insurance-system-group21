@@ -95,7 +95,7 @@ public class LoginScreen extends Application {
         if (username.isEmpty() || password.isEmpty() || role == null || role.isEmpty()) {
 
         } else {
-            // Handle login logic here
+            // TODO: Handle login logic here with the databse
             System.out.println("Username: " + username);
             System.out.println("Password: " + password);
 

@@ -118,69 +118,38 @@ public class DashboardScreen extends Application {
         Button paidBtn = createSectionButton("Payment Calculation");
         Button propposedClaimBtn = createSectionButton("Proposed Claim");
         Button addClaimBtn = new Button("Add Claim");
+        addClaimBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px;");
         Button addInsuranceBtn = new Button("Add Insurance Card");
+        addInsuranceBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px;");
         Button addBeneficiaryBtn = new Button("Add Beneficiary");
+        addBeneficiaryBtn.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white; -fx-font-size: 14px; -fx-padding: 10px;");
 
         dashboardBtn.setOnAction(e -> {
             root.setCenter(new Label("Content for Dashboard"));
-            root.setRight(null);
         });
         dependentBtn.setOnAction(e -> {
-            TableView beneficiaryTable = createBeneficiaryTable(root);
-            root.setCenter(beneficiaryTable);
+            root.setCenter(getBeneficiaryTable(root));
             root.setRight(null);
         });
         claimBtn.setOnAction(e -> {
-            TableView claimTable = createClaimTable(root);
-            root.setCenter(claimTable);
-
-            VBox vbox = new VBox(addClaimBtn);
-            vbox.setAlignment(Pos.CENTER);
-
-            if(this.userRole != "Dependent"){
-                root.setRight(vbox);
-                addClaimBtn.setOnAction(e2 -> {
-                    root.setRight(null);
-                    root.setCenter(addNewClaimForm(root, claimTable, vbox));
-                });
-            }
+            root.setCenter(getClaimTable(root));
         });
 
         beneficiaryBtn.setOnAction(e -> {
-            TableView beneficiaryTable = createBeneficiaryTable(root);
-            root.setCenter(beneficiaryTable);
-
-            VBox vbox = new VBox(addBeneficiaryBtn);
-            vbox.setAlignment(Pos.CENTER);
-
-            root.setRight(vbox);
-            addBeneficiaryBtn.setOnAction(e2 -> {
-                root.setRight(null);
-                root.setCenter(addNewBeneficiaryForm(root, beneficiaryTable, vbox));
-            });
+            root.setCenter(getBeneficiaryTable(root));
         });
 
         insuranceBtn.setOnAction(e -> {
-            TableView insuranceTable = createInsuranceTable(root);
-            root.setCenter(insuranceTable);
-
-            addInsuranceBtn.setMaxHeight(Double.MAX_VALUE);
-            VBox vbox = new VBox(addInsuranceBtn);
-            vbox.setAlignment(Pos.CENTER);
-            vbox.setMaxHeight(Double.MAX_VALUE);
-
-            root.setRight(vbox);
-            addInsuranceBtn.setOnAction(e2 -> {
-                root.setRight(null);
-                root.setCenter(addNewInsuranceCardForm(root, insuranceTable, vbox));
-            });
+            root.setCenter(getInsuranceTable(root));
         });
 
         paidBtn.setOnAction(e -> {
-            root.setCenter(new Label("Payment Content"));
-            root.setRight(null);
+            root.setCenter(getPaymentContent());
         });
-        propposedClaimBtn.setOnAction(e -> root.setCenter(new Label("Propose Claim action")));
+
+        propposedClaimBtn.setOnAction(e -> {
+            root.setCenter(new Label("Propose Claim action"));
+        });
 
         switch (userRole) {
             case "Dependent":
@@ -224,7 +193,17 @@ public class DashboardScreen extends Application {
         return button;
     }
 
-    private TableView createClaimTable(BorderPane root) {
+    private GridPane getClaimTable(BorderPane root) {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(100);
+        gridPane.getColumnConstraints().addAll(column);
+
         TableView<Claim> table = new TableView<>();
 
         TableColumn<Claim, String> idColumn = new TableColumn<>("ID");
@@ -248,33 +227,9 @@ public class DashboardScreen extends Application {
 
         TableColumn<Claim, String> beneficiaryColumn = new TableColumn<>("Beneficiary");
         beneficiaryColumn.setCellValueFactory(new PropertyValueFactory<>("beneficiary"));
-        beneficiaryColumn.setCellFactory(tc -> new TableCell<Claim, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER);
-                }
-            }
-        });
 
         TableColumn<Claim, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card");
         insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCardNumber"));
-        insuranceCardNumberColumn.setCellFactory(tc -> new TableCell<Claim, String>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (empty) {
-                    setText(null);
-                } else {
-                    setText(item);
-                    setAlignment(Pos.CENTER);
-                }
-            }
-        });
 
         TableColumn<Claim, String> examDateColumn = new TableColumn<>("Exam Date");
         examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
@@ -343,7 +298,23 @@ public class DashboardScreen extends Application {
             return row;
         });
 
-        return table;
+        HBox header = new HBox();
+        header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
+        Label headerText = new Label("Claim List");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button addClaimBtn = new Button("+");
+        addClaimBtn.setOnAction(e -> {
+            root.setCenter(addNewClaimForm(root, table));
+        });
+        addClaimBtn.setStyle("-fx-background-color: #62a0ff; -fx-text-fill: white; -fx-font-size: 14px;");
+
+        header.getChildren().addAll(headerText, spacer, addClaimBtn);
+
+        gridPane.add(header, 0, 0);
+        gridPane.add(table, 0, 1);
+
+        return gridPane;
     }
 
     private static GridPane showClaimDetails(Claim claim, String action, TableView<Claim> table) {
@@ -463,7 +434,7 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table, VBox addBtn){
+    private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table){
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -543,13 +514,22 @@ public class DashboardScreen extends Application {
         submitButton.setOnAction(e -> {
             //TODO: Add new Claim to the database, then make the database down by hosting
             root.setCenter(table);
-            root.setRight(addBtn);
         });
 
         return gridPane;
     }
 
-    private TableView createInsuranceTable(BorderPane root) {
+    private GridPane getInsuranceTable(BorderPane root) {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(100);
+        gridPane.getColumnConstraints().addAll(column);
+
         TableView<InsuranceCard> table = new TableView<>();
 
         TableColumn<InsuranceCard, String> cardNumberColumn = new TableColumn<>("Card Number");
@@ -602,7 +582,23 @@ public class DashboardScreen extends Application {
             return row;
         });
 
-        return table;
+        HBox header = new HBox();
+        header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
+        Label headerText = new Label("Insurance Card List");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button addInsuranceBtn = new Button("+");
+        addInsuranceBtn.setStyle("-fx-background-color: #62a0ff; -fx-text-fill: white; -fx-font-size: 14px;");
+        addInsuranceBtn.setOnAction(e -> {
+            root.setCenter(addNewInsuranceCardForm(root, table));
+        });
+
+        header.getChildren().addAll(headerText, spacer, addInsuranceBtn);
+
+        gridPane.add(header, 0, 0);
+        gridPane.add(table, 0, 1);
+
+        return gridPane;
     }
 
     private static GridPane showInsuranceCardDetails(InsuranceCard insuranceCard) {
@@ -649,7 +645,7 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private static GridPane addNewInsuranceCardForm (BorderPane root, TableView<InsuranceCard> table, VBox addBtn){
+    private static GridPane addNewInsuranceCardForm (BorderPane root, TableView<InsuranceCard> table){
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -686,14 +682,22 @@ public class DashboardScreen extends Application {
         submitButton.setOnAction(e -> {
             //TODO: Add new Insurance to the database, then make the database down by hosting
             root.setCenter(table);
-            root.setRight(addBtn);
         });
 
         return gridPane;
     }
 
 
-    private TableView createBeneficiaryTable(BorderPane root) {
+    private GridPane getBeneficiaryTable(BorderPane root) {
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(100);
+        gridPane.getColumnConstraints().addAll(column);
         TableView<Beneficiary> table = new TableView<>();
 
         TableColumn<Beneficiary, String> beneficiaryIdColumn = new TableColumn<>("ID");
@@ -764,7 +768,24 @@ public class DashboardScreen extends Application {
             return row;
         });
 
-        return table;
+
+        HBox header = new HBox();
+        header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
+        Label headerText = new Label("Insurance Card List");
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.ALWAYS);
+        Button addInsuranceBtn = new Button("+");
+        addInsuranceBtn.setStyle("-fx-background-color: #62a0ff; -fx-text-fill: white; -fx-font-size: 14px;");
+        addInsuranceBtn.setOnAction(e -> {
+            root.setCenter(addNewBeneficiaryForm(root, table));
+        });
+
+        header.getChildren().addAll(headerText, spacer, addInsuranceBtn);
+
+        gridPane.add(header, 0, 0);
+        gridPane.add(table, 0, 1);
+
+        return gridPane;
     }
 
 
@@ -883,7 +904,7 @@ public class DashboardScreen extends Application {
         return gridPane;
     }
 
-    private static GridPane  addNewBeneficiaryForm(BorderPane root, TableView<Beneficiary> beneficiaryTable, VBox vbox){
+    private static GridPane addNewBeneficiaryForm(BorderPane root, TableView<Beneficiary> beneficiaryTable){
         GridPane gridPane = new GridPane();
         gridPane.setAlignment(Pos.TOP_CENTER);
         gridPane.setHgap(10);
@@ -934,12 +955,48 @@ public class DashboardScreen extends Application {
         submitButton.setOnAction(e -> {
             // TODO: Create new beneficiary and add to the database, if the user the dependent then add to the beneficiary
             root.setCenter(beneficiaryTable);
-            root.setRight(vbox);
         });
 
         return gridPane;
     }
 
+    private static GridPane getPaymentContent(){
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column1 = new ColumnConstraints();
+        column1.setPercentWidth(20);
+        ColumnConstraints column2 = new ColumnConstraints();
+        column2.setPercentWidth(80);
+        gridPane.getColumnConstraints().addAll(column1, column2);
+
+        Label paymentIdLabel = new Label("Total Payment:");
+        TextField paymentIdField = new TextField();
+        paymentIdField.setText("TODO: Work on logic of this payment from the database"); //TODO: Work on logic on calculating the payment here
+        gridPane.add(paymentIdLabel, 0, 0);
+        gridPane.add(paymentIdField, 1, 0);
+
+        return gridPane;
+    }
+
+    private static GridPane getDependentTable(){
+        GridPane gridPane = new GridPane();
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setHgap(10);
+        gridPane.setVgap(10);
+        gridPane.setPadding(new Insets(25, 25, 25, 25));
+
+        ColumnConstraints column = new ColumnConstraints();
+        column.setPercentWidth(100);
+        gridPane.getColumnConstraints().addAll(column);
+
+        //TODO: Change the logic into the data of all dependent user
+        TableView<Beneficiary> table = new TableView<>();
+        return gridPane;
+    }
     public static void main(String[] args) {
         launch(args);
     }
