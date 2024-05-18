@@ -90,6 +90,19 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	}
 	
 	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			em.createQuery("DELETE FROM PolicyOwner").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
+	@Override
 	public Optional<PolicyOwner> findByUsername(String username) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		

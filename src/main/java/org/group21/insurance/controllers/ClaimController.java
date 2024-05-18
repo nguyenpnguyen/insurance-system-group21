@@ -115,54 +115,6 @@ public class ClaimController implements GenericController<Claim> {
 	}
 	
 	@Override
-	public void batchCreate(List<Claim> claims) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
-			}
-			for (Claim claim : claims) {
-				if (!em.contains(claim)) {
-					claim = em.merge(claim);
-				}
-				em.persist(claim);
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchUpdate(List<Claim> claims) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			if (!em.getTransaction().isActive()) {
-				em.getTransaction().begin();
-			}
-			for (Claim claim : claims) {
-				if (!em.contains(claim)) {
-					em.merge(claim);
-				}
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchDelete(List<Claim> claims) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (Claim claim : claims) {
-				em.remove(em.contains(claim) ? claim : em.merge(claim));
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		

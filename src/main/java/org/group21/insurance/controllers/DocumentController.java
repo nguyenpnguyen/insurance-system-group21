@@ -126,6 +126,33 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	@Override
+	public void deleteAll() {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			List<Document> documentList = readAll();
+			
+			for (Document document : documentList) {
+				try {
+					Drive service = getDriveService();
+					deleteFile(service, document.getDocumentId());
+				} catch (IOException e) {
+					System.err.println("An error occurred during file deletion: " + e.getMessage());
+				} catch (GeneralSecurityException e) {
+					System.err.println("An error occurred during Google Drive service initialization: " + e.getMessage());
+				}
+			}
+			
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
+			
+			em.createQuery("DELETE FROM Document").executeUpdate();
+			em.getTransaction().commit();
+		}
+	}
+	
 	public void uploadDocument(File file, Claim claim) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		String fileId = uploadFile(service, file);

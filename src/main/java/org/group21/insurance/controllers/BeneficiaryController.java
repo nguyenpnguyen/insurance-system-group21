@@ -172,50 +172,10 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
 		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.createQuery("DELETE FROM Beneficiary").executeUpdate();
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchCreate(List<Beneficiary> beneficiaries) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (Beneficiary b : beneficiaries) {
-				if (!em.contains(b)) {
-					b = em.merge(b);
-				}
-				em.persist(b);
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchUpdate(List<Beneficiary> beneficiaries) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (Beneficiary b : beneficiaries) {
-				em.merge(b);
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchDelete(List<Beneficiary> beneficiaries) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (Beneficiary b : beneficiaries) {
-				em.remove(em.contains(b) ? b : em.merge(b));
-			}
 			em.getTransaction().commit();
 		}
 	}

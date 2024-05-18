@@ -15,11 +15,6 @@ interface GenericController<T> {
 	
 	void delete(T t);
 	
-	void batchDelete(List<T> t);
-	
-	void batchCreate(List<T> t);
-	
 	void deleteAll();
 	
-	void batchUpdate(List<T> t);
 }

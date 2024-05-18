@@ -130,64 +130,13 @@ public class InsuranceCardController implements GenericController<InsuranceCard>
 	}
 	
 	@Override
-	public void batchDelete(List<InsuranceCard> ics) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (InsuranceCard ic : ics) {
-				em.remove(ic);
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchCreate(List<InsuranceCard> ics) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (InsuranceCard ic : ics) {
-				if (!em.contains(ic)) {
-					ic = em.merge(ic);
-				}
-				
-				if (ic.getCardHolder() != null) {
-					Beneficiary existingBeneficiary = em.find(Beneficiary.class, ic.getCardHolder().getCustomerId());
-					if (existingBeneficiary != null) {
-						ic.setCardHolder(em.merge(ic.getCardHolder()));
-					} else {
-						em.persist(ic.getCardHolder());
-					}
-				}
-				
-				em.persist(ic);
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
-	public void batchUpdate(List<InsuranceCard> ics) {
-		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
-		
-		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
-			for (InsuranceCard ic : ics) {
-				if (!em.contains(ic)) {
-					em.merge(ic);
-				}
-			}
-			em.getTransaction().commit();
-		}
-	}
-	
-	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
 		try (EntityManager em = emf.createEntityManager()) {
-			em.getTransaction().begin();
+			if (!em.getTransaction().isActive()) {
+				em.getTransaction().begin();
+			}
 			em.createQuery("DELETE FROM InsuranceCard").executeUpdate();
 			em.getTransaction().commit();
 		}
