@@ -8,6 +8,7 @@ import org.group21.insurance.models.SystemAdmin;
 import java.util.Optional;
 
 public class SystemAdminLogInHandler extends LogInHandler<SystemAdmin> {
+	SystemAdmin user;
 	
 	@Override
 	public SystemAdmin getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
@@ -17,7 +18,8 @@ public class SystemAdminLogInHandler extends LogInHandler<SystemAdmin> {
 			SystemAdmin admin = optionalAdmin.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 			if (passwordAuthenticator.authenticate(password.toCharArray(), admin.getHashedPassword())) {
-				return admin;
+				user = admin;
+				return user;
 			} else {
 				throw new UserNotAuthenticatedException("User " + username + " is not authenticated.");
 			}

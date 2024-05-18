@@ -8,6 +8,8 @@ import org.group21.insurance.models.Beneficiary;
 import java.util.Optional;
 
 public class DependentLogInHandler extends LogInHandler<Beneficiary> {
+	Beneficiary user;
+	
 	@Override
 	public Beneficiary getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		BeneficiaryController controller = BeneficiaryController.getInstance();
@@ -16,7 +18,8 @@ public class DependentLogInHandler extends LogInHandler<Beneficiary> {
 			Beneficiary dependent = optionalDependent.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 			if (passwordAuthenticator.authenticate(password.toCharArray(), dependent.getHashedPassword()) && !dependent.isPolicyHolder()) {
-				return dependent;
+				user = dependent;
+				return user;
 			} else {
 				throw new UserNotAuthenticatedException("User " + username + " is not authenticated.");
 			}

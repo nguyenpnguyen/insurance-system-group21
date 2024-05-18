@@ -8,6 +8,7 @@ import org.group21.insurance.models.PolicyOwner;
 import java.util.Optional;
 
 public class PolicyOwnerLogInHandler extends LogInHandler<PolicyOwner> {
+	PolicyOwner user;
 	
 	@Override
 	public PolicyOwner getUser(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
@@ -17,7 +18,8 @@ public class PolicyOwnerLogInHandler extends LogInHandler<PolicyOwner> {
 			PolicyOwner po = optionalPo.get();
 			PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 			if (passwordAuthenticator.authenticate(password.toCharArray(), po.getHashedPassword())) {
-				return po;
+				user = po;
+				return user;
 			} else {
 				throw new UserNotAuthenticatedException("User " + username + " is not authenticated.");
 			}
