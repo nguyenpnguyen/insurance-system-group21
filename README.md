@@ -8,7 +8,12 @@ database (Supabase) with the ability to display functionalities in the front-end
 
 ## Getting Started
 
-1. Clone the repository
+1. Pre-requisites
+    - Java 21
+    - Maven
+    - Git
+
+2. Clone the repository
 
 In your terminal, run the following command:
 
@@ -16,8 +21,19 @@ In your terminal, run the following command:
 git clone https://github.com/nguyenpnguyen/insurance-system-group21.git && cd insurance-system-group21
 ```
 
-2. Run the application
+3. Run the application
 
 ```shell
 mvn clean javafx:run
 ```
+
+#### Note:
+
+Uncomment line
+
+```java 
+DataSeeder.seedData();
+``` 
+
+in ```./src/main/java/org/group21/insurance/App.java``` to seed data to
+the database before running the application.
