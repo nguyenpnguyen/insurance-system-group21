@@ -10,6 +10,7 @@ database (Supabase) with the ability to display functionalities in the front-end
 
 1. Pre-requisites
     - Java 21
+    - JavaFX SDK 21
     - Maven
     - Git
 
@@ -23,9 +24,24 @@ git clone https://github.com/nguyenpnguyen/insurance-system-group21.git && cd in
 
 3. Run the application
 
+<details>
+<summary>Run the application with Maven</summary>
+
 ```shell
 mvn clean javafx:run
 ```
+
+</details>
+
+<details>
+<summary>Run the application with JavaFX SDK</summary>
+
+```shell
+mvn clean compile
+java --module-path $PATH_TO_JAVAFX_SDK --add-modules javafx.controls,javafx.fxml -cp target/insurance-system-group21-1.0-SNAPSHOT.jar
+```
+
+</details>
 
 #### Note:
 
