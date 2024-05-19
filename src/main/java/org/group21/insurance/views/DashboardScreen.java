@@ -38,9 +38,6 @@ public class DashboardScreen extends Application {
 	private static String userRole;
 	private static String userId;
 	private Stage stage;
-	private ArrayList<Claim> claimList = new ArrayList<>();
-	private ArrayList<Beneficiary> beneficiaryList = new ArrayList<>();
-	private ArrayList<InsuranceCard> insuranceCardList = new ArrayList<>();
 	
 	public DashboardScreen(String userId, String role) {
 		this.userRole = role;
@@ -208,31 +205,40 @@ public class DashboardScreen extends Application {
 	
 	private GridPane getClaimTable(BorderPane root) {
 		ClaimController claimController = ClaimController.getInstance();
-		List<Claim> claims;
+		List<Claim> claims = new ArrayList<>();
 		
-		if (Objects.equals(userRole, "Dependent")) {
-			// Get all claims for the current user
-			claims = claimController.readAllByInsuredPerson(userId);
-		} else if (Objects.equals(userRole, "Policy holder")) {
-			// Get all claims for the policy holder
-			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
-			Optional<Beneficiary> policyHolder = beneficiaryController.readPolicyHolder(userId);
-			if (policyHolder.isEmpty()) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Error");
-				alert.setHeaderText("Policy Holder Not Found");
-				alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+		switch (userRole) {
+			case "Dependent" ->
+				// Get all claims for the current user
+					claims = claimController.readAllByInsuredPerson(userId);
+			case "Policy holder" -> {
+				// Get all claims for the policy holder
+				BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+				Optional<Beneficiary> policyHolder = beneficiaryController.readPolicyHolder(userId);
+				if (policyHolder.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Policy Holder Not Found");
+					alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+				}
+				
+				claims = claimController.readAllByInsuredPerson(String.valueOf(policyHolder.get().getCustomerId()));
+				
+				List<Beneficiary> dependents = policyHolder.get().getDependents();
+				for (Beneficiary dependent : dependents) {
+					claims.addAll(claimController.readAllByInsuredPerson(dependent.getCustomerId()));
+				}
 			}
-			
-			claims = claimController.readAllByInsuredPerson(String.valueOf(policyHolder.get().getCustomerId()));
-			
-			List<Beneficiary> dependents = policyHolder.get().getDependents();
-			for (Beneficiary dependent : dependents) {
-				claims.addAll(claimController.readAllByInsuredPerson(dependent.getCustomerId()));
+			case "Policy owner" -> {
+				List<Claim> allClaims = claimController.readAll();
+				for (Claim claim : allClaims) {
+					if (claim.getInsuredPerson().getPolicyOwner() != null &&
+							claim.getInsuredPerson().getPolicyOwner().getCustomerId().equals(userId)) {
+						claims.add(claim);
+					}
+				}
 			}
-			
-		} else {
-			claims = claimController.readAll();
+			case null, default -> claims = claimController.readAll();
 		}
 		
 		GridPane gridPane = new GridPane();
@@ -642,6 +648,69 @@ public class DashboardScreen extends Application {
 	}
 	
 	private GridPane getInsuranceTable(BorderPane root) {
+		// Fetch the list of InsuranceCard objects from the database
+		InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
+		List<InsuranceCard> insuranceCards = new ArrayList<>();
+		if (Objects.equals(userRole, "Dependent")) {
+			// Get the insurance card for the current user
+			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+			Optional<Beneficiary> insuredPerson = beneficiaryController.read(userId);
+			if (insuredPerson.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Insured Person Not Found");
+				alert.setContentText("The insured person with ID " + userId + " does not exist.");
+				alert.showAndWait();
+				return new GridPane();
+			}
+			InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(insuredPerson.get());
+			return showInsuranceCardDetails(insuranceCard);
+		} else if (Objects.equals(userRole, "Policy holder")) {
+			// Get the insurance cards for the policy holder
+			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+			Optional<Beneficiary> policyHolderOptional = beneficiaryController.readPolicyHolder(userId);
+			if (policyHolderOptional.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Policy Holder Not Found");
+				alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+				alert.showAndWait();
+				return new GridPane();
+			}
+			
+			Beneficiary policyHolder = policyHolderOptional.get();
+			List<Beneficiary> dependents = policyHolder.getDependents();
+			for (Beneficiary dependent : dependents) {
+				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(dependent);
+				if (insuranceCard != null) {
+					insuranceCards.add(insuranceCard);
+				}
+			}
+		} else if (Objects.equals(userRole, "Policy owner")) {
+			// Get the insurance cards for the policy owner
+			PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+			Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(userId);
+			if (policyOwnerOptional.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Policy Owner Not Found");
+				alert.setContentText("The policy owner with ID " + userId + " does not exist.");
+				alert.showAndWait();
+				return new GridPane();
+			}
+			
+			PolicyOwner policyOwner = policyOwnerOptional.get();
+			List<Beneficiary> beneficiaries = policyOwner.getBeneficiaries();
+			for (Beneficiary beneficiary : beneficiaries) {
+				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(beneficiary);
+				if (insuranceCard != null) {
+					insuranceCards.add(insuranceCard);
+				}
+			}
+		} else {
+			insuranceCards = insuranceCardController.readAll();
+		}
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -671,35 +740,29 @@ public class DashboardScreen extends Application {
 		});
 		
 		TableColumn<InsuranceCard, String> policyOwnerColumn = new TableColumn<>("Policy Owner");
-		policyOwnerColumn.setCellValueFactory(new PropertyValueFactory<>("policyOwner"));
+		policyOwnerColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPolicyOwner().getFullName()));
 		
-		TableColumn<InsuranceCard, String> cardHolderColumn = new TableColumn<>("Policy Holder");
-		cardHolderColumn.setCellValueFactory(new PropertyValueFactory<>("policyHolder"));
+		TableColumn<InsuranceCard, String> cardHolderColumn = new TableColumn<>("Card Holder");
+		cardHolderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardHolder().getFullName()));
 		
 		TableColumn<InsuranceCard, String> exprirationColumn = new TableColumn<>("Expiration Date");
 		exprirationColumn.setCellValueFactory(new PropertyValueFactory<>("expirationDate"));
 		
 		table.getColumns().addAll(cardNumberColumn, policyOwnerColumn, cardHolderColumn, exprirationColumn);
 		
-		ObservableList<InsuranceCard> insuranceCardData = FXCollections.observableArrayList();
-		for (int i = 1; i <= 30; i++) {
-			InsuranceCard insuranceCard = new InsuranceCard();
-			insuranceCard.setCardNumber("" + i);
-			insuranceCard.setPolicyOwner(new PolicyOwner());
-			insuranceCard.setCardHolder(new Beneficiary());
-			insuranceCard.setExpirationDate(LocalDate.now());
-			
-			insuranceCardData.add(insuranceCard);
-		}
+		
+		ObservableList<InsuranceCard> insuranceCardData = FXCollections.observableArrayList(insuranceCards);
 		
 		table.setItems(insuranceCardData);
 		
 		table.setRowFactory(tv -> {
 			TableRow<InsuranceCard> row = new TableRow<>();
 			row.setOnMouseClicked(e -> {
-				InsuranceCard clickedInsuranceCard = row.getItem();
-				GridPane claimPane = showInsuranceCardDetails(clickedInsuranceCard);
-				root.setCenter(claimPane);
+				if (!row.isEmpty()) {
+					InsuranceCard clickedInsuranceCard = row.getItem();
+					GridPane claimPane = showInsuranceCardDetails(clickedInsuranceCard);
+					root.setCenter(claimPane);
+				}
 			});
 			return row;
 		});
@@ -855,7 +918,27 @@ public class DashboardScreen extends Application {
 	
 	private GridPane getBeneficiaryTable(BorderPane root) {
 		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
-		List<Beneficiary> beneficiaries = beneficiaryController.readAll();
+		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+		List<Beneficiary> beneficiaries;
+		
+		if (userRole == "Policy owner") {
+			Optional<PolicyOwner> policyOwner = policyOwnerController.read(userId);
+			if (policyOwner.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Policy Holder Not Found");
+				alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+				alert.showAndWait();
+				return new GridPane();
+			}
+			beneficiaries = policyOwner.get().getBeneficiaries();
+		} else if (Objects.equals(userRole, "Insurance manager") ||
+				Objects.equals(userRole, "Insurance surveyor") ||
+				Objects.equals(userRole, "System admin")) {
+			beneficiaries = beneficiaryController.readAll();
+		} else {
+			return new GridPane();
+		}
 		
 		ObservableList<Beneficiary> beneficiaryData = FXCollections.observableArrayList();
 		beneficiaryData.addAll(beneficiaries);
@@ -897,7 +980,7 @@ public class DashboardScreen extends Application {
 		phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
 		
 		TableColumn<Beneficiary, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card Number");
-		insuranceCardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("insuranceCardNumber"));
+		insuranceCardNumberColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getInsuranceCard().getCardNumber()));
 		
 		TableColumn<Beneficiary, String> addressColumn = new TableColumn<>("Address");
 		addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
@@ -948,12 +1031,16 @@ public class DashboardScreen extends Application {
 	
 	
 	private GridPane showUserProfile() {
-		if (this.userRole.equals("Policy holder") || this.userRole.equals("Dependent")) {
-			return showBeneficiaryProfile();
-		} else if (this.userRole.equals("Policy owner")) {
-			return showPolicyOwnerProfile();
-		} else if (this.userRole.equals("Insurance manager") || this.userRole.equals("Insurance surveyor")) {
-			return showInsuranceProviderProfile();
+		switch (userRole) {
+			case "Policy holder", "Dependent" -> {
+				return showBeneficiaryProfile();
+			}
+			case "Policy owner" -> {
+				return showPolicyOwnerProfile();
+			}
+			case "Insurance manager", "Insurance surveyor" -> {
+				return showInsuranceProviderProfile();
+			}
 		}
 		
 		// Admin profile
