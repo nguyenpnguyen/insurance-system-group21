@@ -232,9 +232,12 @@ public class DashboardScreen extends Application {
 			case "Policy owner" -> {
 				List<Claim> allClaims = claimController.readAll();
 				for (Claim claim : allClaims) {
-					if (claim.getInsuredPerson().getPolicyOwner() != null &&
-							claim.getInsuredPerson().getPolicyOwner().getCustomerId().equals(userId)) {
-						claims.add(claim);
+					Beneficiary insuredPerson = claim.getInsuredPerson();
+					if (insuredPerson != null) {
+						PolicyOwner policyOwner = insuredPerson.getPolicyOwner();
+						if (policyOwner != null && userId.equals(policyOwner.getCustomerId())) {
+							claims.add(claim);
+						}
 					}
 				}
 			}
@@ -731,6 +734,10 @@ public class DashboardScreen extends Application {
 		
 		TableView<InsuranceCard> table = new TableView<>();
 		
+		ObservableList<InsuranceCard> insuranceCardData = FXCollections.observableArrayList(insuranceCards);
+		
+		table.setItems(insuranceCardData);
+		
 		TableColumn<InsuranceCard, String> cardNumberColumn = new TableColumn<>("Card Number");
 		cardNumberColumn.setCellValueFactory(new PropertyValueFactory<>("cardNumber"));
 		cardNumberColumn.setPrefWidth(100);
@@ -747,21 +754,24 @@ public class DashboardScreen extends Application {
 			}
 		});
 		
+		
 		TableColumn<InsuranceCard, String> policyOwnerColumn = new TableColumn<>("Policy Owner");
-		policyOwnerColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getPolicyOwner().getFullName()));
+		policyOwnerColumn.setCellValueFactory(cellData -> {
+			PolicyOwner policyOwner = cellData.getValue().getPolicyOwner();
+			return new SimpleStringProperty(policyOwner != null ? policyOwner.getFullName() : "Policy Owner not found");
+		});
 		
 		TableColumn<InsuranceCard, String> cardHolderColumn = new TableColumn<>("Card Holder");
-		cardHolderColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getCardHolder().getFullName()));
+		cardHolderColumn.setCellValueFactory(cellData -> {
+			Beneficiary cardHolder = cellData.getValue().getCardHolder();
+			return new SimpleStringProperty(cardHolder != null ? cardHolder.getFullName() : "Card holder not found");
+		});
 		
 		TableColumn<InsuranceCard, String> exprirationColumn = new TableColumn<>("Expiration Date");
 		exprirationColumn.setCellValueFactory(new PropertyValueFactory<>("expirationDate"));
 		
 		table.getColumns().addAll(cardNumberColumn, policyOwnerColumn, cardHolderColumn, exprirationColumn);
 		
-		
-		ObservableList<InsuranceCard> insuranceCardData = FXCollections.observableArrayList(insuranceCards);
-		
-		table.setItems(insuranceCardData);
 		
 		table.setRowFactory(tv -> {
 			TableRow<InsuranceCard> row = new TableRow<>();
@@ -988,7 +998,10 @@ public class DashboardScreen extends Application {
 		phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
 		
 		TableColumn<Beneficiary, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card Number");
-		insuranceCardNumberColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getInsuranceCard().getCardNumber()));
+		insuranceCardNumberColumn.setCellValueFactory(cellData -> {
+			InsuranceCard insuranceCard = cellData.getValue().getInsuranceCard();
+			return new SimpleStringProperty(insuranceCard != null ? insuranceCard.getCardNumber() : "Insurance card not found");
+		});
 		
 		TableColumn<Beneficiary, String> addressColumn = new TableColumn<>("Address");
 		addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
