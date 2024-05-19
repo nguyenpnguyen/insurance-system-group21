@@ -39,9 +39,11 @@ in ```./src/main/java/org/group21/insurance/App.java``` to seed data to
 the database before running the application.
 
 ## Video Demo Link:
-link: 
+
+link: https://www.youtube.com/watch?v=BSSfXMR1wsU
 
 ## Contribution Points
+
 | Name               | ID       | Contribution Point |
 |--------------------|----------|--------------------|
 | Pham Hoang Duong   | S3818206 | 3                  |
