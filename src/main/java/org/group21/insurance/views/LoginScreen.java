@@ -1,9 +1,12 @@
 package org.group21.insurance.views;
 
 /**
- * @author Group 21
- */
-
+ * /**
+ *  * This class represents the login screen of the Insurance Claim Management System.
+ *  * It provides the user interface for user authentication.
+ *  *
+ *  * @author Group 21
+ *  */
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -17,6 +20,7 @@ import org.group21.insurance.authentication.LogInHandlerFactory;
 import org.group21.insurance.exceptions.UserNotAuthenticatedException;
 import org.group21.insurance.exceptions.UserNotFoundException;
 
+
 public class LoginScreen extends Application {
 	private TextField nameInput;
 	private PasswordField passInput;
@@ -24,8 +28,13 @@ public class LoginScreen extends Application {
 	
 	private Label errorLabel;
 	private ComboBox<String> roleComboBox;
-	
-	
+
+
+	/**
+	 * This method starts the application and sets the scene to the login screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 */
 	@Override
 	public void start(Stage stage) {
 		Scene loginScene = setLoginScreenUI(stage);
@@ -33,7 +42,13 @@ public class LoginScreen extends Application {
 		stage.setTitle("Insurance Claim Management System - Authentication");
 		stage.show();
 	}
-	
+
+	/**
+	 * This method sets up the user interface for the login screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 * @return A Scene object representing the login screen.
+	 */
 	public Scene setLoginScreenUI(Stage stage) {
 		nameInput = new TextField();
 		passInput = new PasswordField();
@@ -42,7 +57,7 @@ public class LoginScreen extends Application {
 		errorLabel.setTextFill(Color.RED);
 		roleComboBox = new ComboBox<>();
 		
-		roleComboBox.getItems().addAll("Dependent", "Policy holder", "Policy owner", "Insurance surveyor", "Insurance manager", "System admin"); // Add roles as needed
+		roleComboBox.getItems().addAll("Dependent", "Policy holder", "Policy owner", "Insurance surveyor", "Insurance manager", "System admin");
 		roleComboBox.setPromptText("Select Role");
 		
 		GridPane gridPane = new GridPane();
@@ -65,7 +80,14 @@ public class LoginScreen extends Application {
 		
 		return new Scene(gridPane, 400, 300);
 	}
-	
+
+	/**
+	 * This method handles the login process when the login button is clicked.
+	 * It validates the user input and authenticates the user.
+	 *
+	 * @param stage The primary stage for this application.
+	 * @param role The role selected by the user.
+	 */
 	private void handleLogin(Stage stage, String role) {
 		String username = nameInput.getText();
 		String password = passInput.getText();
@@ -75,7 +97,6 @@ public class LoginScreen extends Application {
 		passInput.setStyle("");
 		roleComboBox.setStyle("");
 		errorLabel.setText("");
-		
 		
 		if (username.isEmpty()) {
 			nameInput.setStyle("-fx-border-color: red;");

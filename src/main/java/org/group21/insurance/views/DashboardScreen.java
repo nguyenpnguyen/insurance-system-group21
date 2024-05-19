@@ -1,6 +1,9 @@
 package org.group21.insurance.views;
 
 /**
+ * This class represents the dashboard screen of the Insurance Claim Management System.
+ * It provides the user interface for managing insurance claims, beneficiaries, and insurance cards.
+ *
  * @author Group 21
  */
 
@@ -39,12 +42,24 @@ public class DashboardScreen extends Application {
 	private static String userRole;
 	private static String userId;
 	private Stage stage;
-	
+
+
+	/**
+	 * Constructor for the DashboardScreen class.
+	 *
+	 * @param userId The ID of the user.
+	 * @param role The role of the user.
+	 */
 	public DashboardScreen(String userId, String role) {
 		this.userRole = role;
 		this.userId = userId;
 	}
-	
+
+	/**
+	 * This method starts the application and sets the scene to the dashboard screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 */
 	@Override
 	public void start(Stage stage) {
 		Scene dashboardScene = createDashboardUI(stage, this.userRole);
@@ -52,7 +67,14 @@ public class DashboardScreen extends Application {
 		stage.setScene(dashboardScene);
 		stage.show();
 	}
-	
+
+	/**
+	 * This method sets up the user interface for the dashboard screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 * @param role The role of the user.
+	 * @return A Scene object representing the dashboard screen.
+	 */
 	private Scene createDashboardUI(Stage stage, String role) {
 		BorderPane root = new BorderPane();
 		// Create sidebar
@@ -61,7 +83,14 @@ public class DashboardScreen extends Application {
 		root.setTop(createHeader(stage, root));
 		return new Scene(root, 1200, 600);
 	}
-	
+
+	/**
+	 * This method creates the header for the dashboard screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 * @param root The root node of the scene graph.
+	 * @return A HBox object representing the header.
+	 */
 	private HBox createHeader(Stage stage, BorderPane root) {
 		HBox header = new HBox();
 		header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
@@ -116,7 +145,14 @@ public class DashboardScreen extends Application {
 		
 		return header;
 	}
-	
+
+	/**
+	 * This method creates the sidebar for the dashboard screen.
+	 *
+	 * @param stage The primary stage for this application.
+	 * @param root The root node of the scene graph.
+	 * @return A VBox object representing the sidebar.
+	 */
 	private VBox createSidebar(Stage stage, BorderPane root) {
 		VBox sidebar = new VBox();
 		sidebar.setStyle("-fx-background-color: #ffffff; -fx-border-color: grey; -fx-border-width: 0 2 0 0; -fx-padding: 0; -fx-min-width: 150px;");
@@ -192,7 +228,13 @@ public class DashboardScreen extends Application {
 		
 		return sidebar;
 	}
-	
+
+	/**
+	 * This method creates a button for a section in the sidebar.
+	 *
+	 * @param text The text to be displayed on the button.
+	 * @return A Button object representing the section button.
+	 */
 	private Button createSectionButton(String text) {
 		Button button = new Button(text);
 		button.setMaxWidth(Double.MAX_VALUE);
@@ -203,7 +245,13 @@ public class DashboardScreen extends Application {
 		button.setOnMouseExited(e -> button.setStyle("-fx-background-color: transparent; -fx-border-color: transparent; -fx-text-fill: #000000; -fx-font-size: 15px;"));
 		return button;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the claim table.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @return A GridPane object representing the claim table.
+	 */
 	private GridPane getClaimTable(BorderPane root) {
 		ClaimController claimController = ClaimController.getInstance();
 		List<Claim> claims = new ArrayList<>();
@@ -362,7 +410,15 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method shows the details of a claim.
+	 *
+	 * @param claim The claim whose details are to be shown.
+	 * @param action The action to be performed (e.g., "update").
+	 * @param table The TableView object representing the claim table.
+	 * @return A GridPane object representing the claim details.
+	 */
 	private static GridPane showClaimDetails(Claim claim, String action, TableView<Claim> table) {
 		ClaimController claimController = ClaimController.getInstance();
 		GridPane gridPane = new GridPane();
@@ -480,7 +536,14 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the form for adding a new claim.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @param table The TableView object representing the claim table.
+	 * @return A GridPane object representing the form for adding a new claim.
+	 */
 	private GridPane addNewClaimForm(BorderPane root, TableView<Claim> table) {
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
@@ -655,7 +718,13 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the insurance card table.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @return A GridPane object representing the insurance card table.
+	 */
 	private GridPane getInsuranceTable(BorderPane root) {
 		// Fetch the list of InsuranceCard objects from the database
 		InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
@@ -804,7 +873,13 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method shows the details of an insurance card.
+	 *
+	 * @param insuranceCard The insurance card whose details are to be shown.
+	 * @return A GridPane object representing the insurance card details.
+	 */
 	private static GridPane showInsuranceCardDetails(InsuranceCard insuranceCard) {
 		InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
 		Optional<InsuranceCard> insuranceCardOptional = insuranceCardController.read(insuranceCard.getCardNumber());
@@ -860,7 +935,14 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the form for adding a new insurance card.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @param table The TableView object representing the insurance card table.
+	 * @return A GridPane object representing the form for adding a new insurance card.
+	 */
 	private static GridPane addNewInsuranceCardForm(BorderPane root, TableView<InsuranceCard> table) {
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
@@ -933,8 +1015,13 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the beneficiary table.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @return A GridPane object representing the beneficiary table.
+	 */
 	private GridPane getBeneficiaryTable(BorderPane root) {
 		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
 		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
@@ -1030,8 +1117,7 @@ public class DashboardScreen extends Application {
 			});
 			return row;
 		});
-		
-		
+
 		HBox header = new HBox();
 		header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
 		Label headerText = new Label("Insurance Card List");
@@ -1050,8 +1136,12 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
-	
+
+	/**
+	 * This method shows the user profile.
+	 *
+	 * @return A GridPane object representing the user profile.
+	 */
 	private GridPane showUserProfile() {
 		switch (userRole) {
 			case "Policy holder", "Dependent" -> {
@@ -1092,7 +1182,12 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method shows the insurance provider profile.
+	 *
+	 * @return A GridPane object representing the insurance provider profile.
+	 */
 	private GridPane showInsuranceProviderProfile() {
 		InsuranceProviderController insuranceProviderController = InsuranceProviderController.getInstance();
 		Optional<InsuranceProvider> insuranceProviderOptional = insuranceProviderController.read(this.userId);
@@ -1149,7 +1244,12 @@ public class DashboardScreen extends Application {
 		return gridPane;
 		
 	}
-	
+
+	/**
+	 * This method shows the policy owner profile.
+	 *
+	 * @return A GridPane object representing the policy owner profile.
+	 */
 	private GridPane showPolicyOwnerProfile() {
 		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
 		Optional<PolicyOwner> policyOwnerOptionalOptional = policyOwnerController.read(this.userId);
@@ -1212,7 +1312,12 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method shows the beneficiary profile.
+	 *
+	 * @return A GridPane object representing the beneficiary profile.
+	 */
 	private GridPane showBeneficiaryProfile() {
 		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
 		Optional<Beneficiary> beneficiaryOptional = beneficiaryController.read(this.userId);
@@ -1282,7 +1387,13 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method shows the details of a beneficiary.
+	 *
+	 * @param beneficiary The beneficiary whose details are to be shown.
+	 * @return A GridPane object representing the beneficiary details.
+	 */
 	private GridPane showBeneficiaryDetails(Beneficiary beneficiary) {
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
@@ -1334,7 +1445,14 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the form for adding a new beneficiary.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @param beneficiaryTable The TableView object representing the beneficiary table.
+	 * @return A GridPane object representing the form for adding a new beneficiary.
+	 */
 	private static GridPane addNewBeneficiaryForm(BorderPane root, TableView<Beneficiary> beneficiaryTable) {
 		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
 		
@@ -1425,7 +1543,12 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the payment content.
+	 *
+	 * @return A GridPane object representing the payment content.
+	 */
 	private GridPane getPaymentContent() {
 		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
 		Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(userId);
@@ -1456,7 +1579,13 @@ public class DashboardScreen extends Application {
 		
 		return gridPane;
 	}
-	
+
+	/**
+	 * This method creates and returns a GridPane object representing the dependent table.
+	 *
+	 * @param root The root node of the scene graph.
+	 * @return A GridPane object representing the dependent table.
+	 */
 	private static GridPane getDependentTable(BorderPane root) {
 		if (userId == null) {
 			return new GridPane();
