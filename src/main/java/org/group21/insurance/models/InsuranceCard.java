@@ -84,4 +84,11 @@ public class InsuranceCard implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(getCardNumber());
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Card Number: ");
+		sb.append(cardNumber);
+		return sb.toString();
+	}
 }

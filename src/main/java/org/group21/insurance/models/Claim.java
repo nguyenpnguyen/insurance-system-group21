@@ -36,7 +36,7 @@ public class Claim implements Serializable {
 	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	
-	@OneToMany(mappedBy = "claim", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToMany(mappedBy = "claim", fetch = FetchType.EAGER, cascade = {CascadeType.PERSIST, CascadeType.MERGE})
 	private List<Document> document;
 	
 	@Column(name = "claim_amount")
@@ -146,5 +146,12 @@ public class Claim implements Serializable {
 	@Override
 	public int hashCode() {
 		return Objects.hashCode(getClaimId());
+	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Claim ID:");
+		sb.append(claimId);
+		return sb.toString();
 	}
 }

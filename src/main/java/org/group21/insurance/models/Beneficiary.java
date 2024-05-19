@@ -116,5 +116,6 @@ public class Beneficiary extends Customer implements Serializable {
 			this.insuranceRate = insuranceRate;
 		}
 	}
+	
 }
 

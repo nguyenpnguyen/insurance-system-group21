@@ -207,7 +207,6 @@ public class DataSeeder {
 	
 	private static String[] generateRandomNames(int count) {
 		
-		// Let copilot generate names
 		String[] firstNames = {"Nguyen", "Ly", "Tran", "Le", "Pham",
 				"Huynh", "Hoang", "Phan", "Vu", "Vo",
 				"Dang", "Bui", "Do", "Ho", "Ngo",

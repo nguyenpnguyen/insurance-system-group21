@@ -59,4 +59,9 @@ public class SystemAdmin implements Serializable {
 	public int hashCode() {
 		return Objects.hash(getSysAdminId(), getUsername());
 	}
+	
+	@Override
+	public String toString() {
+		return "System Admin";
+	}
 }

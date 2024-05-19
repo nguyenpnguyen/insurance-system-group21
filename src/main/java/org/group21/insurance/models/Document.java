@@ -64,4 +64,11 @@ public class Document implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(getDocumentId());
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("File name: ");
+		sb.append(fileName);
+		return sb.toString();
+	}
 }

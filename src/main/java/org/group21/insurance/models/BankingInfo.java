@@ -64,4 +64,13 @@ public class BankingInfo implements Serializable {
 	public int hashCode() {
 		return Objects.hashCode(getAccountNumber());
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder();
+		sb.append("Account number:'").append(accountNumber).append(",").append("\n");
+		sb.append("Name='").append(name).append(",").append("\n");
+		sb.append("Bank='").append(bank).append(",").append("\n");
+		return sb.toString();
+	}
 }

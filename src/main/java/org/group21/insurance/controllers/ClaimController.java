@@ -126,4 +126,18 @@ public class ClaimController implements GenericController<Claim> {
 			em.getTransaction().commit();
 		}
 	}
+	
+	public List<Claim> readAllByInsuredPerson(String userId) {
+		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
+		
+		try (EntityManager em = emf.createEntityManager()) {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Claim> cq = cb.createQuery(Claim.class);
+			Root<Claim> claim = cq.from(Claim.class);
+			cq.select(claim).where(cb.equal(claim.get("insuredPerson").get("id"), userId));
+			return em.createQuery(cq).getResultList();
+		} catch (NoResultException e) {
+			return Collections.emptyList();
+		}
+	}
 }

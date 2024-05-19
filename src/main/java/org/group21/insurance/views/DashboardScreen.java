@@ -1,6 +1,7 @@
 package org.group21.insurance.views;
 
 import javafx.application.Application;
+import javafx.beans.property.ReadOnlyStringWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -16,20 +17,21 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
-import org.group21.insurance.controllers.ClaimController;
-import org.group21.insurance.models.Beneficiary;
-import org.group21.insurance.models.Claim;
-import org.group21.insurance.models.InsuranceCard;
-import org.group21.insurance.models.PolicyOwner;
+import org.group21.insurance.controllers.*;
+import org.group21.insurance.models.*;
 
 import java.io.File;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public class DashboardScreen extends Application {
 	private String userRole;
 	private String userId;
+	private Stage stage;
 	private ArrayList<Claim> claimList = new ArrayList<>();
 	private ArrayList<Beneficiary> beneficiaryList = new ArrayList<>();
 	private ArrayList<InsuranceCard> insuranceCardList = new ArrayList<>();
@@ -199,6 +201,16 @@ public class DashboardScreen extends Application {
 	}
 	
 	private GridPane getClaimTable(BorderPane root) {
+		ClaimController claimController = ClaimController.getInstance();
+		List<Claim> claims;
+		
+		if (Objects.equals(userRole, "Dependent") || Objects.equals(userRole, "Policy holder")) {
+			// Get all claims for the current user
+			claims = claimController.readAllByInsuredPerson(userId);
+		} else {
+			claims = claimController.readAll();
+		}
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -240,7 +252,9 @@ public class DashboardScreen extends Application {
 		examDateColumn.setCellValueFactory(new PropertyValueFactory<>("examDate"));
 		
 		TableColumn<Claim, String> documentsColumn = new TableColumn<>("Documents");
-		documentsColumn.setCellValueFactory(new PropertyValueFactory<>("document"));
+		documentsColumn.setCellValueFactory(cellData -> new ReadOnlyStringWrapper(cellData.getValue().getDocumentList().stream()
+				.map(Document::getFileName)
+				.collect(Collectors.joining(", "))));
 		
 		TableColumn<Claim, String> claimAmountColumn = new TableColumn<>("Claim Amount");
 		claimAmountColumn.setCellValueFactory(new PropertyValueFactory<>("claimAmount"));
@@ -269,9 +283,6 @@ public class DashboardScreen extends Application {
 			root.setCenter(claimPane);
 		});
 		
-		ClaimController claimController = ClaimController.getInstance();
-		
-		List<Claim> claims = claimController.readAll();
 		ObservableList<Claim> claimData = FXCollections.observableArrayList();
 		
 		claimData.addAll(claims);
@@ -327,102 +338,101 @@ public class DashboardScreen extends Application {
 		column2.setPercentWidth(80);
 		gridPane.getColumnConstraints().addAll(column1, column2);
 		
-		Label userIdLabel = new Label("User ID:");
-		TextField userIdField = new TextField();
-		userIdField.setText(claim.getClaimId());
-		userIdField.setEditable(false);
-		gridPane.add(userIdLabel, 0, 0);
-		gridPane.add(userIdField, 1, 0);
+		Label claimIdLabel = new Label("Claim ID:");
+		TextField claimIdField = new TextField();
+		claimIdField.setText(claim.getClaimId());
+		claimIdField.setEditable(false);
+		gridPane.add(claimIdLabel, 0, 0);
+		gridPane.add(claimIdField, 1, 0);
 		
-		Label fullNameLabel = new Label("Full Name:");
+		Label fullNameLabel = new Label("Insured Person:");
 		TextField fullNameField = new TextField();
-		fullNameField.setText("Default Full Name");
+		fullNameField.setText(claim.getInsuredPerson().toString());
 		fullNameField.setEditable(false);
 		gridPane.add(fullNameLabel, 0, 1);
 		gridPane.add(fullNameField, 1, 1);
 		
+		String role = claim.getInsuredPerson().isPolicyHolder() ? "Policy Holder" : "Dependent";
 		Label roleLabel = new Label("Role:");
 		TextField roleField = new TextField();
-		roleField.setText("Default Role");
+		roleField.setText(role);
 		roleField.setEditable(false);
 		gridPane.add(roleLabel, 0, 2);
 		gridPane.add(roleField, 1, 2);
 		
 		Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
 		TextField insuranceCardNumberField = new TextField();
-		insuranceCardNumberField.setText("Default Insurance Card Number");
+		insuranceCardNumberField.setText(claim.getInsuranceCard().getCardNumber());
 		insuranceCardNumberField.setEditable(false);
 		gridPane.add(insuranceCardNumberLabel, 0, 3);
 		gridPane.add(insuranceCardNumberField, 1, 3);
 		
 		Label claimAmountLabel = new Label("Claim Amount:");
 		TextField claimAmountField = new TextField();
-		claimAmountField.setText("Default Claim Amount");
+		claimAmountField.setText(String.valueOf(claim.getClaimAmount()));
 		claimAmountField.setEditable(false);
 		gridPane.add(claimAmountLabel, 0, 4);
 		gridPane.add(claimAmountField, 1, 4);
 		
 		Label claimDateLabel = new Label("Claim Date:");
 		TextField claimDateField = new TextField();
-		claimDateField.setText("Default Claim Date");
+		claimDateField.setText(String.valueOf(claim.getClaimDate()));
 		claimDateField.setEditable(false);
 		gridPane.add(claimDateLabel, 0, 5);
 		gridPane.add(claimDateField, 1, 5);
 		
-		Label insuredPersonLabel = new Label("Insured Person:");
-		TextField insuredPersonField = new TextField();
-		insuredPersonField.setText("Default Insured Person");
-		insuredPersonField.setEditable(false);
-		gridPane.add(insuredPersonLabel, 0, 6);
-		gridPane.add(insuredPersonField, 1, 6);
-		
 		Label examDateLabel = new Label("Exam Date:");
 		TextField examDateField = new TextField();
-		examDateField.setText("Default Exam Date");
+		examDateField.setText(String.valueOf(claim.getExamDate()));
 		examDateField.setEditable(false);
 		gridPane.add(examDateLabel, 0, 7);
 		gridPane.add(examDateField, 1, 7);
 		
 		Label documentListLabel = new Label("Document List:");
 		TextField documentListField = new TextField();
-		documentListField.setText("Default Document List");
+		documentListField.setText(claim.getDocumentList().toString());
 		documentListField.setEditable(false);
 		gridPane.add(documentListLabel, 0, 8);
 		gridPane.add(documentListField, 1, 8);
 		
+		Label statusLabel = new Label("Status:");
+		TextField statusField = new TextField();
+		statusField.setText(String.valueOf(claim.getStatus()));
+		statusField.setEditable(false);
+		gridPane.add(statusLabel, 0, 9);
+		gridPane.add(statusField, 1, 9);
+		
 		if (action.equals("update")) {
-			userIdField.setEditable(true);
-			fullNameField.setEditable(true);
-			roleField.setEditable(true);
-			insuranceCardNumberField.setEditable(true);
+			claimIdField.setEditable(false);
+			fullNameField.setEditable(false);
+			roleField.setEditable(false);
+			insuranceCardNumberField.setEditable(false);
 			claimAmountField.setEditable(true);
 			claimDateField.setEditable(true);
-			insuredPersonField.setEditable(true);
 			examDateField.setEditable(true);
-			documentListField.setEditable(true);
+			documentListField.setEditable(false);
+			statusField.setEditable(true);
 			Button saveBtn = new Button("Save");
 			gridPane.add(saveBtn, 1, 9);
 			saveBtn.setOnAction(e -> {
 				// TODO: Change this to update the claim in the database
-				String updatedUserId = userIdField.getText();
-				String updatedFullName = fullNameField.getText();
-				String updatedRole = roleField.getText();
-				String updatedInsuranceCardNumber = insuranceCardNumberField.getText();
 				String updatedClaimAmount = claimAmountField.getText();
 				String updatedClaimDate = claimDateField.getText();
-				String updatedInsuredPerson = insuredPersonField.getText();
 				String updatedExamDate = examDateField.getText();
-				String updatedDocumentList = documentListField.getText();
+				String updatedStatus = statusField.getText();
 				
-				Claim updatedClaim = new Claim();
-				updatedClaim.setClaimId(updatedUserId);
-				updatedClaim.setClaimDate(LocalDate.now());
-				updatedClaim.setExamDate(LocalDate.now());
+				claim.setClaimDate(LocalDate.parse(updatedClaimDate));
+				claim.setExamDate(LocalDate.parse(updatedExamDate));
+				claim.setStatus(Claim.ClaimStatus.valueOf(updatedStatus));
+				claim.setClaimAmount(Long.parseLong(updatedClaimAmount));
+				
+				ClaimController claimController = ClaimController.getInstance();
+				claimController.update(claim);
 				
 				// TODO: Replace this byb reloading the table from the database
 				int index = table.getItems().indexOf(claim);
 				if (index != -1) {
-					table.getItems().set(index, updatedClaim);
+					table.getItems().set(index, claim);
 				}
 			});
 		}
@@ -430,7 +440,7 @@ public class DashboardScreen extends Application {
 		return gridPane;
 	}
 	
-	private static GridPane addNewClaimForm(BorderPane root, TableView<Claim> table) {
+	private GridPane addNewClaimForm(BorderPane root, TableView<Claim> table) {
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -443,73 +453,163 @@ public class DashboardScreen extends Application {
 		column2.setPercentWidth(80);
 		gridPane.getColumnConstraints().addAll(column1, column2);
 		
-		Label userIdLabel = new Label("User ID:");
-		TextField userIdField = new TextField();
-		gridPane.add(userIdLabel, 0, 0);
-		gridPane.add(userIdField, 1, 0);
+		// Insured Person Field
+		Label insuredPersonLabel = new Label("Insured Person ID:");
+		TextField insuredPersonField = new TextField();
+		gridPane.add(insuredPersonLabel, 0, 0);
+		gridPane.add(insuredPersonField, 1, 0);
 		
-		Label fullNameLabel = new Label("Full Name:");
-		TextField fullNameField = new TextField();
-		gridPane.add(fullNameLabel, 0, 1);
-		gridPane.add(fullNameField, 1, 1);
+		// Claim Amount Field
+		Label claimAmountLabel = new Label("Claim Amount:");
+		TextField claimAmountField = new TextField();
+		gridPane.add(claimAmountLabel, 0, 2);
+		gridPane.add(claimAmountField, 1, 2);
 		
-		Label insuranceCardLabel = new Label("Insurance Card:");
-		TextField insuranceCardField = new TextField();
-		gridPane.add(insuranceCardLabel, 0, 2);
-		gridPane.add(insuranceCardField, 1, 2);
+		// Banking Info Field
+		Label bankingInfoLabel = new Label("Bank account number:");
+		TextField bankingInfoField = new TextField();
+		gridPane.add(bankingInfoLabel, 0, 3);
+		gridPane.add(bankingInfoField, 1, 3);
 		
+		// Claim Date Picker
+		Label claimDateLabel = new Label("Claim Date:");
+		DatePicker claimDatePicker = new DatePicker();
+		gridPane.add(claimDateLabel, 0, 4);
+		gridPane.add(claimDatePicker, 1, 4);
+		
+		// Exam Date Picker
+		Label examDateLabel = new Label("Exam Date:");
+		DatePicker examDatePicker = new DatePicker();
+		gridPane.add(examDateLabel, 0, 5);
+		gridPane.add(examDatePicker, 1, 5);
+		
+		// Document Upload
 		Label uploadLabel = new Label("Upload Document:");
-		Button uploadButton = new Button("Upload PDF");
-		Label fileNamesLabel = new Label("");
+		Button selectButton = new Button("Select Documents");
+		ListView<String> documentListView = new ListView<>();
+		gridPane.add(uploadLabel, 0, 6);
+		gridPane.add(selectButton, 1, 6);
+		gridPane.add(documentListView, 1, 7);
 		
-		gridPane.add(uploadLabel, 0, 3);
-		gridPane.add(uploadButton, 1, 3);
-		ListView<HBox> fileListView = new ListView<>();
-		gridPane.add(fileListView, 1, 4);
+		List<File> selectedFileList = new ArrayList<>();
 		
-		FileChooser fileChooser = new FileChooser();
-		fileChooser.getExtensionFilters().add(new FileChooser.ExtensionFilter("PDF Files", "*.pdf"));
-		
-		uploadButton.setOnAction(e -> {
-			List<File> selectedFiles = fileChooser.showOpenMultipleDialog(null);
+		selectButton.setOnAction(e -> {
+			FileChooser fileChooser = new FileChooser();
+			fileChooser.setTitle("Select Documents");
+			fileChooser.getExtensionFilters().addAll(
+					new FileChooser.ExtensionFilter("All Files", "*.*"),
+					new FileChooser.ExtensionFilter("PDF", "*.pdf")
+			);
+			List<File> selectedFiles = fileChooser.showOpenMultipleDialog(stage);
 			if (selectedFiles != null) {
-				StringBuilder fileNames = new StringBuilder();
 				for (File file : selectedFiles) {
-					// Append the name of the file to the fileNames string
-					fileNames.append(file.getName()).append("\n");
-					
-					HBox fileBox = new HBox();
-					
-					// Create a Label for the file name
-					Label fileNameLabel = new Label(file.getName());
-					fileBox.getChildren().add(fileNameLabel);
-					
-					// Create a Button for deleting the file
-					Button deleteButton = new Button("X");
-					deleteButton.setOnAction(e2 -> {
-						// Remove the HBox from the ListView when the delete button is clicked
-						fileListView.getItems().remove(fileBox);
-					});
-					fileBox.getChildren().add(deleteButton);
-					
-					// Add the HBox to the ListView
-					fileListView.getItems().add(fileBox);
+					documentListView.getItems().add(file.getName());
+					selectedFileList.add(file);
 				}
-				
-				// Set the text of the fileNamesLabel to the names of the selected files
-				fileNamesLabel.setText(fileNames.toString());
-				
-			} else {
-				System.out.println("File selection cancelled.");
 			}
 		});
 		
+		// Status ComboBox
+		Label statusLabel = new Label("Status:");
+		ComboBox<Claim.ClaimStatus> statusComboBox = new ComboBox<>();
+		statusComboBox.getItems().addAll(Claim.ClaimStatus.values());
+		gridPane.add(statusLabel, 0, 8);
+		gridPane.add(statusComboBox, 1, 8);
+		
+		// Submit Button
 		Button submitButton = new Button("Submit");
-		gridPane.add(submitButton, 1, 5);
+		gridPane.add(submitButton, 1, 9);
 		
 		submitButton.setOnAction(e -> {
-			//TODO: Add new Claim to the database, then make the database down by hosting
-			root.setCenter(table);
+			try {
+				// Collect data from form fields
+				String insuredPersonId = insuredPersonField.getText();
+				String claimAmountStr = bankingInfoField.getText();
+				LocalDate claimDate = claimDatePicker.getValue();
+				LocalDate examDate = examDatePicker.getValue();
+				Claim.ClaimStatus status = statusComboBox.getValue();
+				String bankingInfo = bankingInfoField.getText();
+				
+				// Validate data
+				if (insuredPersonId.isEmpty() || claimAmountStr.isEmpty() || claimDate == null || examDate == null || status == null) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Validation Error");
+					alert.setContentText("Please fill all required fields.");
+					alert.showAndWait();
+					return;
+				}
+				long claimAmount = Long.parseLong(claimAmountStr);
+				
+				BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+				Optional<Beneficiary> insuredPerSon = beneficiaryController.read(insuredPersonId);
+				
+				if (insuredPerSon.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Invalid Insured Person");
+					alert.setContentText("The insured person with ID " + insuredPersonId + " does not exist.");
+					alert.showAndWait();
+					return;
+				}
+				Claim newClaim = new Claim();
+				newClaim.setInsuredPerson(insuredPerSon.get());
+				newClaim.setClaimAmount(claimAmount);
+				newClaim.setClaimDate(claimDate);
+				newClaim.setExamDate(examDate);
+				newClaim.setStatus(status);
+				
+				InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
+				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(insuredPerSon.get());
+				
+				newClaim.setInsuranceCard(insuranceCard);
+				
+				BankingInfoController bankingInfoController = BankingInfoController.getInstance();
+				Optional<BankingInfo> bankingInfoOptional = bankingInfoController.read(bankingInfo);
+				
+				if (bankingInfoOptional.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Invalid Banking Info");
+					alert.setContentText("The banking info with account number " + bankingInfo + " does not exist.");
+					alert.showAndWait();
+					return;
+				}
+				
+				newClaim.setReceiverBankingInfo(bankingInfoOptional.get());
+				
+				// Save the claim to the database
+				ClaimController claimController = ClaimController.getInstance();
+				claimController.create(newClaim);
+				
+				DocumentController documentController = DocumentController.getInstance();
+				for (File file : selectedFileList) {
+					documentController.uploadDocument(file, newClaim);
+				}
+				
+				// Add the claim to the table
+				table.getItems().add(newClaim);
+				
+				// Show success message
+				Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+				successAlert.setTitle("Success");
+				successAlert.setHeaderText(null);
+				successAlert.setContentText("Claim added successfully.");
+				successAlert.showAndWait();
+				
+			} catch (NumberFormatException ex) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Invalid Input");
+				alert.setContentText("Please enter a valid number for claim amount.");
+				alert.showAndWait();
+			} catch (Exception ex) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Error Adding Claim");
+				alert.setContentText("An error occurred while adding the claim.");
+				alert.showAndWait();
+			}
 		});
 		
 		return gridPane;
@@ -598,6 +698,18 @@ public class DashboardScreen extends Application {
 	}
 	
 	private static GridPane showInsuranceCardDetails(InsuranceCard insuranceCard) {
+		InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
+		Optional<InsuranceCard> insuranceCardOptional = insuranceCardController.read(insuranceCard.getCardNumber());
+		if (insuranceCardOptional.isEmpty()) {
+			Alert alert = new Alert(Alert.AlertType.ERROR);
+			alert.setTitle("Error");
+			alert.setHeaderText("Insurance Card Not Found");
+			alert.setContentText("The insurance card with card number " + insuranceCard.getCardNumber() + " does not exist.");
+			return new GridPane();
+		}
+		
+		insuranceCard = insuranceCardOptional.get();
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -619,21 +731,21 @@ public class DashboardScreen extends Application {
 		
 		Label policyOwnerLabel = new Label("Policy Owner:");
 		TextField policyOwnerField = new TextField();
-		policyOwnerField.setText("Default Full Name");
+		policyOwnerField.setText(insuranceCard.getPolicyOwner().getFullName());
 		policyOwnerField.setEditable(false);
 		gridPane.add(policyOwnerLabel, 0, 1);
 		gridPane.add(policyOwnerField, 1, 1);
 		
 		Label cardHolderLabel = new Label("Card Holder:");
 		TextField cardHolderField = new TextField();
-		cardHolderField.setText("Default Role");
+		cardHolderField.setText(insuranceCard.getCardHolder().getFullName());
 		cardHolderField.setEditable(false);
 		gridPane.add(cardHolderLabel, 0, 2);
 		gridPane.add(cardHolderField, 1, 2);
 		
 		Label expirationDateLabel = new Label("Expiration Date:");
 		TextField expirationDateField = new TextField();
-		expirationDateField.setText("Default Expiration Date");
+		expirationDateField.setText(String.valueOf(insuranceCard.getExpirationDate()));
 		expirationDateField.setEditable(false);
 		gridPane.add(expirationDateLabel, 0, 3);
 		gridPane.add(expirationDateField, 1, 3);
@@ -654,29 +766,60 @@ public class DashboardScreen extends Application {
 		column2.setPercentWidth(80);
 		gridPane.getColumnConstraints().addAll(column1, column2);
 		
-		Label cardNumberLabel = new Label("Card Number:");
-		TextField cardNumberField = new TextField();
-		gridPane.add(cardNumberLabel, 0, 0);
-		gridPane.add(cardNumberField, 1, 0);
+		Label cardHolderLabel = new Label("Card Holder ID:");
+		TextField cardHolderField = new TextField();
+		gridPane.add(cardHolderLabel, 0, 0);
+		gridPane.add(cardHolderField, 1, 0);
 		
-		Label fullNameLabel = new Label("Full Name:");
-		TextField fullNameField = new TextField();
-		gridPane.add(fullNameLabel, 0, 1);
-		gridPane.add(fullNameField, 1, 1);
-		
-		Label insuranceCardLabel = new Label("Policy Holder:");
-		TextField insuranceCardField = new TextField();
-		gridPane.add(insuranceCardLabel, 0, 2);
-		gridPane.add(insuranceCardField, 1, 2);
+		Label policyOwnerLabel = new Label("Policy Owner ID:");
+		TextField policyOwnerField = new TextField();
+		gridPane.add(policyOwnerLabel, 0, 1);
+		gridPane.add(policyOwnerField, 1, 1);
 		
 		Label expirationDateLabel = new Label("Expiration Date:");
 		DatePicker expirationDateField = new DatePicker();
+		gridPane.add(expirationDateLabel, 0, 2);
+		gridPane.add(expirationDateField, 1, 2);
 		
 		Button submitButton = new Button("Submit");
 		gridPane.add(submitButton, 1, 3);
 		
+		String cardHolderId = cardHolderField.getText();
+		String policyOwnerId = policyOwnerField.getText();
+		LocalDate expirationDate = expirationDateField.getValue();
+		
 		submitButton.setOnAction(e -> {
-			//TODO: Add new Insurance to the database, then make the database down by hosting
+			InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
+			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+			PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+			
+			Optional<Beneficiary> cardHolderOptional = beneficiaryController.read(cardHolderId);
+			Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(policyOwnerId);
+			
+			if (cardHolderOptional.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Invalid Card Holder");
+				alert.setContentText("The card holder with ID " + cardHolderId + " does not exist.");
+				alert.showAndWait();
+				return;
+			}
+			
+			if (policyOwnerOptional.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Invalid Policy Owner");
+				alert.setContentText("The policy owner with ID " + policyOwnerId + " does not exist.");
+				alert.showAndWait();
+				return;
+			}
+			
+			InsuranceCard newInsuranceCard = new InsuranceCard();
+			newInsuranceCard.setCardHolder(cardHolderOptional.get());
+			newInsuranceCard.setPolicyOwner(policyOwnerOptional.get());
+			newInsuranceCard.setExpirationDate(expirationDate);
+			
+			insuranceCardController.create(newInsuranceCard);
 			root.setCenter(table);
 		});
 		

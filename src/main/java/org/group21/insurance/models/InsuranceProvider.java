@@ -116,4 +116,16 @@ public class InsuranceProvider implements Serializable {
 	public int hashCode() {
 		return Objects.hash(getInsuranceProviderId(), getUsername());
 	}
+	
+	@Override
+	public String toString() {
+		if (this.isInsuranceManager) {
+			return "Insurance Manager ID: " +
+					insuranceProviderId + "," + "\n" +
+					"Name: " + fullName;
+		}
+		return "Insurance Surveyor ID: " +
+				insuranceProviderId + "," + "\n" +
+				"Name: " + fullName;
+	}
 }

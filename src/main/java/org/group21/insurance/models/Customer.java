@@ -116,4 +116,12 @@ public abstract class Customer implements Serializable {
 	public int hashCode() {
 		return Objects.hash(getCustomerId(), getUsername());
 	}
+	
+	@Override
+	public String toString() {
+		final StringBuilder sb = new StringBuilder("Customer ID: ");
+		sb.append(customerId).append(",").append('\n');
+		sb.append("Customer name: ").append(fullName);
+		return sb.toString();
+	}
 }
