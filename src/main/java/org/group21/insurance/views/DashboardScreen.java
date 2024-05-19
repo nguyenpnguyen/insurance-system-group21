@@ -651,64 +651,67 @@ public class DashboardScreen extends Application {
 		// Fetch the list of InsuranceCard objects from the database
 		InsuranceCardController insuranceCardController = InsuranceCardController.getInstance();
 		List<InsuranceCard> insuranceCards = new ArrayList<>();
-		if (Objects.equals(userRole, "Dependent")) {
-			// Get the insurance card for the current user
-			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
-			Optional<Beneficiary> insuredPerson = beneficiaryController.read(userId);
-			if (insuredPerson.isEmpty()) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Error");
-				alert.setHeaderText("Insured Person Not Found");
-				alert.setContentText("The insured person with ID " + userId + " does not exist.");
-				alert.showAndWait();
-				return new GridPane();
+		switch (userRole) {
+			case "Dependent" -> {
+				// Get the insurance card for the current user
+				BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+				Optional<Beneficiary> insuredPerson = beneficiaryController.read(userId);
+				if (insuredPerson.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Insured Person Not Found");
+					alert.setContentText("The insured person with ID " + userId + " does not exist.");
+					alert.showAndWait();
+					return new GridPane();
+				}
+				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(insuredPerson.get());
+				return showInsuranceCardDetails(insuranceCard);
 			}
-			InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(insuredPerson.get());
-			return showInsuranceCardDetails(insuranceCard);
-		} else if (Objects.equals(userRole, "Policy holder")) {
-			// Get the insurance cards for the policy holder
-			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
-			Optional<Beneficiary> policyHolderOptional = beneficiaryController.readPolicyHolder(userId);
-			if (policyHolderOptional.isEmpty()) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Error");
-				alert.setHeaderText("Policy Holder Not Found");
-				alert.setContentText("The policy holder with ID " + userId + " does not exist.");
-				alert.showAndWait();
-				return new GridPane();
-			}
-			
-			Beneficiary policyHolder = policyHolderOptional.get();
-			List<Beneficiary> dependents = policyHolder.getDependents();
-			for (Beneficiary dependent : dependents) {
-				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(dependent);
-				if (insuranceCard != null) {
-					insuranceCards.add(insuranceCard);
+			case "Policy holder" -> {
+				// Get the insurance cards for the policy holder
+				BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+				Optional<Beneficiary> policyHolderOptional = beneficiaryController.readPolicyHolder(userId);
+				if (policyHolderOptional.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Policy Holder Not Found");
+					alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+					alert.showAndWait();
+					return new GridPane();
+				}
+				
+				Beneficiary policyHolder = policyHolderOptional.get();
+				List<Beneficiary> dependents = policyHolder.getDependents();
+				for (Beneficiary dependent : dependents) {
+					InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(dependent);
+					if (insuranceCard != null) {
+						insuranceCards.add(insuranceCard);
+					}
 				}
 			}
-		} else if (Objects.equals(userRole, "Policy owner")) {
-			// Get the insurance cards for the policy owner
-			PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
-			Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(userId);
-			if (policyOwnerOptional.isEmpty()) {
-				Alert alert = new Alert(Alert.AlertType.ERROR);
-				alert.setTitle("Error");
-				alert.setHeaderText("Policy Owner Not Found");
-				alert.setContentText("The policy owner with ID " + userId + " does not exist.");
-				alert.showAndWait();
-				return new GridPane();
-			}
-			
-			PolicyOwner policyOwner = policyOwnerOptional.get();
-			List<Beneficiary> beneficiaries = policyOwner.getBeneficiaries();
-			for (Beneficiary beneficiary : beneficiaries) {
-				InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(beneficiary);
-				if (insuranceCard != null) {
-					insuranceCards.add(insuranceCard);
+			case "Policy owner" -> {
+				// Get the insurance cards for the policy owner
+				PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+				Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(userId);
+				if (policyOwnerOptional.isEmpty()) {
+					Alert alert = new Alert(Alert.AlertType.ERROR);
+					alert.setTitle("Error");
+					alert.setHeaderText("Policy Owner Not Found");
+					alert.setContentText("The policy owner with ID " + userId + " does not exist.");
+					alert.showAndWait();
+					return new GridPane();
+				}
+				
+				PolicyOwner policyOwner = policyOwnerOptional.get();
+				List<Beneficiary> beneficiaries = policyOwner.getBeneficiaries();
+				for (Beneficiary beneficiary : beneficiaries) {
+					InsuranceCard insuranceCard = insuranceCardController.findCardByCardHolder(beneficiary);
+					if (insuranceCard != null) {
+						insuranceCards.add(insuranceCard);
+					}
 				}
 			}
-		} else {
-			insuranceCards = insuranceCardController.readAll();
+			default -> insuranceCards = insuranceCardController.readAll();
 		}
 		
 		GridPane gridPane = new GridPane();
