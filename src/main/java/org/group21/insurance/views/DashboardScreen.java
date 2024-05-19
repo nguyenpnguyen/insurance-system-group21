@@ -297,43 +297,48 @@ public class DashboardScreen extends Application {
 		
 		table.getColumns().addAll(idColumn, claimDateColumn, beneficiaryColumn, insuranceCardNumberColumn, examDateColumn, documentsColumn, claimAmountColumn, statusColumn, receiverBankingInfoColumn);
 		
-		ContextMenu deleteOrUpdateContextMenu = new ContextMenu();
-		MenuItem updateItem = new MenuItem("Update");
-		MenuItem deleteItem = new MenuItem("Delete");
-		deleteOrUpdateContextMenu.getItems().addAll(updateItem, deleteItem);
-		
-		deleteItem.setOnAction(e -> {
-			Claim selectedClaim = table.getSelectionModel().getSelectedItem();
-			table.getItems().remove(selectedClaim);
-		});
-		
-		updateItem.setOnAction(e -> {
-			Claim selectedClaim = table.getSelectionModel().getSelectedItem();
-			GridPane claimPane = showClaimDetails(selectedClaim, "update", table);
-			root.setCenter(claimPane);
-		});
-		
-		ObservableList<Claim> claimData = FXCollections.observableArrayList();
-		
-		claimData.addAll(claims);
-		
-		table.setItems(claimData);
-		
-		table.setRowFactory(tv -> {
-			TableRow<Claim> row = new TableRow<>();
-			row.setContextMenu(deleteOrUpdateContextMenu);
-			row.setOnMouseClicked(e -> {
-				if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty()) && this.userRole != "Dependent") {
-					deleteOrUpdateContextMenu.show(row, e.getScreenX(), e.getScreenY());
-				} else if (e.getButton() == MouseButton.PRIMARY && (!row.isEmpty())) {
-					Claim clickedClaim = row.getItem();
-					GridPane claimPane = showClaimDetails(clickedClaim, "view", table);
-					root.setCenter(claimPane);
-				}
+		if (Objects.equals(userRole, "Insurance manager") ||
+				Objects.equals(userRole, "Insurance surveyor") ||
+				Objects.equals(userRole, "System admin")) {
+			ContextMenu deleteOrUpdateContextMenu = new ContextMenu();
+			MenuItem updateItem = new MenuItem("Update");
+			MenuItem deleteItem = new MenuItem("Delete");
+			deleteOrUpdateContextMenu.getItems().addAll(updateItem, deleteItem);
+			
+			deleteItem.setOnAction(e -> {
+				Claim selectedClaim = table.getSelectionModel().getSelectedItem();
+				claimController.delete(selectedClaim);
+				table.getItems().remove(selectedClaim);
 			});
 			
-			return row;
-		});
+			updateItem.setOnAction(e -> {
+				Claim selectedClaim = table.getSelectionModel().getSelectedItem();
+				GridPane claimPane = showClaimDetails(selectedClaim, "update", table);
+				root.setCenter(claimPane);
+			});
+			
+			ObservableList<Claim> claimData = FXCollections.observableArrayList();
+			
+			claimData.addAll(claims);
+			
+			table.setItems(claimData);
+			
+			table.setRowFactory(tv -> {
+				TableRow<Claim> row = new TableRow<>();
+				row.setContextMenu(deleteOrUpdateContextMenu);
+				row.setOnMouseClicked(e -> {
+					if (e.getButton() == MouseButton.SECONDARY && (!row.isEmpty()) && this.userRole != "Dependent") {
+						deleteOrUpdateContextMenu.show(row, e.getScreenX(), e.getScreenY());
+					} else if (e.getButton() == MouseButton.PRIMARY && (!row.isEmpty())) {
+						Claim clickedClaim = row.getItem();
+						GridPane claimPane = showClaimDetails(clickedClaim, "view", table);
+						root.setCenter(claimPane);
+					}
+				});
+				
+				return row;
+			});
+		}
 		
 		HBox header = new HBox();
 		header.setStyle("-fx-padding: 10; -fx-background-color: #f0f0f0;");
