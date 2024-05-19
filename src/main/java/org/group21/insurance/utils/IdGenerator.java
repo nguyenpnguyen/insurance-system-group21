@@ -16,6 +16,7 @@ import java.util.stream.Stream;
  * Class used to generate unique identifiers for entities.
  * </p>
  *
+ * @author Group 21
  * @see <a href="https://www.baeldung.com/hibernate-identifiers">Baeldung</a>
  */
 public class IdGenerator implements IdentifierGenerator, Configurable {

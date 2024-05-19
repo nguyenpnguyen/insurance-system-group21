@@ -1,5 +1,9 @@
 package org.group21.insurance.utils;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import jakarta.persistence.Persistence;

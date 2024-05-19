@@ -16,6 +16,7 @@ import java.util.regex.Pattern;
  * <p>Instances of this class can be used
  * concurrently by multiple threads.</p>
  *
+ * @author Group 21
  * @see <a href="http://stackoverflow.com/a/2861125/3474">StackOverflow</a>
  * @see <a href="https://www.baeldung.com/java-password-hashing">Baeldung</a>
  */

@@ -1,5 +1,9 @@
 package org.group21.insurance.controllers;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
 import org.group21.insurance.models.Claim;

@@ -1,5 +1,9 @@
 package org.group21.insurance.data;
 
+/**
+ * @author Group 21
+ */
+
 import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.controllers.*;
 import org.group21.insurance.models.*;

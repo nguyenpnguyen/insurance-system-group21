@@ -1,5 +1,9 @@
 package org.group21.insurance.models;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.*;
 
 import java.io.Serializable;
@@ -9,7 +13,7 @@ import java.util.List;
 @Table(name = "beneficiaries")
 public class Beneficiary extends Customer implements Serializable {
 	
-	@OneToOne(cascade = CascadeType.PERSIST)
+	@OneToOne(cascade = CascadeType.PERSIST, fetch = FetchType.EAGER)
 	@JoinColumn(name = "insurance_card_number", referencedColumnName = "card_number")
 	private InsuranceCard insuranceCard;
 	
@@ -17,10 +21,10 @@ public class Beneficiary extends Customer implements Serializable {
 	@JoinColumn(name = "policy_holder_id", referencedColumnName = "customer_id")
 	private Beneficiary policyHolder;
 	
-	@OneToMany(mappedBy = "policyHolder", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToMany(mappedBy = "policyHolder", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	private List<Beneficiary> dependents;
 	
-	@OneToMany(mappedBy = "insuredPerson", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToMany(mappedBy = "insuredPerson", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	private List<Claim> claims;
 	
 	@ManyToOne

@@ -1,5 +1,9 @@
 package org.group21.insurance.views;
 
+/**
+ * @author Group 21
+ */
+
 import javafx.application.Application;
 import javafx.geometry.Insets;
 import javafx.geometry.Pos;
@@ -108,9 +112,5 @@ public class LoginScreen extends Application {
 			errorLabel.setText("Error: User not authenticated.");
 		}
 		
-	}
-	
-	public static void main(String[] args) {
-		launch(args);
 	}
 }

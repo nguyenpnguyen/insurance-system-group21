@@ -1,5 +1,9 @@
 package org.group21.insurance.utils;
 
+/**
+ * @author Group 21
+ */
+
 import org.group21.insurance.controllers.ClaimController;
 import org.group21.insurance.models.Beneficiary;
 import org.group21.insurance.models.Claim;

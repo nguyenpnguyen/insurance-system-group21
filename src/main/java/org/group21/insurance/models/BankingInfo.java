@@ -1,5 +1,9 @@
 package org.group21.insurance.models;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

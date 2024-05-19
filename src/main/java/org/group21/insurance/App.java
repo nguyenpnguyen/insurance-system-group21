@@ -7,6 +7,8 @@ import org.group21.insurance.views.LoginScreen;
 
 /**
  * JavaFX App
+ *
+ * @author Group 21
  */
 public class App extends Application {
 	
@@ -22,7 +24,6 @@ public class App extends Application {
 		// Close EntityManagerFactory when the application is closed
 		Runtime.getRuntime().addShutdownHook(new Thread(() -> {
 			EntityManagerFactorySingleton.close();
-			System.out.println("Closing EntityManagerFactory");
 			System.out.println("Shutting down...");
 		}));
 		

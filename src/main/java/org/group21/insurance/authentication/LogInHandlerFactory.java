@@ -1,5 +1,8 @@
 package org.group21.insurance.authentication;
 
+/**
+ * @author Group 21
+ */
 public class LogInHandlerFactory {
 	private static final String POLICY_OWNER = "Policy owner";
 	private static final String SYSTEM_ADMIN = "System admin";

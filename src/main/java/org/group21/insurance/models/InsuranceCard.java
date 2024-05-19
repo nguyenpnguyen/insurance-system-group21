@@ -1,5 +1,9 @@
 package org.group21.insurance.models;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.*;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -21,11 +25,11 @@ public class InsuranceCard implements Serializable {
 	@Column(name = "card_number")
 	private String cardNumber;
 	
-	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	@JoinColumn(name = "policy_owner_id", referencedColumnName = "customer_id")
 	private PolicyOwner policyOwner;
 	
-	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	@JoinColumn(name = "card_holder_id", referencedColumnName = "customer_id")
 	private Beneficiary cardHolder;
 	

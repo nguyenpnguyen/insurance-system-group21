@@ -1,5 +1,9 @@
 package org.group21.insurance.models;
 
+/**
+ * @author Group 21
+ */
+
 import jakarta.persistence.*;
 
 import java.io.Serializable;

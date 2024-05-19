@@ -1,7 +1,12 @@
 package org.group21.insurance.views;
 
+/**
+ * @author Group 21
+ */
+
 import javafx.application.Application;
 import javafx.beans.property.ReadOnlyStringWrapper;
+import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Insets;
@@ -19,6 +24,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 import org.group21.insurance.controllers.*;
 import org.group21.insurance.models.*;
+import org.group21.insurance.utils.ClaimCalculator;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -29,8 +35,8 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 public class DashboardScreen extends Application {
-	private String userRole;
-	private String userId;
+	private static String userRole;
+	private static String userId;
 	private Stage stage;
 	private ArrayList<Claim> claimList = new ArrayList<>();
 	private ArrayList<Beneficiary> beneficiaryList = new ArrayList<>();
@@ -135,7 +141,7 @@ public class DashboardScreen extends Application {
 			root.setCenter(new Label("Content for Dashboard"));
 		});
 		dependentBtn.setOnAction(e -> {
-			root.setCenter(getBeneficiaryTable(root));
+			root.setCenter(getDependentTable(root));
 			root.setRight(null);
 		});
 		claimBtn.setOnAction(e -> {
@@ -204,9 +210,27 @@ public class DashboardScreen extends Application {
 		ClaimController claimController = ClaimController.getInstance();
 		List<Claim> claims;
 		
-		if (Objects.equals(userRole, "Dependent") || Objects.equals(userRole, "Policy holder")) {
+		if (Objects.equals(userRole, "Dependent")) {
 			// Get all claims for the current user
 			claims = claimController.readAllByInsuredPerson(userId);
+		} else if (Objects.equals(userRole, "Policy holder")) {
+			// Get all claims for the policy holder
+			BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+			Optional<Beneficiary> policyHolder = beneficiaryController.readPolicyHolder(userId);
+			if (policyHolder.isEmpty()) {
+				Alert alert = new Alert(Alert.AlertType.ERROR);
+				alert.setTitle("Error");
+				alert.setHeaderText("Policy Holder Not Found");
+				alert.setContentText("The policy holder with ID " + userId + " does not exist.");
+			}
+			
+			claims = claimController.readAllByInsuredPerson(String.valueOf(policyHolder.get().getCustomerId()));
+			
+			List<Beneficiary> dependents = policyHolder.get().getDependents();
+			for (Beneficiary dependent : dependents) {
+				claims.addAll(claimController.readAllByInsuredPerson(dependent.getCustomerId()));
+			}
+			
 		} else {
 			claims = claimController.readAll();
 		}
@@ -325,6 +349,7 @@ public class DashboardScreen extends Application {
 	}
 	
 	private static GridPane showClaimDetails(Claim claim, String action, TableView<Claim> table) {
+		ClaimController claimController = ClaimController.getInstance();
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -415,7 +440,6 @@ public class DashboardScreen extends Application {
 			Button saveBtn = new Button("Save");
 			gridPane.add(saveBtn, 1, 9);
 			saveBtn.setOnAction(e -> {
-				// TODO: Change this to update the claim in the database
 				String updatedClaimAmount = claimAmountField.getText();
 				String updatedClaimDate = claimDateField.getText();
 				String updatedExamDate = examDateField.getText();
@@ -426,14 +450,16 @@ public class DashboardScreen extends Application {
 				claim.setStatus(Claim.ClaimStatus.valueOf(updatedStatus));
 				claim.setClaimAmount(Long.parseLong(updatedClaimAmount));
 				
-				ClaimController claimController = ClaimController.getInstance();
 				claimController.update(claim);
 				
-				// TODO: Replace this byb reloading the table from the database
-				int index = table.getItems().indexOf(claim);
-				if (index != -1) {
-					table.getItems().set(index, claim);
-				}
+				Optional<Claim> updatedClaimOptional = claimController.read(claim.getClaimId());
+				
+				updatedClaimOptional.ifPresent(updatedClaim -> {
+					int index = table.getItems().indexOf(claim);
+					if (index != -1) {
+						table.getItems().set(index, updatedClaim);
+					}
+				});
 			});
 		}
 		
@@ -828,6 +854,12 @@ public class DashboardScreen extends Application {
 	
 	
 	private GridPane getBeneficiaryTable(BorderPane root) {
+		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+		List<Beneficiary> beneficiaries = beneficiaryController.readAll();
+		
+		ObservableList<Beneficiary> beneficiaryData = FXCollections.observableArrayList();
+		beneficiaryData.addAll(beneficiaries);
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -840,7 +872,7 @@ public class DashboardScreen extends Application {
 		TableView<Beneficiary> table = new TableView<>();
 		
 		TableColumn<Beneficiary, String> beneficiaryIdColumn = new TableColumn<>("ID");
-		beneficiaryIdColumn.setCellValueFactory(new PropertyValueFactory<>("beneficiaryId"));
+		beneficiaryIdColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
 		
 		beneficiaryIdColumn.setCellFactory(tc -> new TableCell<Beneficiary, String>() {
 			@Override
@@ -856,7 +888,7 @@ public class DashboardScreen extends Application {
 		});
 		
 		TableColumn<Beneficiary, String> roleColumn = new TableColumn<>("Role");
-		roleColumn.setCellValueFactory(new PropertyValueFactory<>("role"));
+		roleColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().isPolicyHolder() ? "Policy Holder" : "Dependent"));
 		
 		TableColumn<Beneficiary, String> beneficiaryFullNameColumn = new TableColumn<>("Full Name");
 		beneficiaryFullNameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
@@ -881,21 +913,8 @@ public class DashboardScreen extends Application {
 		table.getColumns().add(addressColumn);
 		table.getColumns().add(emailColumn);
 		
-		ObservableList<Beneficiary> claimData = FXCollections.observableArrayList();
-		for (int i = 1; i <= 30; i++) {
-			Beneficiary beneficiary = new Beneficiary();
-			beneficiary.setCustomerId("ID" + i);
-			beneficiary.setFullName("Full Name " + i);
-//            beneficiary.setRole("Role " + i);
-			beneficiary.setPhoneNumber("Phone Number " + i);
-//            beneficiary.setInsuranceCardNumber("Insurance Card Number " + i);
-			beneficiary.setAddress("Address " + i);
-			beneficiary.setEmail("Email " + i);
-			
-			claimData.add(beneficiary);
-		}
 		
-		table.setItems(claimData);
+		table.setItems(beneficiaryData);
 		
 		table.setRowFactory(tv -> {
 			TableRow<Beneficiary> row = new TableRow<>();
@@ -929,6 +948,50 @@ public class DashboardScreen extends Application {
 	
 	
 	private GridPane showUserProfile() {
+		if (this.userRole.equals("Policy holder") || this.userRole.equals("Dependent")) {
+			return showBeneficiaryProfile();
+		} else if (this.userRole.equals("Policy owner")) {
+			return showPolicyOwnerProfile();
+		} else if (this.userRole.equals("Insurance manager") || this.userRole.equals("Insurance surveyor")) {
+			return showInsuranceProviderProfile();
+		}
+		
+		// Admin profile
+		GridPane gridPane = new GridPane();
+		gridPane.setAlignment(Pos.TOP_CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		gridPane.setPadding(new Insets(25, 25, 25, 25));
+		
+		ColumnConstraints column1 = new ColumnConstraints();
+		column1.setPercentWidth(15);
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setPercentWidth(85);
+		gridPane.getColumnConstraints().addAll(column1, column2);
+		
+		Label userIdLabel = new Label("User:");
+		TextField userIdField = new TextField();
+		userIdField.setText("System Admin");
+		gridPane.add(userIdLabel, 0, 0);
+		gridPane.add(userIdField, 1, 0);
+		
+		Label userRoleLabel = new Label("Role");
+		TextField userRoleField = new TextField();
+		userRoleField.setText(this.userRole);
+		gridPane.add(userRoleLabel, 0, 1);
+		gridPane.add(userRoleField, 1, 1);
+		
+		return gridPane;
+	}
+	
+	private GridPane showInsuranceProviderProfile() {
+		InsuranceProviderController insuranceProviderController = InsuranceProviderController.getInstance();
+		Optional<InsuranceProvider> insuranceProviderOptional = insuranceProviderController.read(this.userId);
+		if (insuranceProviderOptional.isEmpty()) {
+			return new GridPane();
+		}
+		InsuranceProvider insuranceProvider = insuranceProviderOptional.get();
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -943,7 +1006,7 @@ public class DashboardScreen extends Application {
 		
 		Label userIdLabel = new Label("User ID:");
 		TextField userIdField = new TextField();
-		userIdField.setText("Default User ID");
+		userIdField.setText(insuranceProvider.getInsuranceProviderId());
 		gridPane.add(userIdLabel, 0, 0);
 		gridPane.add(userIdField, 1, 0);
 		
@@ -955,35 +1018,155 @@ public class DashboardScreen extends Application {
 		
 		Label fullNameLabel = new Label("Full Name:");
 		TextField fullNameField = new TextField();
-		fullNameField.setText("Default Full Name");
+		fullNameField.setText(insuranceProvider.getFullName());
 		fullNameField.setEditable(false);
 		gridPane.add(fullNameLabel, 0, 2);
 		gridPane.add(fullNameField, 1, 2);
 		
 		Label roleLabel = new Label("Phone Number:");
 		TextField roleField = new TextField();
-		roleField.setText("Default Phone Number");
+		roleField.setText(insuranceProvider.getPhoneNumber());
+		roleField.setEditable(false);
+		gridPane.add(roleLabel, 0, 3);
+		gridPane.add(roleField, 1, 3);
+		
+		Label emailLabel = new Label("Email:");
+		TextField emailField = new TextField();
+		emailField.setText(insuranceProvider.getEmail());
+		emailField.setEditable(false);
+		gridPane.add(emailLabel, 0, 4);
+		gridPane.add(emailField, 1, 4);
+		
+		return gridPane;
+		
+	}
+	
+	private GridPane showPolicyOwnerProfile() {
+		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+		Optional<PolicyOwner> policyOwnerOptionalOptional = policyOwnerController.read(this.userId);
+		if (policyOwnerOptionalOptional.isEmpty()) {
+			return new GridPane();
+		}
+		PolicyOwner policyOwner = policyOwnerOptionalOptional.get();
+		
+		GridPane gridPane = new GridPane();
+		gridPane.setAlignment(Pos.TOP_CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		gridPane.setPadding(new Insets(25, 25, 25, 25));
+		
+		ColumnConstraints column1 = new ColumnConstraints();
+		column1.setPercentWidth(15);
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setPercentWidth(85);
+		gridPane.getColumnConstraints().addAll(column1, column2);
+		
+		Label userIdLabel = new Label("User ID:");
+		TextField userIdField = new TextField();
+		userIdField.setText(policyOwner.getCustomerId());
+		gridPane.add(userIdLabel, 0, 0);
+		gridPane.add(userIdField, 1, 0);
+		
+		Label userRoleLabel = new Label("Role");
+		TextField userRoleField = new TextField();
+		userRoleField.setText(this.userRole);
+		gridPane.add(userRoleLabel, 0, 1);
+		gridPane.add(userRoleField, 1, 1);
+		
+		Label fullNameLabel = new Label("Full Name:");
+		TextField fullNameField = new TextField();
+		fullNameField.setText(policyOwner.getFullName());
+		fullNameField.setEditable(false);
+		gridPane.add(fullNameLabel, 0, 2);
+		gridPane.add(fullNameField, 1, 2);
+		
+		Label roleLabel = new Label("Phone Number:");
+		TextField roleField = new TextField();
+		roleField.setText(policyOwner.getPhoneNumber());
+		roleField.setEditable(false);
+		gridPane.add(roleLabel, 0, 3);
+		gridPane.add(roleField, 1, 3);
+		
+		Label addressLabel = new Label("Address:");
+		TextField addressField = new TextField();
+		addressField.setText(policyOwner.getAddress());
+		addressField.setEditable(false);
+		gridPane.add(addressLabel, 0, 4);
+		gridPane.add(addressField, 1, 4);
+		
+		Label emailLabel = new Label("Email:");
+		TextField emailField = new TextField();
+		emailField.setText(policyOwner.getEmail());
+		emailField.setEditable(false);
+		gridPane.add(emailLabel, 0, 5);
+		gridPane.add(emailField, 1, 5);
+		
+		return gridPane;
+	}
+	
+	private GridPane showBeneficiaryProfile() {
+		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+		Optional<Beneficiary> beneficiaryOptional = beneficiaryController.read(this.userId);
+		if (beneficiaryOptional.isEmpty()) {
+			return new GridPane();
+		}
+		Beneficiary beneficiary = beneficiaryOptional.get();
+		
+		GridPane gridPane = new GridPane();
+		gridPane.setAlignment(Pos.TOP_CENTER);
+		gridPane.setHgap(10);
+		gridPane.setVgap(10);
+		gridPane.setPadding(new Insets(25, 25, 25, 25));
+		
+		ColumnConstraints column1 = new ColumnConstraints();
+		column1.setPercentWidth(15);
+		ColumnConstraints column2 = new ColumnConstraints();
+		column2.setPercentWidth(85);
+		gridPane.getColumnConstraints().addAll(column1, column2);
+		
+		Label userIdLabel = new Label("User ID:");
+		TextField userIdField = new TextField();
+		userIdField.setText(beneficiary.getCustomerId());
+		gridPane.add(userIdLabel, 0, 0);
+		gridPane.add(userIdField, 1, 0);
+		
+		Label userRoleLabel = new Label("Role");
+		TextField userRoleField = new TextField();
+		userRoleField.setText(this.userRole);
+		gridPane.add(userRoleLabel, 0, 1);
+		gridPane.add(userRoleField, 1, 1);
+		
+		Label fullNameLabel = new Label("Full Name:");
+		TextField fullNameField = new TextField();
+		fullNameField.setText(beneficiary.getFullName());
+		fullNameField.setEditable(false);
+		gridPane.add(fullNameLabel, 0, 2);
+		gridPane.add(fullNameField, 1, 2);
+		
+		Label roleLabel = new Label("Phone Number:");
+		TextField roleField = new TextField();
+		roleField.setText(beneficiary.getPhoneNumber());
 		roleField.setEditable(false);
 		gridPane.add(roleLabel, 0, 3);
 		gridPane.add(roleField, 1, 3);
 		
 		Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
 		TextField insuranceCardNumberField = new TextField();
-		insuranceCardNumberField.setText("Default Insurance Card Number");
+		insuranceCardNumberField.setText(beneficiary.getInsuranceCard().getCardNumber());
 		insuranceCardNumberField.setEditable(false);
 		gridPane.add(insuranceCardNumberLabel, 0, 4);
 		gridPane.add(insuranceCardNumberField, 1, 4);
 		
 		Label addressLabel = new Label("Address:");
 		TextField addressField = new TextField();
-		addressField.setText("Default Address");
+		addressField.setText(beneficiary.getAddress());
 		addressField.setEditable(false);
 		gridPane.add(addressLabel, 0, 5);
 		gridPane.add(addressField, 1, 5);
 		
 		Label emailLabel = new Label("Email:");
 		TextField emailField = new TextField();
-		emailField.setText("Default Email");
+		emailField.setText(beneficiary.getEmail());
 		emailField.setEditable(false);
 		gridPane.add(emailLabel, 0, 6);
 		gridPane.add(emailField, 1, 6);
@@ -1044,6 +1227,8 @@ public class DashboardScreen extends Application {
 	}
 	
 	private static GridPane addNewBeneficiaryForm(BorderPane root, TableView<Beneficiary> beneficiaryTable) {
+		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -1062,21 +1247,20 @@ public class DashboardScreen extends Application {
 		gridPane.add(beneficiaryFullNameField, 1, 0);
 		
 		Label roleLabel = new Label("Role:");
-		TextField roleField = new TextField();
+		ComboBox<String> roleComboBox = new ComboBox<>();
+		roleComboBox.getItems().addAll("Dependent", "Policy holder");
 		gridPane.add(roleLabel, 0, 1);
-		gridPane.add(roleField, 1, 1);
+		gridPane.add(roleComboBox, 1, 1);
+		
+		Label policyHolderLabel = new Label("Policy Holder ID (if new beneficiary is a dependent):");
+		TextField policyHolderField = new TextField();
+		gridPane.add(policyHolderLabel, 0, 2);
+		gridPane.add(policyHolderField, 1, 2);
 		
 		Label phoneNumberLabel = new Label("Phone Number:");
 		TextField phoneNumberField = new TextField();
-		gridPane.add(phoneNumberLabel, 0, 2);
-		gridPane.add(phoneNumberField, 1, 2);
-		
-		Label insuranceCardNumberLabel = new Label("Insurance Card Number:");
-		TextField insuranceCardNumberField = new TextField();
-		gridPane.add(insuranceCardNumberLabel, 0, 3);
-		gridPane.add(insuranceCardNumberField, 1, 3);
-		
-		// TODO: Add Insurance Card verification here to check if the insurance card number is valid
+		gridPane.add(phoneNumberLabel, 0, 3);
+		gridPane.add(phoneNumberField, 1, 3);
 		
 		Label addressLabel = new Label("Address:");
 		TextField addressField = new TextField();
@@ -1091,15 +1275,41 @@ public class DashboardScreen extends Application {
 		Button submitButton = new Button("Submit");
 		gridPane.add(submitButton, 1, 6);
 		
+		String fullName = beneficiaryFullNameField.getText();
+		String newRole = roleComboBox.getValue();
+		String policyHolderId = policyHolderField.getText();
+		String phoneNumber = phoneNumberField.getText();
+		String address = addressField.getText();
+		String email = emailField.getText();
+		
 		submitButton.setOnAction(e -> {
-			// TODO: Create new beneficiary and add to the database, if the user the dependent then add to the beneficiary
+			Beneficiary newBeneficiary = new Beneficiary();
+			newBeneficiary.setFullName(fullName);
+			newBeneficiary.setPhoneNumber(phoneNumber);
+			newBeneficiary.setAddress(address);
+			newBeneficiary.setEmail(email);
+			newBeneficiary.setIsPolicyHolder(!Objects.equals(newRole, "Dependent"));
+			if (!newBeneficiary.isPolicyHolder()) {
+				beneficiaryController.read(policyHolderId).ifPresent(newBeneficiary::setPolicyHolder);
+			}
+			
+			beneficiaryController.create(newBeneficiary);
 			root.setCenter(beneficiaryTable);
 		});
 		
 		return gridPane;
 	}
 	
-	private static GridPane getPaymentContent() {
+	private GridPane getPaymentContent() {
+		PolicyOwnerController policyOwnerController = PolicyOwnerController.getInstance();
+		Optional<PolicyOwner> policyOwnerOptional = policyOwnerController.read(userId);
+		
+		if (policyOwnerOptional.isEmpty()) {
+			return new GridPane();
+		}
+		PolicyOwner policyOwner = policyOwnerOptional.get();
+		long totalPayment = ClaimCalculator.calculateYearlyClaimPayment(policyOwner);
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -1112,16 +1322,33 @@ public class DashboardScreen extends Application {
 		column2.setPercentWidth(80);
 		gridPane.getColumnConstraints().addAll(column1, column2);
 		
-		Label paymentIdLabel = new Label("Total Payment:");
+		Label paymentIdLabel = new Label("Total Yearly Payment:");
 		TextField paymentIdField = new TextField();
-		paymentIdField.setText("TODO: Work on logic of this payment from the database"); //TODO: Work on logic on calculating the payment here
+		paymentIdField.setText(String.valueOf(totalPayment));
 		gridPane.add(paymentIdLabel, 0, 0);
 		gridPane.add(paymentIdField, 1, 0);
 		
 		return gridPane;
 	}
 	
-	private static GridPane getDependentTable() {
+	private static GridPane getDependentTable(BorderPane root) {
+		if (userId == null) {
+			return new GridPane();
+		}
+		
+		if (!Objects.equals(userRole, "Policy holder")) {
+			return new GridPane();
+		}
+		
+		BeneficiaryController beneficiaryController = BeneficiaryController.getInstance();
+		Optional<Beneficiary> policyHolderOptional = beneficiaryController.read(userId);
+		if (policyHolderOptional.isEmpty()) {
+			return new GridPane();
+		}
+		Beneficiary policyHolder = policyHolderOptional.get();
+		
+		List<Beneficiary> dependents = policyHolder.getDependents();
+		
 		GridPane gridPane = new GridPane();
 		gridPane.setAlignment(Pos.TOP_CENTER);
 		gridPane.setHgap(10);
@@ -1132,12 +1359,38 @@ public class DashboardScreen extends Application {
 		column.setPercentWidth(100);
 		gridPane.getColumnConstraints().addAll(column);
 		
-		//TODO: Change the logic into the data of all dependent user
 		TableView<Beneficiary> table = new TableView<>();
+		
+		TableColumn<Beneficiary, String> idColumn = new TableColumn<>("ID");
+		idColumn.setCellValueFactory(new PropertyValueFactory<>("customerId"));
+		
+		TableColumn<Beneficiary, String> fullNameColumn = new TableColumn<>("Full Name");
+		fullNameColumn.setCellValueFactory(new PropertyValueFactory<>("fullName"));
+		
+		TableColumn<Beneficiary, String> phoneNumberColumn = new TableColumn<>("Phone Number");
+		phoneNumberColumn.setCellValueFactory(new PropertyValueFactory<>("phoneNumber"));
+		
+		TableColumn<Beneficiary, String> insuranceCardNumberColumn = new TableColumn<>("Insurance Card Number");
+		insuranceCardNumberColumn.setCellValueFactory(cellData -> new SimpleStringProperty(cellData.getValue().getInsuranceCard().getCardNumber()));
+		
+		TableColumn<Beneficiary, String> addressColumn = new TableColumn<>("Address");
+		addressColumn.setCellValueFactory(new PropertyValueFactory<>("address"));
+		
+		TableColumn<Beneficiary, String> emailColumn = new TableColumn<>("Email");
+		emailColumn.setCellValueFactory(new PropertyValueFactory<>("email"));
+		
+		table.getColumns().add(idColumn);
+		table.getColumns().add(fullNameColumn);
+		table.getColumns().add(phoneNumberColumn);
+		table.getColumns().add(insuranceCardNumberColumn);
+		table.getColumns().add(addressColumn);
+		table.getColumns().add(emailColumn);
+		
+		ObservableList<Beneficiary> dependentsData = FXCollections.observableArrayList(dependents);
+		table.setItems(dependentsData);
+		
+		gridPane.add(table, 0, 0);
+		
 		return gridPane;
-	}
-	
-	public static void main(String[] args) {
-		launch(args);
 	}
 }

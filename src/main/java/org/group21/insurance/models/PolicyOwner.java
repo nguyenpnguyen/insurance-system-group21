@@ -1,9 +1,10 @@
 package org.group21.insurance.models;
 
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+/**
+ * @author Group 21
+ */
+
+import jakarta.persistence.*;
 
 import java.io.Serializable;
 import java.util.List;
@@ -12,7 +13,7 @@ import java.util.List;
 @Table(name = "policy_owners")
 public class PolicyOwner extends Customer implements Serializable {
 	
-	@OneToMany(mappedBy = "policyOwner", cascade = {CascadeType.PERSIST, CascadeType.MERGE})
+	@OneToMany(mappedBy = "policyOwner", cascade = {CascadeType.PERSIST, CascadeType.MERGE}, fetch = FetchType.EAGER)
 	private List<Beneficiary> beneficiaries;
 	
 	public PolicyOwner() {
