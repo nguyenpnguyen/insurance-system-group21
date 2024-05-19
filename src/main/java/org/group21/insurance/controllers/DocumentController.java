@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import com.google.api.services.drive.Drive;
 import jakarta.persistence.EntityManager;
@@ -22,12 +19,23 @@ import java.util.Optional;
 import static java.io.File.separator;
 import static org.group21.insurance.utils.FileHandler.*;
 
+/**
+ * Controller class for Document entities.
+ *
+ * @author Group 21
+ */
 public class DocumentController implements GenericController<Document> {
+	// Singleton
 	private static DocumentController instance = null;
 	
 	private DocumentController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the DocumentController.
+	 *
+	 * @return the instance of the DocumentController
+	 */
 	public static DocumentController getInstance() {
 		if (instance == null) {
 			instance = new DocumentController();
@@ -35,6 +43,13 @@ public class DocumentController implements GenericController<Document> {
 		return instance;
 	}
 	
+	/**
+	 * Find a Document entity by its file name.
+	 *
+	 * @param fileName the file name of the Document entity
+	 *
+	 * @return the Document entity with the given file name
+	 */
 	public Optional<Document> findByFileName(String fileName) throws GeneralSecurityException, IOException {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -51,6 +66,13 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Find a Document entity by its ID.
+	 *
+	 * @param documentId the ID of the Document entity
+	 *
+	 * @return the Document entity with the given ID
+	 */
 	@Override
 	public Optional<Document> read(String documentId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -68,6 +90,11 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Read all Document entities.
+	 *
+	 * @return a list of all Document entities
+	 */
 	@Override
 	public List<Document> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -90,6 +117,11 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Create a new Document entity.
+	 *
+	 * @param document the Document entity to create
+	 */
 	@Override
 	public void create(Document document) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -104,6 +136,11 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Update an existing Document entity.
+	 *
+	 * @param document the Document entity to update
+	 */
 	@Override
 	public void update(Document document) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -117,6 +154,11 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Delete a Document entity.
+	 *
+	 * @param document the Document entity to delete
+	 */
 	@Override
 	public void delete(Document document) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -130,6 +172,9 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Delete all Document entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -157,6 +202,12 @@ public class DocumentController implements GenericController<Document> {
 		}
 	}
 	
+	/**
+	 * Upload a document to Google Drive and create a new Document entity.
+	 *
+	 * @param file  the file to upload
+	 * @param claim the claim the document belongs to
+	 */
 	public void uploadDocument(File file, Claim claim) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		String fileId = uploadFile(service, file);
@@ -171,6 +222,12 @@ public class DocumentController implements GenericController<Document> {
 		create(document);
 	}
 	
+	/**
+	 * Download a document from Google Drive.
+	 *
+	 * @param documentId      the ID of the document to download
+	 * @param destinationPath the path to save the downloaded document
+	 */
 	public void downloadDocument(String documentId, String destinationPath) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		Document document = read(documentId).orElseThrow();
@@ -180,6 +237,11 @@ public class DocumentController implements GenericController<Document> {
 		downloadFile(service, documentId, destinationPath + separator + fileName);
 	}
 	
+	/**
+	 * Delete a document from Google Drive and the database.
+	 *
+	 * @param documentId the ID of the document to delete
+	 */
 	public void deleteDocument(String documentId) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		Document document = read(documentId).orElseThrow();
@@ -188,6 +250,12 @@ public class DocumentController implements GenericController<Document> {
 		delete(document);
 	}
 	
+	/**
+	 * Replace a document in Google Drive and update the database.
+	 *
+	 * @param documentId the ID of the document to replace
+	 * @param newFile    the new file to upload
+	 */
 	public void replaceDocument(String documentId, File newFile) throws IOException, GeneralSecurityException {
 		Drive service = getDriveService();
 		Document document = read(documentId).orElseThrow();

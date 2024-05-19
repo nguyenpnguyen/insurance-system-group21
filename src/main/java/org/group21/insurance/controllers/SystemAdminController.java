@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,12 +13,23 @@ import org.group21.insurance.utils.EntityManagerFactorySingleton;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for SystemAdmin entities.
+ *
+ * @author Group 21
+ */
 public class SystemAdminController implements GenericController<SystemAdmin>, UserController<SystemAdmin> {
+	// Singleton
 	private static SystemAdminController instance = null;
 	
 	private SystemAdminController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the SystemAdminController.
+	 *
+	 * @return the instance of the SystemAdminController
+	 */
 	public static SystemAdminController getInstance() {
 		if (instance == null) {
 			instance = new SystemAdminController();
@@ -29,6 +37,14 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		return instance;
 	}
 	
+	/**
+	 * Read a SystemAdmin entity by its ID.
+	 *
+	 * @param id the ID of the SystemAdmin entity
+	 *
+	 * @return the SystemAdmin entity with the given ID
+	 */
+	@Override
 	public Optional<SystemAdmin> read(String id) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -37,6 +53,11 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Read all SystemAdmin entities.
+	 *
+	 * @return a list of all SystemAdmin entities
+	 */
 	@Override
 	public List<SystemAdmin> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -49,6 +70,11 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Create a new SystemAdmin entity.
+	 *
+	 * @param systemAdmin the SystemAdmin entity to create
+	 */
 	@Override
 	public void create(SystemAdmin systemAdmin) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -68,6 +94,11 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Update a SystemAdmin entity.
+	 *
+	 * @param systemAdmin the SystemAdmin entity to update
+	 */
 	@Override
 	public void update(SystemAdmin systemAdmin) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -84,6 +115,11 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Delete a SystemAdmin entity.
+	 *
+	 * @param systemAdmin the SystemAdmin entity to delete
+	 */
 	@Override
 	public void delete(SystemAdmin systemAdmin) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -102,6 +138,13 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Find a SystemAdmin entity by its username.
+	 *
+	 * @param username the username of the SystemAdmin entity
+	 *
+	 * @return the SystemAdmin entity with the given username
+	 */
 	@Override
 	public Optional<SystemAdmin> findByUsername(String username) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -118,6 +161,9 @@ public class SystemAdminController implements GenericController<SystemAdmin>, Us
 		}
 	}
 	
+	/**
+	 * Delete all SystemAdmin entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();

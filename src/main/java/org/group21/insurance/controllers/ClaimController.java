@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,12 +14,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for Claim entities.
+ *
+ * @author Group 21
+ */
 public class ClaimController implements GenericController<Claim> {
+	// Singleton
 	private static ClaimController instance = null;
 	
 	private ClaimController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the ClaimController.
+	 *
+	 * @return the instance of the ClaimController
+	 */
 	public static ClaimController getInstance() {
 		if (instance == null) {
 			instance = new ClaimController();
@@ -30,6 +38,13 @@ public class ClaimController implements GenericController<Claim> {
 		return instance;
 	}
 	
+	/**
+	 * Read a Claim entity by its ID.
+	 *
+	 * @param claimId the ID of the Claim entity
+	 *
+	 * @return the Claim entity with the given ID
+	 */
 	@Override
 	public Optional<Claim> read(String claimId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -39,6 +54,11 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Read all Claim entities.
+	 *
+	 * @return a list of all Claim entities
+	 */
 	@Override
 	public List<Claim> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -53,6 +73,11 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Create a new Claim entity.
+	 *
+	 * @param c the Claim entity to create
+	 */
 	@Override
 	public void create(Claim c) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -71,6 +96,11 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Update a Claim entity.
+	 *
+	 * @param c the Claim entity to update
+	 */
 	@Override
 	public void update(Claim c) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -86,6 +116,11 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Delete a Claim entity.
+	 *
+	 * @param c the Claim entity to delete
+	 */
 	@Override
 	public void delete(Claim c) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -104,6 +139,13 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Get all Claim entities with a specific status.
+	 *
+	 * @param status the status of the Claim entities
+	 *
+	 * @return a list of all Claim entities with the given status
+	 */
 	public List<Claim> getClaimByStatus(Claim.ClaimStatus status) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -118,6 +160,9 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Delete all Claim entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -131,6 +176,13 @@ public class ClaimController implements GenericController<Claim> {
 		}
 	}
 	
+	/**
+	 * Read all Claim entities by the ID of the insured person.
+	 *
+	 * @param userId the ID of the insured person
+	 *
+	 * @return a list of all Claim entities with the given insured person ID
+	 */
 	public List<Claim> readAllByInsuredPerson(String userId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		

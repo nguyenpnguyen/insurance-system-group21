@@ -19,11 +19,16 @@ import java.util.List;
 import java.util.concurrent.ThreadLocalRandom;
 
 /**
+ * Class to seed data into database, upload documents
+ *
  * @author Group 21
  */
 
 public class DataSeeder {
 	
+	/**
+	 * Seed data into database
+	 */
 	public static void seedData() {
 		// Delete all data
 		SystemAdminController systemAdminController = SystemAdminController.getInstance();
@@ -209,6 +214,13 @@ public class DataSeeder {
 		removeClonedFiles(baseName, numCopies);
 	}
 	
+	/**
+	 * Generate random names
+	 *
+	 * @param count Number of names to generate
+	 *
+	 * @return Array of random names
+	 */
 	private static String[] generateRandomNames(int count) {
 		
 		String[] firstNames = {"Nguyen", "Ly", "Tran", "Le", "Pham",
@@ -243,6 +255,13 @@ public class DataSeeder {
 		return names;
 	}
 	
+	/**
+	 * Clone files
+	 *
+	 * @param sourceFileName Source file name
+	 * @param baseName       Base name for cloned files
+	 * @param numCopies      Number of copies to create
+	 */
 	public static void cloneFiles(String sourceFileName, String baseName, int numCopies) {
 		Path sourceFilePath = Paths.get(sourceFileName);
 		for (int i = 2; i <= numCopies + 1; i++) {
@@ -257,6 +276,12 @@ public class DataSeeder {
 		System.out.println("Cloning completed.");
 	}
 	
+	/**
+	 * Remove cloned files
+	 *
+	 * @param baseName  Base name for cloned files
+	 * @param numCopies Number of copies to remove
+	 */
 	public static void removeClonedFiles(String baseName, int numCopies) {
 		for (int i = 2; i <= numCopies + 1; i++) {
 			Path filePath = Paths.get(baseName + "-" + i + ".pdf");

@@ -1,8 +1,5 @@
 package org.group21.insurance.authentication;
 
-/**
- * @author Group 21
- */
 
 import org.group21.insurance.controllers.InsuranceProviderController;
 import org.group21.insurance.exceptions.UserNotAuthenticatedException;
@@ -11,8 +8,25 @@ import org.group21.insurance.models.InsuranceProvider;
 
 import java.util.Optional;
 
+/**
+ * LogInHandler for Insurance surveyor role.
+ *
+ * @author Group 21
+ */
 public class InsuranceSurveyorLogInHandler implements LogInHandler {
 	
+	/**
+	 * Get the user ID of a Insurance surveyor entity by its username and password.
+	 *
+	 * @param username the username of the Insurance surveyor entity
+	 * @param password the password of the Insurance surveyor entity
+	 *
+	 * @return the user ID of the Insurance surveyor entity
+	 *
+	 * @throws UserNotFoundException         if the Insurance surveyor entity with the given username is not found
+	 * @throws UserNotAuthenticatedException if the Insurance surveyor entity with the given username is found but the
+	 *                                       password is incorrect
+	 */
 	@Override
 	public String getUserId(String username, String password) throws UserNotFoundException, UserNotAuthenticatedException {
 		InsuranceProviderController controller = InsuranceProviderController.getInstance();

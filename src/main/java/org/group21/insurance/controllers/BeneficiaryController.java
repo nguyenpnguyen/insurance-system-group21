@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,12 +14,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for Beneficiary entities.
+ *
+ * @author Group 21
+ */
 public class BeneficiaryController implements GenericController<Beneficiary>, UserController<Beneficiary> {
+	// Singleton
 	private static BeneficiaryController instance = null;
 	
 	private BeneficiaryController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the BeneficiaryController.
+	 *
+	 * @return the instance of the BeneficiaryController
+	 */
 	public static BeneficiaryController getInstance() {
 		if (instance == null) {
 			instance = new BeneficiaryController();
@@ -30,6 +38,13 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		return instance;
 	}
 	
+	/**
+	 * Read a Policy holder entity by its ID.
+	 *
+	 * @param policyHolderId the ID of the policy holder entity
+	 *
+	 * @return the Policy holder entity with the given ID
+	 */
 	public Optional<Beneficiary> readPolicyHolder(String policyHolderId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -42,6 +57,13 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Read a Dependent entity by its ID.
+	 *
+	 * @param dependentId the ID of the Dependent entity
+	 *
+	 * @return the Dependent entity with the given ID
+	 */
 	public Optional<Beneficiary> readDependent(String dependentId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -54,6 +76,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Read all Policy holder entities.
+	 *
+	 * @return a list of all Policy holder entities
+	 */
 	public List<Beneficiary> readAllPolicyHolders() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -68,6 +95,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Read all Dependent entities.
+	 *
+	 * @return a list of all Dependent entities
+	 */
 	public List<Beneficiary> readAllDependents() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -82,6 +114,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Read a Beneficiary entity based on its ID.
+	 *
+	 * @return an optional of the Beneficiary entity
+	 */
 	@Override
 	public Optional<Beneficiary> read(String beneficiaryId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -91,6 +128,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Read all Beneficiary entities.
+	 *
+	 * @return a list of all Beneficiary entities
+	 */
 	@Override
 	public List<Beneficiary> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -105,6 +147,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Create a new Beneficiary entity.
+	 *
+	 * @param b the Beneficiary entity to create
+	 */
 	@Override
 	public void create(Beneficiary b) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -123,6 +170,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Update a Beneficiary entity.
+	 *
+	 * @param b the Beneficiary entity to update
+	 */
 	@Override
 	public void update(Beneficiary b) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -138,6 +190,11 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Delete a Beneficiary entity.
+	 *
+	 * @param b the Beneficiary entity to delete
+	 */
 	@Override
 	public void delete(Beneficiary b) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -156,6 +213,13 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Find a Beneficiary entity by its username.
+	 *
+	 * @param username the username of the Beneficiary entity
+	 *
+	 * @return an optional of the Beneficiary entity
+	 */
 	@Override
 	public Optional<Beneficiary> findByUsername(String username) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -171,6 +235,9 @@ public class BeneficiaryController implements GenericController<Beneficiary>, Us
 		}
 	}
 	
+	/**
+	 * Delete all Beneficiary entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();

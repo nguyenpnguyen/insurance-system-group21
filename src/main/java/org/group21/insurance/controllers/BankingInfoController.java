@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -16,12 +13,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for BankingInfo entities.
+ *
+ * @author Group 21
+ */
 public class BankingInfoController implements GenericController<BankingInfo> {
+	// Singleton
 	private static BankingInfoController instance = null;
 	
 	private BankingInfoController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the BankingInfoController.
+	 *
+	 * @return the instance of the BankingInfoController
+	 */
 	public static BankingInfoController getInstance() {
 		if (instance == null) {
 			instance = new BankingInfoController();
@@ -29,6 +37,13 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		return instance;
 	}
 	
+	/**
+	 * Read a BankingInfo entity by its account number.
+	 *
+	 * @param accountNumber the account number of the BankingInfo entity
+	 *
+	 * @return the BankingInfo entity with the given account number
+	 */
 	@Override
 	public Optional<BankingInfo> read(String accountNumber) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -38,6 +53,11 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		}
 	}
 	
+	/**
+	 * Read all BankingInfo entities.
+	 *
+	 * @return a list of all BankingInfo entities
+	 */
 	@Override
 	public List<BankingInfo> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -52,6 +72,11 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		}
 	}
 	
+	/**
+	 * Create a new BankingInfo entity.
+	 *
+	 * @param bi the BankingInfo entity to create
+	 */
 	@Override
 	public void create(BankingInfo bi) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -69,6 +94,11 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		}
 	}
 	
+	/**
+	 * Update a BankingInfo entity.
+	 *
+	 * @param bi the BankingInfo entity to update
+	 */
 	@Override
 	public void update(BankingInfo bi) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -84,6 +114,11 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		}
 	}
 	
+	/**
+	 * Delete a BankingInfo entity.
+	 *
+	 * @param bi the BankingInfo entity to delete
+	 */
 	@Override
 	public void delete(BankingInfo bi) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -102,6 +137,9 @@ public class BankingInfoController implements GenericController<BankingInfo> {
 		}
 	}
 	
+	/**
+	 * Delete all BankingInfo entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();

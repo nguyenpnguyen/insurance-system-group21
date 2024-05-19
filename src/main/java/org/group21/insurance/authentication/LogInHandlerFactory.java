@@ -1,6 +1,8 @@
 package org.group21.insurance.authentication;
 
 /**
+ * Factory class to create LogInHandler objects based on the user type
+ *
  * @author Group 21
  */
 public class LogInHandlerFactory {

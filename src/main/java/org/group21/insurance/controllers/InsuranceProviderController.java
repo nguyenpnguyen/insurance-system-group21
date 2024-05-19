@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,12 +14,23 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for InsuranceProvider entities.
+ *
+ * @author Group 21
+ */
 public class InsuranceProviderController implements GenericController<InsuranceProvider>, UserController<InsuranceProvider> {
+	// Singleton
 	private static InsuranceProviderController instance = null;
 	
 	private InsuranceProviderController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the InsuranceProviderController.
+	 *
+	 * @return the instance of the InsuranceProviderController
+	 */
 	public static InsuranceProviderController getInstance() {
 		if (instance == null) {
 			instance = new InsuranceProviderController();
@@ -30,6 +38,13 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		return instance;
 	}
 	
+	/**
+	 * Read an Insurance manager entity by its ID.
+	 *
+	 * @param insuranceManagerId the ID of the Insurance manager entity
+	 *
+	 * @return the Insurance manager entity with the given ID
+	 */
 	public Optional<InsuranceProvider> readInsuranceManager(String insuranceManagerId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -42,6 +57,13 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Read an Insurance surveyor entity by its ID.
+	 *
+	 * @param insuranceSurveyorId the ID of the Insurance surveyor entity
+	 *
+	 * @return the Insurance surveyor entity with the given ID
+	 */
 	public Optional<InsuranceProvider> readInsuranceSurveyor(String insuranceSurveyorId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -54,6 +76,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Read all Insurance manager entities.
+	 *
+	 * @return a list of all Insurance manager entities
+	 */
 	public List<InsuranceProvider> readAllInsuranceManagers() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -68,6 +95,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Read all Insurance surveyor entities.
+	 *
+	 * @return a list of all Insurance surveyor entities
+	 */
 	public List<InsuranceProvider> readAllInsuranceSurveyors() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
 		
@@ -82,6 +114,13 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Read a InsuranceProvider entity with given ID .
+	 *
+	 * @param insuranceProviderId the ID of the InsuranceProvider entity
+	 *
+	 * @return an optional of InsuranceProvider entity
+	 */
 	@Override
 	public Optional<InsuranceProvider> read(String insuranceProviderId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -91,6 +130,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Read all InsuranceProvider entities.
+	 *
+	 * @return a list of all InsuranceProvider entities
+	 */
 	@Override
 	public List<InsuranceProvider> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -105,6 +149,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Create a new InsuranceProvider entity.
+	 *
+	 * @param ip the InsuranceProvider entity to create
+	 */
 	@Override
 	public void create(InsuranceProvider ip) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -121,6 +170,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Update an existing InsuranceProvider entity.
+	 *
+	 * @param ip the InsuranceProvider entity to update
+	 */
 	@Override
 	public void update(InsuranceProvider ip) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -136,6 +190,11 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Delete an existing InsuranceProvider entity.
+	 *
+	 * @param ip the InsuranceProvider entity to delete
+	 */
 	@Override
 	public void delete(InsuranceProvider ip) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -152,6 +211,13 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Find an InsuranceProvider entity by its username.
+	 *
+	 * @param username the username of the InsuranceProvider entity
+	 *
+	 * @return an optional of InsuranceProvider entity
+	 */
 	@Override
 	public Optional<InsuranceProvider> findByUsername(String username) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -167,6 +233,9 @@ public class InsuranceProviderController implements GenericController<InsuranceP
 		}
 	}
 	
+	/**
+	 * Delete all InsuranceProvider entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();

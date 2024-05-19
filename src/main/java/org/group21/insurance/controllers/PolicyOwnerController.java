@@ -1,8 +1,5 @@
 package org.group21.insurance.controllers;
 
-/**
- * @author Group 21
- */
 
 import jakarta.persistence.EntityManager;
 import jakarta.persistence.EntityManagerFactory;
@@ -17,12 +14,24 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Controller class for PolicyOwner entities.
+ *
+ * @author Group 21
+ */
+
 public class PolicyOwnerController implements GenericController<PolicyOwner>, UserController<PolicyOwner> {
+	// Singleton
 	private static PolicyOwnerController instance = null;
 	
 	private PolicyOwnerController() {
 	}
 	
+	/**
+	 * Get the singleton instance of the PolicyOwnerController.
+	 *
+	 * @return the instance of the PolicyOwnerController
+	 */
 	public static PolicyOwnerController getInstance() {
 		if (instance == null) {
 			instance = new PolicyOwnerController();
@@ -31,6 +40,13 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 	}
 	
 	
+	/**
+	 * Read a PolicyOwner entity by its ID.
+	 *
+	 * @param policyOwnerId the ID of the PolicyOwner entity
+	 *
+	 * @return the PolicyOwner entity with the given ID
+	 */
 	@Override
 	public Optional<PolicyOwner> read(String policyOwnerId) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -40,6 +56,11 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Read all PolicyOwner entities.
+	 *
+	 * @return a list of all PolicyOwner entities
+	 */
 	@Override
 	public List<PolicyOwner> readAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -54,6 +75,11 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Create a new PolicyOwner entity.
+	 *
+	 * @param po the PolicyOwner entity to create
+	 */
 	@Override
 	public void create(PolicyOwner po) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -67,6 +93,11 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Update a PolicyOwner entity.
+	 *
+	 * @param po the PolicyOwner entity to update
+	 */
 	@Override
 	public void update(PolicyOwner po) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -80,6 +111,11 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Delete a PolicyOwner entity.
+	 *
+	 * @param po the PolicyOwner entity to delete
+	 */
 	@Override
 	public void delete(PolicyOwner po) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -93,6 +129,9 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Delete all PolicyOwner entities.
+	 */
 	@Override
 	public void deleteAll() {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
@@ -106,6 +145,13 @@ public class PolicyOwnerController implements GenericController<PolicyOwner>, Us
 		}
 	}
 	
+	/**
+	 * Find a PolicyOwner entity by its username.
+	 *
+	 * @param username the username of the PolicyOwner entity
+	 *
+	 * @return the PolicyOwner entity with the given username
+	 */
 	@Override
 	public Optional<PolicyOwner> findByUsername(String username) {
 		EntityManagerFactory emf = EntityManagerFactorySingleton.getInstance();
