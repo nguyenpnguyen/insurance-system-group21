@@ -22,6 +22,7 @@ import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
+import org.group21.insurance.authentication.PasswordAuthenticator;
 import org.group21.insurance.controllers.*;
 import org.group21.insurance.models.*;
 import org.group21.insurance.utils.ClaimCalculator;
@@ -1349,40 +1350,52 @@ public class DashboardScreen extends Application {
 		column2.setPercentWidth(80);
 		gridPane.getColumnConstraints().addAll(column1, column2);
 		
+		Label beneficiaryUsernameLabel = new Label("Username:");
+		TextField beneficiaryUsernameField = new TextField();
+		gridPane.add(beneficiaryUsernameLabel, 0, 0);
+		gridPane.add(beneficiaryUsernameField, 1, 0);
+		
+		Label beneficiaryPasswordLabel = new Label("Password:");
+		TextField beneficiaryPasswordField = new TextField();
+		gridPane.add(beneficiaryPasswordLabel, 0, 1);
+		gridPane.add(beneficiaryPasswordField, 1, 1);
+		
 		Label beneficiaryFullNameLabel = new Label("Full Name:");
 		TextField beneficiaryFullNameField = new TextField();
-		gridPane.add(beneficiaryFullNameLabel, 0, 0);
-		gridPane.add(beneficiaryFullNameField, 1, 0);
+		gridPane.add(beneficiaryFullNameLabel, 0, 2);
+		gridPane.add(beneficiaryFullNameField, 1, 2);
 		
 		Label roleLabel = new Label("Role:");
 		ComboBox<String> roleComboBox = new ComboBox<>();
 		roleComboBox.getItems().addAll("Dependent", "Policy holder");
-		gridPane.add(roleLabel, 0, 1);
-		gridPane.add(roleComboBox, 1, 1);
+		gridPane.add(roleLabel, 0, 3);
+		gridPane.add(roleComboBox, 1, 3);
 		
 		Label policyHolderLabel = new Label("Policy Holder ID (if new beneficiary is a dependent):");
 		TextField policyHolderField = new TextField();
-		gridPane.add(policyHolderLabel, 0, 2);
-		gridPane.add(policyHolderField, 1, 2);
+		gridPane.add(policyHolderLabel, 0, 4);
+		gridPane.add(policyHolderField, 1, 4);
 		
 		Label phoneNumberLabel = new Label("Phone Number:");
 		TextField phoneNumberField = new TextField();
-		gridPane.add(phoneNumberLabel, 0, 3);
-		gridPane.add(phoneNumberField, 1, 3);
+		gridPane.add(phoneNumberLabel, 0, 5);
+		gridPane.add(phoneNumberField, 1, 5);
 		
 		Label addressLabel = new Label("Address:");
 		TextField addressField = new TextField();
-		gridPane.add(addressLabel, 0, 4);
-		gridPane.add(addressField, 1, 4);
+		gridPane.add(addressLabel, 0, 6);
+		gridPane.add(addressField, 1, 6);
 		
 		Label emailLabel = new Label("Email:");
 		TextField emailField = new TextField();
-		gridPane.add(emailLabel, 0, 5);
-		gridPane.add(emailField, 1, 5);
+		gridPane.add(emailLabel, 0, 7);
+		gridPane.add(emailField, 1, 7);
 		
 		Button submitButton = new Button("Submit");
-		gridPane.add(submitButton, 1, 6);
+		gridPane.add(submitButton, 1, 8);
 		
+		String username = beneficiaryUsernameField.getText();
+		String password = beneficiaryPasswordField.getText();
 		String fullName = beneficiaryFullNameField.getText();
 		String newRole = roleComboBox.getValue();
 		String policyHolderId = policyHolderField.getText();
@@ -1390,8 +1403,13 @@ public class DashboardScreen extends Application {
 		String address = addressField.getText();
 		String email = emailField.getText();
 		
+		PasswordAuthenticator passwordAuthenticator = new PasswordAuthenticator();
 		submitButton.setOnAction(e -> {
+			
 			Beneficiary newBeneficiary = new Beneficiary();
+			
+			newBeneficiary.setUsername(username);
+			newBeneficiary.setHashedPassword(passwordAuthenticator.hash(password.toCharArray()));
 			newBeneficiary.setFullName(fullName);
 			newBeneficiary.setPhoneNumber(phoneNumber);
 			newBeneficiary.setAddress(address);
